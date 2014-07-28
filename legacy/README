@@ -1,0 +1,23 @@
+
+The file titles.dat is a data file containing the list of 
+known titles.  It needs to be present in the directory or 
+else running the main proram will try to load it, fail, 
+and issue a segmentation fault (see line 448).
+
+At present (14/0710) the program can call a single SnapStream 
+file, either by name or from standard input.  Whether to use
+a file name or stdin is hard-coded.  The hard-coding occurs
+in the routine "getstring" in lines 109-110.  There are two 
+versions of example programs copied from the old directory:
+
+	"eg01china.c" is hard-coded to use stdin
+	"eg02trade.c" is hard-coded to use the file "Data/2012-10-23.txt"
+
+These are set to be read-only.  Please make copies when fiddling with them.
+
+Line 508 tells the program only to do Boolean searching within programs
+whose unique title identifier is nonzero.  If titles.dat contains
+all known titles then this should be any program for which there
+was not a titling error.  If titles.dat is altered to be a subset
+of titles, then this line invokes the list as a mask. 
+
