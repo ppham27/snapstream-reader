@@ -259,7 +259,7 @@ for (i=0; ; i++)
   {
   if (s[i] == 42) return (0);
   if ((s[i] == '\0') && ((t[i] == '\0') || (t[i] == '\n'))) return (0);
-  if (s[i] != t[i]) return (s[i]-t[i]);
+  if (s[i] != text(t[i])) return (s[i]-t[i]);
   }
 }
 

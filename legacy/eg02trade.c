@@ -1,11 +1,10 @@
-
 #include <stdio.h>
 #include <string.h>
 
 /* globally defined variables */
 
 #define MAXHEAD 800	/* maximum number of characters in header */
-#define MAXCHARS 12000000 /* maximum number of characters in daily log */
+#define MAXCHARS 18000000 /* maximum number of characters in daily log */
 #define MAXWORDS 20000	/* maximum number of words in program */
 #define MAXPROGS 200	/* maximum number of programs in a day */
 #define PAD 50		/* number of words before and after excerpt */
@@ -106,17 +105,17 @@ int getstring()
   char z='\0';
   FILE *fp;
   
-  fp = fopen("Data/2012-10-23.txt","r");
+  fp = fopen("Data/2012-10-23-Combined.txt","r");
   while ((y = getc(fp)) != EOF) 
   {
-    if (y == -61) {bigstring[i++]=13; numprogs++;}
+    if (y == -61) {/* bigstring[i++]=13 */; numprogs++;}
     if ( (i > 0) && (text(y) == 0) && (text(z) != 0) ) {bigstring[i++]='\0';}
     bigstring[i++]=y;
     z = y;
     if (i >= MAXCHARS) {printf("\nWarning: file exceeded %d chars\n",i); 
       break;}
   }
-  bigstring[i++] = 13;
+  bigstring[i++] = -61;
   bigstring[i++]=EOF; 
   fclose(fp);
   return(i);
@@ -169,7 +168,7 @@ int readheader(int i)
      {printf("\nEOF at letter %d",letter); hlen = -1;}
   else if (letter++ - hstart >= MAXHEAD) 
     {
-    printf("\nWarning: maximum header length exceeded");
+    printf("\nWarning: maximum header length exceeded at letter = %d and hstart = %d\n",letter,hstart);
     hlen=MAXHEAD; 
     }
   else 
@@ -228,7 +227,7 @@ int readbody(int i)
 
   z = bigstring[letter]; letter++; /* printf("\n(%d)",letter) */;
 
-  while (((y=bigstring[letter]) != 13) && (y != EOF)) 
+  while (((y=bigstring[letter]) != -61) && (y != EOF)) 
      {if ((text(y) != 0) && (text (z) == 0)) 
          {table[i][wctr] = &(bigstring[letter]); wctr++;}
       z=y; letter++;
@@ -259,7 +258,7 @@ for (i=0; ; i++)
   {
   if (s[i] == 42) return (0);
   if ((s[i] == '\0') && ((t[i] == '\0') || (t[i] == '\n'))) return (0);
-  if (s[i] != t[i]) return (s[i]-t[i]);
+  if (s[i] != text(t[i])) return (s[i]-t[i]);
   }
 }
 
@@ -513,13 +512,17 @@ for (i=0;i<numprogs;i++)
    /* t = near(i,50,"has","won",pri); */
    /* not(sec); */
    /* t = and(pri,sec); */
+   /* near(i,50,"trad*","china*",pri); */
+   /* near(i,50,"trad*","chinese*",sec); */
+   /* t = or(pri,sec); */
+   /* t = find(i,"chin*",pri); */
    find(i,"trad*",pri);
    find(i,"nafta",sec);
    t = or(pri,sec);
    if (t != -1)
       {
-      printf("\n--------------------------------------------\n\nTitle: "); 
-      printtitle(i); 
+      printf("\n--------------------------------------------\n\nTitle: ");
+      printtitle(i);
       printf("\nTitle ID #%d",idmatch(i)); printf("\n");
       display(i,pri);
       n1++;
