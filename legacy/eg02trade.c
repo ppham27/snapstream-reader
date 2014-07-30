@@ -519,6 +519,9 @@ for (i=0;i<numprogs;i++)
    find(i,"trad*",pri);
    find(i,"nafta",sec);
    t = or(pri,sec);
+   find(i,"tradition*",ter);
+   not(ter);
+   t = and(pri, ter);
    if (t != -1)
       {
       printf("\n--------------------------------------------\n\nTitle: ");
