@@ -532,7 +532,7 @@ for (i=0;i<numprogs;i++)
       }
    }
  }
-printf("\n--------------------------------------------\n"); 
-printf("\n     Number of programs with matches: %d.\n\n",n1);
+ printf("\n--------------------------------------------\n"); 
+ printf("\n     Number of programs with matches: %d.\n\n",n1);
 }
 

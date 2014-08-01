@@ -7,7 +7,7 @@
 #define MAXHEAD 800	/* maximum number of characters in header */
 #define MAXCHARS 18000000 /* maximum number of characters in daily log */
 #define MAXWORDS 20000	/* maximum number of words in program */
-#define MAXPROGS 200	/* maximum number of programs in a day */
+#define MAXPROGS 250	/* maximum number of programs in a day */
 #define PAD 50		/* number of words before and after excerpt */
 #define MAXTITLE 50	/* maximum number of characters in title */
 #define NUMTITLES 400	/* maximum number of unique show titles */
@@ -50,7 +50,7 @@ int ter[MAXMATCH+1];     /* third array of pointers to table, to combine
 
 /* subroutine declarations */
 
-int getstring();	/* inputs daily log, returns length of bigstring */
+int getstring(char *);	/* inputs daily log, returns length of bigstring */
 
 void loadtitles();		/* loads title strings into titlearray */
 
@@ -99,26 +99,27 @@ void printcaps(int i, int j);   /* prints table[i][j] all in caps */
    between each transision from a text to a non-text character.  It returns
    the length of bigstring */
 
-int getstring()
+int getstring(char* file_name)
 {
   int i=0;
   char y;
   char z='\0';
   FILE *fp;
   
-  /* fp = fopen("2012-10-23-Combined.txt","r"); */
-  while ((y = getc(stdin)) != EOF) 
-  {
+  fp = fopen(file_name,"r");
+  while ((y = getc(fp)) != EOF)  {
     if (y == -61) {/* bigstring[i++]=13 */; numprogs++;}
     if ( (i > 0) && (text(y) == 0) && (text(z) != 0) ) {bigstring[i++]='\0';}
     bigstring[i++]=y;
     z = y;
-    if (i >= MAXCHARS) {printf("\nWarning: file exceeded %d chars\n",i); 
-      break;}
+    if (i >= MAXCHARS) {
+      printf("\nWarning: file exceeded %d chars\n",i); 
+      break;
+    }
   }
   bigstring[i++] = -61;
   bigstring[i++]=EOF; 
-  /* fclose(fp); */
+  fclose(fp);
   return(i);
 }
 
@@ -490,47 +491,57 @@ return(id);
 
 /* MAIN PROGRAM STARTS HERE */
 
-main()
-{
-int i,j,t;
-
-loadtitles();
-LEN = getstring();
+int main(int argc, char **argv) {
+  if (argc < 2) {
+    fprintf(stderr, "a file name is expected as the first argument");
+    return -1;
+  }
+  int i,j,t;
+  loadtitles();
+  LEN = getstring(argv[1]);
    
-   printf("\nlength of main string = %d",LEN); 
-   printf("\nNumber of programs = %d\n", numprogs);
-   printf("\n----------------------------------------------------------\n");
+  printf("\nlength of main string = %d",LEN); 
+  printf("\nNumber of programs = %d\n", numprogs);
+  printf("\n----------------------------------------------------------\n");
    
-parseprogs(0); 
-
-for (i=0;i<numprogs;i++)
- {
-   if (titlenums[i] != 0)
-   {
-   /* SAMPLE formatting - do not delete */
-   /* find(i,"presid*",pri); */
-   /* find(i,"trad*",sec); */
-   /* t = near(i,50,"has","won",pri); */
-   /* not(sec); */
-   /* t = and(pri,sec); */
-   /* near(i,50,"trad*","china*",pri); */
-   /* near(i,50,"trad*","chinese*",sec); */
-   /* t = or(pri,sec); */
-   t = find(i,"chin*",pri);
-   /* find(i,"trad*",pri); */
-   /* find(i,"nafta",sec); */
-   /* t = or(pri,sec); */
-   if (t != -1)
-      {
-      printf("\n--------------------------------------------\n\nTitle: ");
-      printtitle(i);
-      printf("\nTitle ID #%d",idmatch(i)); printf("\n");
-      display(i,pri);
-      n1++;
+  parseprogs(0); 
+  int total_matches = 0;
+  int selected_programs = 0;
+  for (i=0;i<numprogs;i++) {
+    if (titlenums[i] != 0) {
+      ++selected_programs;
+      /* SAMPLE formatting - do not delete */
+      /* find(i,"presid*",pri); */
+      /* find(i,"trad*",sec); */
+      /* t = near(i,50,"has","won",pri); */
+      /* not(sec); */
+      /* t = and(pri,sec); */
+      /* near(i,50,"trad*","china*",pri); */
+      /* near(i,50,"trad*","chinese*",sec); */
+      /* t = or(pri,sec); */
+      t = find(i,"chin*",pri);
+      /* find(i,"trad*",pri); */
+      /* find(i,"nafta",sec); */
+      /* t = or(pri,sec); */
+      /* t = or(pri,sec); */
+      /* find(i,"tradition*",ter); */
+      /* not(ter); */
+      if (t != -1) {     
+        printf("\n--------------------------------------------\n\nTitle: ");
+        printtitle(i);
+        printf("\nTitle ID #%d",idmatch(i)); printf("\n");
+        display(i,pri);
+        n1++;
+        total_matches += pri[0];
       }
-   }
- }
-printf("\n--------------------------------------------\n"); 
-printf("\n     Number of programs with matches: %d.\n\n",n1);
+    }
+  }
+  printf("\n--------------------------------------------\n");
+  printf("\n     Number of total matches: %d.\n",total_matches);
+  printf("     Number of programs with matches: %d.\n",n1);
+  printf("     Number of total programs: %d.\n",numprogs);
+  printf("     Number of selected programs: %d.\n",selected_programs);
+  printf("%d\t%d\t%d\t%d\n", total_matches, n1, numprogs, selected_programs);
+  return 0;
 }
 
