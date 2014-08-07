@@ -526,8 +526,8 @@ int main(int argc, char **argv) {
       /* t = or(pri,sec); */
       /* find(i,"tradition*",ter); */
       /* not(ter); */
-      if (t != -1) {     
-        printf("\n--------------------------------------------\n\nTitle: ");
+      if (t != -1) {
+        printf("\n*--------------------------------------------*\n\nTitle: ");
         printtitle(i);
         printf("\nTitle ID #%d",idmatch(i)); printf("\n");
         display(i,pri);
@@ -536,7 +536,7 @@ int main(int argc, char **argv) {
       }
     }
   }
-  printf("\n--------------------------------------------\n");
+  printf("\n*--------------------------------------------*\n");
   printf("\n     Number of total matches: %d.\n",total_matches);
   printf("     Number of programs with matches: %d.\n",n1);
   printf("     Number of total programs: %d.\n",numprogs);

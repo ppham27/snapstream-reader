@@ -51,10 +51,13 @@ if __name__ == "__main__":
         search_string = country
         for file_name in data_files:
             date_string = file_name[5:15]
-            header = "searching for " + search_string + " in " + file_name + "\n" + "====================\n\n"
+            header = "searching for " + search_string + " in " + file_name + "\n" + "====================\n"
             proc = subprocess.Popen(["./a.out",search_string, file_name], stdout=subprocess.PIPE)
             proc_out = proc.communicate()[0].decode('utf-8')
-            excerpts.append(header + proc_out)
+            partial_excerpts = proc_out.split("*--------------------------------------------*\n")
+            if len(partial_excerpts) > 2:
+                partial_excerpts = list(map(lambda x : header + x + '\n', partial_excerpts[1:-1]))
+                excerpts.extend(partial_excerpts)
             full_output.write(header + proc_out)            
             proc_out = proc_out.split('\n')
             data_line = proc_out[-2]
@@ -73,10 +76,14 @@ if __name__ == "__main__":
             c2 = country_list[j]
             for file_name in data_files:
                 date_string = file_name[5:15]
-                header = "searching for " + c1 + " near " + c2 + " in " + file_name + "\n" + "====================\n\n"
+                header = "searching for " + c1 + " near " + c2 + " in " + file_name + "\n" + "====================\n"
                 proc = subprocess.Popen(["./a.out", c1, c2, file_name], stdout=subprocess.PIPE)
                 proc_out = proc.communicate()[0].decode('utf-8')
-                excerpts.append(header + proc_out)                
+                partial_excerpts = proc_out.split()
+                partial_excerpts = proc_out.split("*--------------------------------------------*\n")
+                if len(partial_excerpts) > 2:
+                    partial_excerpts = list(map(lambda x : header + x + '\n', partial_excerpts[1:-1]))
+                    excerpts.extend(partial_excerpts)
                 full_output.write(header + proc_out)
                 proc_out = proc_out.split('\n')
                 data_line = proc_out[-2]
@@ -100,5 +107,7 @@ if __name__ == "__main__":
     for e in excerpts[:100]:
         print(e)
     print(str(time.time() - start_time) + " seconds taken")
+
+
 
     

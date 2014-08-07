@@ -524,7 +524,7 @@ for (i=0;i<numprogs;i++)
    t = and(pri, ter);
    if (t != -1)
       {
-      printf("\n--------------------------------------------\n\nTitle: ");
+        printf("\n*--------------------------------------------*\n\nTitle: ");
       printtitle(i);
       printf("\nTitle ID #%d",idmatch(i)); printf("\n");
       display(i,pri);
@@ -532,7 +532,7 @@ for (i=0;i<numprogs;i++)
       }
    }
  }
- printf("\n--------------------------------------------\n"); 
+ printf("\n*--------------------------------------------*\n");
  printf("\n     Number of programs with matches: %d.\n\n",n1);
 }
 
