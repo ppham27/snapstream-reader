@@ -1,10 +1,14 @@
-#include "snap.h"
 #include <cctype>
 #include <string>
 #include <regex>
 #include <map>
 #include <vector>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+
+#include "snap.h"
+#include "Program.h"
 
 
 namespace snap {
@@ -53,6 +57,15 @@ namespace snap {
     if (pattern1_loci.size() == 0 || pattern2_loci.size() == 0) { return match_positions; }    
     return match_positions;
   }
+
+  std::vector<snap::Program *> parse_programs(const std::string &file_name) {
+    std::ifstream ifs(file_name, std::ifstream::in);    
+    return parse_programs(ifs);
+  }
+  
+  std::vector<snap::Program *> parse_programs(std::istream &input) {
+    return std::vector<snap::Program *>();
+  }  
 }
 
 
