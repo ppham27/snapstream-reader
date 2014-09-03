@@ -23,7 +23,7 @@ Captioning made possible by Johnson & Johnson, where quality products for the Am
   ASSERT_EQ("3 - KYW", prog.channel);
   ASSERT_EQ("2014-07-27", prog.recorded_date);
   ASSERT_EQ("2014-07-27", prog.aired_date);
-  ASSERT_EQ("Captioning made possible", prog.text);
+  ASSERT_EQ("Captioning made possible by Johnson & Johnson, where quality products for the American family have been a tradition for generations good morning, I am Charles Osgood and this is Sunday morning. Summertime is the season when countless Americans spend as much time as possible outside the house, and no wonder. All too many of them, the house that they are escaping is a full house. A house so full of stuff there is hardly any room for them. Peter, Rita braver will report our cover story. .. \n>> Has now been diagnosed as a mental disorder, hoarding. >> Up to 5 percent of Americans.", prog.text);
 }
 
 TEST(find, Default) {
@@ -66,12 +66,16 @@ TEST(near, Default) {
   ASSERT_EQ(match_positions[pattern1].size(), 0);
   ASSERT_EQ(match_positions[pattern2].size(), 0);
   match_positions = snap::near(pattern1, pattern2, distance, text);
-  ASSERT_THAT(match_positions[pattern1],
-              ::testing::ElementsAre(12));
   text = "together are china and russia blah blah blah blah blah china blah blah russia blah";
-  match_positions = snap::near(pattern1, pattern2, distance, text);                         
+  match_positions = snap::near(pattern1, pattern2, distance, text);
   ASSERT_THAT(match_positions[pattern1],
-              ::testing::ElementsAre(12));
+              ::testing::ElementsAre(13));
   ASSERT_THAT(match_positions[pattern2],
               ::testing::ElementsAre(23));
+  distance = 20;
+  match_positions = snap::near(pattern1, pattern2, distance, text);
+  ASSERT_THAT(match_positions[pattern1],
+              ::testing::ElementsAre(13, 55));
+  ASSERT_THAT(match_positions[pattern2],
+              ::testing::ElementsAre(23, 71));
 }

@@ -1,6 +1,7 @@
 #ifndef SNAP_H
 #define SNAP_H
 
+#include <algorithm>
 #include <cctype>
 #include <map>
 #include <string>

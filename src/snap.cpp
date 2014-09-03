@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cctype>
 #include <string>
 #include <regex>
@@ -49,12 +50,24 @@ namespace snap {
                                                const std::string &pattern2,
                                                int distance,
                                                const std::string &s) {
-    std::vector<int> pattern1_loci = find(pattern1, s)[pattern1];
-    std::vector<int> pattern2_loci = find(pattern2, s)[pattern2];    
+    std::vector<int> pattern1_locii = find(pattern1, s)[pattern1];
+    std::vector<int> pattern2_locii = find(pattern2, s)[pattern2];    
     std::map<std::string, std::vector<int>> match_positions;
     match_positions[pattern1] = std::vector<int>();
     match_positions[pattern2] = std::vector<int>();
-    if (pattern1_loci.size() == 0 || pattern2_loci.size() == 0) { return match_positions; }    
+    if (pattern1_locii.size() == 0 || pattern2_locii.size() == 0) { return match_positions; }
+    auto q = pattern2_locii.begin();
+    for (int p : pattern1_locii) {
+      while (q + 1 != pattern2_locii.end() && *q < p && p - *q > distance) { ++q; }
+      if (abs(p - *q) <= distance) {
+        match_positions[pattern1].push_back(p);
+        match_positions[pattern2].push_back(*q);
+        while (q + 1 != pattern2_locii.end() && abs(p-*(q+1)) <= distance) {
+          ++q;
+          match_positions[pattern2].push_back(*q);
+        }
+      }
+    }
     return match_positions;
   }
 
