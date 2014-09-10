@@ -44,6 +44,20 @@ std::string snap::Program::read_date(const std::string &date) {
   return new_date_str;
 }
 
+bool snap::Program::operator==(const snap::Program &other) const {
+  if (this -> title == other.title &&
+      this -> description == other.description &&
+      this -> channel == other.channel &&
+      this -> aired_date == other.aired_date &&
+      this -> recorded_date == other.recorded_date &&
+      this -> text == other.text) {
+    return true;
+  }
+  return false;
+}
 
+bool snap::Program::operator!=(const snap::Program &other) const {
+  return !(*this == other);
+}
 
 

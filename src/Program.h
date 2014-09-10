@@ -15,7 +15,9 @@ namespace snap {
     std::string aired_date;
     std::string recorded_date;
     std::string text;
-    Program(const std::string &program_text);
+    bool operator==(const snap::Program &other) const;
+    bool operator!=(const snap::Program &other) const;
+    Program(const std::string &program_text);    
   private:
     void read_header(const std::string &header);
     std::string read_date(const std::string &date);  

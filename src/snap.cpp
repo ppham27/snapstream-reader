@@ -77,6 +77,7 @@ namespace snap {
   }
   
   std::vector<snap::Program *> parse_programs(std::istream &input) {
+    
     return std::vector<snap::Program *>();
   }  
 }
