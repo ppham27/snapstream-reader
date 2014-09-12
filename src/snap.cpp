@@ -8,6 +8,9 @@
 #include <fstream>
 #include <sstream>
 
+#include "boost/algorithm/string.hpp"
+#include "boost/date_time/gregorian/gregorian.hpp"
+
 #include "snap.h"
 #include "Program.h"
 
@@ -71,15 +74,34 @@ namespace snap {
     return match_positions;
   }
 
-  std::vector<snap::Program *> parse_programs(const std::string &file_name) {
+  std::vector<snap::Program> parse_programs(const std::string &file_name) {
     std::ifstream ifs(file_name, std::ifstream::in);    
     return parse_programs(ifs);
   }
   
-  std::vector<snap::Program *> parse_programs(std::istream &input) {
-    
-    return std::vector<snap::Program *>();
-  }  
+  std::vector<snap::Program> parse_programs(std::istream &input) {
+    std::vector<snap::Program> prog_vector;
+    const int read_size = 100000;
+    char program_text[read_size];
+    while (!input.eof()) {
+      input.getline(program_text, read_size, -65);
+      input.getline(program_text, read_size, -61);
+      std::string program_string(program_text);
+      prog_vector.emplace_back(program_string);
+    }    
+    return prog_vector;
+  }
+  std::vector<std::string> generate_file_names(boost::gregorian::date from,
+                                               boost::gregorian::date to,
+                                               std::string prefix,
+                                               std::string suffix) {
+    std::vector<std::string> file_names;
+    std::cout << from << std::endl;
+    std::cout << from + boost::gregorian::date_duration(1) << std::endl;
+    std::cout << boost::gregorian::to_iso_extended_string(from) << std::endl;
+    // file_names.push_back(boost::gregorian::to_simple_string(from));
+    return file_names;
+  }
 }
 
 

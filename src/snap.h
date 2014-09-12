@@ -10,6 +10,9 @@
 #include <fstream>
 #include <sstream>
 
+#include "boost/algorithm/string.hpp"
+#include "boost/date_time/gregorian/gregorian.hpp"
+
 #include "Program.h"
 
 namespace snap {
@@ -19,8 +22,12 @@ namespace snap {
                                                const std::string &pattern2,
                                                int distance,
                                                const std::string &s);
-  std::vector<snap::Program *> parse_programs(const std::string &file_name);
-  std::vector<snap::Program *> parse_programs(std::istream &input);
+  std::vector<snap::Program> parse_programs(const std::string &file_name);
+  std::vector<snap::Program> parse_programs(std::istream &input);
+  std::vector<std::string> generate_file_names(boost::gregorian::date from,
+                                               boost::gregorian::date to,
+                                               std::string prefix,
+                                               std::string suffix);
   /* int or(); */
   /* int not(); */
   /* int near(); */
