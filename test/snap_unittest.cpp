@@ -9,11 +9,17 @@
 #include "gmock/gmock.h"
 
 TEST(generate_file_names, Default) {
-  boost::gregorian::date from(2014,1,1);
-  boost::gregorian::date to(2014,3,1);
+  boost::gregorian::date from(2014,2,27);
+  boost::gregorian::date to(2014,3,3);
   std::vector<std::string> file_names = snap::generate_file_names(from, to,
-                                                                  "","");
-  ASSERT_EQ(60,file_names.size());
+                                                                  "Data/",".txt");
+  ASSERT_EQ(4,file_names.size());
+  std::vector<std::string> expected_file_names{"Data/2014-02-27.txt",
+      "Data/2014-02-28.txt",
+      "Data/2014-03-01.txt",
+      "Data/2014-03-02.txt"};
+  ASSERT_EQ(expected_file_names,
+            file_names);
 }
 
 TEST(Program, Default) {

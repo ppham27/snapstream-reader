@@ -1,3 +1,5 @@
 add_library(snap snap.cpp)
 add_library(Program Program.cpp)
+add_executable(simple_search simple_search.cpp)
 target_link_libraries(snap Program)
+target_link_libraries(simple_search snap Program)

@@ -2,6 +2,7 @@
 #define SNAP_H
 
 #include <algorithm>
+#include <cmath>
 #include <cctype>
 #include <map>
 #include <string>

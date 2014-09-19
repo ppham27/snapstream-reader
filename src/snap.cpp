@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cmath>
 #include <cctype>
 #include <string>
 #include <regex>
@@ -91,15 +92,29 @@ namespace snap {
     }    
     return prog_vector;
   }
+
+  std::string pad_number(int n, int p) {
+    int digits = log10(n) + 1;
+    std::string nstr = std::to_string(n);
+    while (digits < p) {
+      nstr = '0' + nstr; ++digits;
+    }
+    return nstr;
+  }
+  
+  std::string date_to_string(boost::gregorian::date d) {
+    boost::gregorian::date::ymd_type ymd = d.year_month_day();
+    return pad_number(ymd.year, 4) + '-' + pad_number(ymd.month, 2) + '-' + pad_number(ymd.day, 2);
+  }  
   std::vector<std::string> generate_file_names(boost::gregorian::date from,
                                                boost::gregorian::date to,
                                                std::string prefix,
                                                std::string suffix) {
     std::vector<std::string> file_names;
-    std::cout << from << std::endl;
-    std::cout << from + boost::gregorian::date_duration(1) << std::endl;
-    std::cout << boost::gregorian::to_iso_extended_string(from) << std::endl;
-    // file_names.push_back(boost::gregorian::to_simple_string(from));
+    while (from < to) {
+      file_names.push_back(prefix + date_to_string(from) + suffix);
+      from += boost::gregorian::date_duration(1);
+    }
     return file_names;
   }
 }
