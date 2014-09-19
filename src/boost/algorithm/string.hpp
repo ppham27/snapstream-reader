@@ -15,7 +15,7 @@
     Cumulative include for string_algo library
 */
 
-#include <boost/algorithm/string/std_containers_traits.hpp>
+#include <boost/algorithm/string/std_containers_traits.hpp> 
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>

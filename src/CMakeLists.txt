@@ -1,3 +1,4 @@
+include_directories(${CMAKE_SOURCE_DIR}/src)
 add_library(snap snap.cpp)
 add_library(Program Program.cpp)
 add_executable(simple_search simple_search.cpp)
