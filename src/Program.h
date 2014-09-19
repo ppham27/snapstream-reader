@@ -1,6 +1,8 @@
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
+#include <algorithm>
+#include <cctype>
 #include <string>
 #include <ctime>
 #include <sstream>
@@ -15,6 +17,7 @@ namespace snap {
     std::string aired_date;
     std::string recorded_date;
     std::string text;
+    std::string lower_text;
     bool operator==(const snap::Program &other) const;
     bool operator!=(const snap::Program &other) const;
     Program(const std::string &program_text);    

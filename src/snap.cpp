@@ -2,7 +2,6 @@
 #include <cmath>
 #include <cctype>
 #include <string>
-#include <regex>
 #include <map>
 #include <vector>
 #include <iostream>

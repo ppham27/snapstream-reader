@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cctype>
 #include <string>
 #include <sstream>
 #include <ctime>
@@ -14,6 +16,9 @@ snap::Program::Program(const std::string &program_text) {
   this -> text = program_text.substr(header_break + 1,
                                      program_text.length() - header_break);
   boost::algorithm::trim(this -> text);
+  this -> lower_text = std::string(this -> text);
+  std::transform(this -> lower_text.begin(), this -> lower_text.end(),
+                 this -> lower_text.begin(), ::tolower);
 }
 
 void snap::Program::read_header(const std::string &header) {

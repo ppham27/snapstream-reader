@@ -6,7 +6,6 @@
 #include <cctype>
 #include <map>
 #include <string>
-#include <regex>
 #include <vector>
 #include <fstream>
 #include <sstream>
