@@ -14,3 +14,5 @@ add_subdirectory(src)
 enable_testing()
 add_subdirectory(test)
 add_test(snapTest test/bin/unittest)
+
+file(COPY ${CMAKE_SOURCE_DIR}/html/index.html DESTINATION ${CMAKE_BINARY_DIR})

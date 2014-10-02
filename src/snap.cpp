@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cctype>
+#include <cstring>
 #include <string>
 #include <map>
 #include <vector>
@@ -104,7 +105,21 @@ namespace snap {
   std::string date_to_string(boost::gregorian::date d) {
     boost::gregorian::date::ymd_type ymd = d.year_month_day();
     return pad_number(ymd.year, 4) + '-' + pad_number(ymd.month, 2) + '-' + pad_number(ymd.day, 2);
-  }  
+  }
+
+  boost::gregorian::date string_to_date(std::string d) {
+    char *d_c_str = new char[d.length() + 1];
+    std::strcpy(d_c_str, d.c_str());
+    char *tok = strtok(d_c_str,"-");
+    int year = atoi(tok);
+    tok = strtok(NULL,"-");
+    int month = atoi(tok);
+    tok = strtok(NULL,"-");
+    int day = atoi(tok);
+    delete[] d_c_str;
+    return boost::gregorian::date(year, month, day);    
+  }
+  
   std::vector<std::string> generate_file_names(boost::gregorian::date from,
                                                boost::gregorian::date to,
                                                std::string prefix,
@@ -115,6 +130,15 @@ namespace snap {
       from += boost::gregorian::date_duration(1);
     }
     return file_names;
+  }
+
+  std::map<std::string, std::string> parse_query_string(std::string query_string) {
+    std::map<std::string, std::string> kv;
+    std::vector<std::string> entries;
+    boost::split(entries, query_string, boost::is_any_of("=&"));
+    auto it = entries.begin();
+    for (; it != entries.end(); ++it) { kv[*it] = *(it + 1); ++it; }
+    return kv;
   }
 }
 

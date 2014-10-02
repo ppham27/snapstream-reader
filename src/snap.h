@@ -28,6 +28,9 @@ namespace snap {
                                                boost::gregorian::date to,
                                                std::string prefix,
                                                std::string suffix);
+  boost::gregorian::date string_to_date(std::string d);
+  std::map<std::string, std::string> parse_query_string(std::string query_string);
+  
   /* int or(); */
   /* int not(); */
   /* int near(); */
