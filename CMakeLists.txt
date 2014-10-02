@@ -1,5 +1,8 @@
 project(snapstream-reader)
 cmake_minimum_required(VERSION 2.8)
+IF(UNIX)
+  set(CMAKE_CXX_FLAGS "-std=c++11")
+ENDIF(UNIX)
 IF(APPLE)
   set(CMAKE_CXX_FLAGS "-std=c++11 -stdlib=libc++")
 ENDIF(APPLE)
