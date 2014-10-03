@@ -82,14 +82,15 @@ namespace snap {
   
   std::vector<snap::Program> parse_programs(std::istream &input) {
     std::vector<snap::Program> prog_vector;
-    const int read_size = 100000;
-    char program_text[read_size];
+    const int read_size = 1000000;
+    char *program_text = new char[read_size];
     while (!input.eof()) {
       input.getline(program_text, read_size, -65);
       input.getline(program_text, read_size, -61);
       std::string program_string(program_text);
       prog_vector.emplace_back(program_string);
-    }    
+    }
+    delete[] program_text;
     return prog_vector;
   }
 

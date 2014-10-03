@@ -14,6 +14,7 @@
 #include "boost/date_time/gregorian/gregorian.hpp"
 
 #include "Program.h"
+#include "Excerpt.h"
 
 namespace snap {
   std::map<std::string, std::vector<int>> find(const std::string &pattern,
@@ -29,8 +30,8 @@ namespace snap {
                                                std::string prefix,
                                                std::string suffix);
   boost::gregorian::date string_to_date(std::string d);
+  std::string date_to_string(boost::gregorian::date d);
   std::map<std::string, std::string> parse_query_string(std::string query_string);
-  
   /* int or(); */
   /* int not(); */
   /* int near(); */

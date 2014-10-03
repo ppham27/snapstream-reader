@@ -1,17 +1,65 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <sys/stat.h>
+
+#include "boost/date_time/gregorian/gregorian.hpp"
 
 #include "snap.h"
 
 const std::string prefix = "Data/";
 const std::string suffix = "-Combined.txt";
 
+bool file_exists(const std::string &file_name) {
+  struct stat buffer;
+  return stat(file_name.c_str(), &buffer) == 0;
+}
+
 int main() {
-  std::cout << "Content-type: text/plain; charset=iso-8859-1\n" << std::endl;
+  std::cout << "Content-type: text/html; charset=iso-8859-1\n" << std::endl;
+  std::cout << "<html>\n<head>\n<title>Snapstream Searcher</title>\n<meta charset=\"utf-8\">\n</head>\n<body>" << std::endl;
   
-  std::cout << "Hello, world" << std::endl;  
-  char *query_string = getenv("QUERY_STRING");
-  std::cout << query_string << std::endl;
+  std::string query_string(getenv("QUERY_STRING"));
+  std::cout << "<p>" << std::endl;  
+  std::map<std::string, std::string> arguments = snap::parse_query_string(query_string);
+  std::cout << "Search string: " << arguments["search-string"] << "<br/>" << std::endl;
+  std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
+  std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
+  std::cout << "</p>" << std::endl;  
+ 
+  std::string search_string = arguments["search-string"];
+  boost::gregorian::date current_date = snap::string_to_date(arguments["from-date"]);
+  boost::gregorian::date from_date = snap::string_to_date(arguments["from-date"]);
+  boost::gregorian::date to_date = snap::string_to_date(arguments["to-date"]);
+  std::vector<std::string> file_list = snap::generate_file_names(from_date, to_date, prefix, suffix);
+  std::cout << "<pre>" << std::endl;
+  std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;  
+  for (auto it = file_list.begin();
+       it != file_list.end();
+       ++it) {
+    if (file_exists(*it)) {      
+      std::vector<snap::Program> programs = snap::parse_programs(*it);
+      std::cout << snap::date_to_string(current_date);
+      int matching_programs = 0;
+      int total_matches = 0;
+      for (auto p = programs.begin();
+           p != programs.end();
+           ++p) {
+        std::map<std::string, std::vector<int>> match_positions = snap::find(search_string, p -> lower_text);
+        if (match_positions[search_string].size() > 0) {
+          ++matching_programs;
+          total_matches += match_positions[search_string].size();
+        }
+      }
+      std::cout << '\t' << matching_programs;
+      std::cout << '\t' << total_matches;
+      std::cout << '\t' << programs.size();
+      std::cout << '\t' << programs.size() << std::endl;
+      programs.clear();
+    }
+    current_date += boost::gregorian::date_duration(1);
+  }
+  std::cout << "</pre>" << std::endl;  
+  std::cout << "</body>\n</html>" << std::endl;
   return 0;
 }
