@@ -138,7 +138,10 @@ namespace snap {
     std::vector<std::string> entries;
     boost::split(entries, query_string, boost::is_any_of("=&"));
     auto it = entries.begin();
-    for (; it != entries.end(); ++it) { kv[*it] = *(it + 1); ++it; }
+    for (; it != entries.end(); ++it) {
+      boost::replace_all(*(it + 1),"+"," ");
+      kv[*it] = *(it + 1); ++it;
+    }
     return kv;
   }
 }

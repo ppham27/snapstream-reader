@@ -112,3 +112,9 @@ Hero before it became passe and awful like Facebook. Maybe we'll have something 
   ASSERT_EQ(prog0, prog_vector[0]);
   ASSERT_EQ(prog1, prog_vector[1]);
 }
+
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();    
+}
