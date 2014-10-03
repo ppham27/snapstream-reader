@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -51,7 +52,12 @@ int main() {
       for (auto p = programs.begin();
            p != programs.end();
            ++p) {
-        std::map<std::string, std::vector<int>> match_positions = snap::find(search_string, p -> lower_text);
+        std::map<std::string, std::vector<int>> match_positions;
+        if (std::any_of(search_string.begin(), search_string.end(), ::isupper)) {
+          match_positions = snap::find(search_string, p -> text);
+        } else {
+          match_positions = snap::find(search_string, p -> lower_text);
+        }
         if (match_positions[search_string].size() > 0) {
           ++matching_programs;
           total_matches += match_positions[search_string].size();
@@ -60,6 +66,7 @@ int main() {
             excerpts.back().highlight_word(search_string);
           }
         }
+        match_positions.clear();
       }
       std::cout << '\t' << matching_programs;
       std::cout << '\t' << total_matches;

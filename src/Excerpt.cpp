@@ -7,8 +7,6 @@
 #include "Program.h"
 #include "Excerpt.h"
 
-
-
 snap::Excerpt::Excerpt(const snap::Program &p, int from, int to) {
   this -> search_strings = std::vector<std::string>(0);
   this -> date = p.recorded_date;
