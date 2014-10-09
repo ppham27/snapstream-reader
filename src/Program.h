@@ -1,12 +1,7 @@
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
-#include <algorithm>
-#include <cctype>
 #include <string>
-#include <ctime>
-#include <sstream>
-#include "boost/algorithm/string.hpp"
 
 namespace snap {
   class Program {

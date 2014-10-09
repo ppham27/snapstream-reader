@@ -3,7 +3,6 @@
 #include <string>
 #include <sstream>
 #include <ctime>
-#include <iostream>
 #include "boost/algorithm/string.hpp"
 #include "Program.h"
 

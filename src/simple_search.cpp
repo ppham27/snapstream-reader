@@ -5,7 +5,6 @@
 #include <string>
 #include <random> 
 #include <chrono> 
-#include <sys/stat.h>
 
 #include "boost/algorithm/string.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
@@ -15,11 +14,6 @@
 const std::string prefix = "Data/";
 const std::string suffix = "-Combined.txt";
 
-bool file_exists(const std::string &file_name) {
-  struct stat buffer;
-  return stat(file_name.c_str(), &buffer) == 0;
-}
-
 int main() {
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   std::cout << "Content-type: text/html; charset=iso-8859-1\n" << std::endl;
@@ -27,26 +21,26 @@ int main() {
       
   std::string query_string(getenv("QUERY_STRING"));
   std::cout << "<p>" << std::endl;  
-  std::map<std::string, std::string> arguments = snap::parse_query_string(query_string);
+  std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
   std::cout << "Search string: " << arguments["search-string"] << "<br/>" << std::endl;
   std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
   std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
   std::cout << "</p>" << std::endl;  
  
   std::string search_string = boost::algorithm::trim_copy(arguments["search-string"]);
-  boost::gregorian::date current_date = snap::string_to_date(arguments["from-date"]);
-  boost::gregorian::date from_date = snap::string_to_date(arguments["from-date"]);
-  boost::gregorian::date to_date = snap::string_to_date(arguments["to-date"]);
-  std::vector<std::string> file_list = snap::generate_file_names(from_date, to_date, prefix, suffix);
+  boost::gregorian::date current_date = snap::date::string_to_date(arguments["from-date"]);
+  boost::gregorian::date from_date = snap::date::string_to_date(arguments["from-date"]);
+  boost::gregorian::date to_date = snap::date::string_to_date(arguments["to-date"]);
+  std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
   std::vector<snap::Excerpt> excerpts;
   std::cout << "<pre>" << std::endl;
   std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
   for (auto it = file_list.begin();
        it != file_list.end();
        ++it) {
-    if (file_exists(*it)) {      
-      std::vector<snap::Program> programs = snap::parse_programs(*it);
-      std::cout << snap::date_to_string(current_date);
+    if (snap::io::file_exists(*it)) {      
+      std::vector<snap::Program> programs = snap::io::parse_programs(*it);
+      std::cout << snap::date::date_to_string(current_date);
       int matching_programs = 0;
       int total_matches = 0;
       for (auto p = programs.begin();

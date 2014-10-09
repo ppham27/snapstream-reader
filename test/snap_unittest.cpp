@@ -8,6 +8,15 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
+
+TEST(find, Multi) {
+  std::map<std::string, std::vector<int>> match_positions0 = snap::find(std::vector<std::string>{"china","is"}, "china is china is china");
+  ASSERT_THAT(match_positions0["china"],
+              ::testing::ElementsAre(0, 9, 18));
+  ASSERT_THAT(match_positions0["is"],
+              ::testing::ElementsAre(7, 15));
+}
+
 TEST(find, Default) {
   ASSERT_THAT(snap::find("china","china is china is china")["china"],
               ::testing::ElementsAre(0, 9, 18));

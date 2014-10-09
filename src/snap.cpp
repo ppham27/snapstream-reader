@@ -1,24 +1,18 @@
 #include <algorithm>
-#include <cmath>
 #include <cctype>
-#include <cstring>
-#include <string>
+#include <queue>
+#include <functional>
 #include <map>
+#include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-
-#include "boost/algorithm/string.hpp"
-#include "boost/date_time/gregorian/gregorian.hpp"
 
 #include "snap.h"
 #include "Program.h"
 
 
 namespace snap {
-  std::map<std::string, std::vector<int>> find(const std::string &pattern,
-                                               const std::string &s) {
+  
+  std::string pattern_to_search_string(const std::string &pattern) {
     std::string search_string;
     if (pattern.front() == '*' && pattern.back() == '*') {      
       search_string = pattern.substr(1, pattern.length() - 2);
@@ -29,6 +23,32 @@ namespace snap {
     } else {
       search_string = pattern;
     }
+    return search_string;
+  }
+  
+  std::map<std::string, std::vector<int>> find(const std::vector<std::string> &patterns,
+                                               const std::string &s) {
+    std::map<std::string, std::vector<int>> match_positions;
+    std::map<std::string, std::string> search_strings;
+    std::priority_queue<std::pair<int, std::string>, std::vector<std::pair<int, std::string>>,
+                        std::greater<std::pair<int, std::string>>> next_positions;
+    int current_position = 0;
+    int next_position;
+    for (auto it = patterns.begin(); it != patterns.end(); ++it) {
+      match_positions[*it] = std::vector<int>(0);
+      search_strings[*it] = pattern_to_search_string(*it);
+      next_position = s.find(search_strings[*it], current_position);
+      next_positions.emplace(next_position, *it);
+    }
+    while (!next_positions.empty()) {
+      std::pair<int, std::string> current_pair = next_positions.top();
+      next_positions.pop();
+    }
+    return match_positions;
+  }
+  std::map<std::string, std::vector<int>> find(const std::string &pattern,
+                                               const std::string &s) {
+    std::string search_string = pattern_to_search_string(pattern);
     std::map<std::string, std::vector<int>> match_positions;
     std::vector<int> match_position;
     int current_position = 0;    
@@ -73,76 +93,6 @@ namespace snap {
       }
     }
     return match_positions;
-  }
-
-  std::vector<snap::Program> parse_programs(const std::string &file_name) {
-    std::ifstream ifs(file_name, std::ifstream::in);    
-    return parse_programs(ifs);
-  }
-  
-  std::vector<snap::Program> parse_programs(std::istream &input) {
-    std::vector<snap::Program> prog_vector;
-    const int read_size = 1000000;
-    char *program_text = new char[read_size];
-    while (!input.eof()) {
-      input.getline(program_text, read_size, -65);
-      input.getline(program_text, read_size, -61);
-      std::string program_string(program_text);
-      prog_vector.emplace_back(program_string);
-    }
-    delete[] program_text;
-    return prog_vector;
-  }
-
-  std::string pad_number(int n, int p) {
-    int digits = log10(n) + 1;
-    std::string nstr = std::to_string(n);
-    while (digits < p) {
-      nstr = '0' + nstr; ++digits;
-    }
-    return nstr;
-  }
-  
-  std::string date_to_string(boost::gregorian::date d) {
-    boost::gregorian::date::ymd_type ymd = d.year_month_day();
-    return pad_number(ymd.year, 4) + '-' + pad_number(ymd.month, 2) + '-' + pad_number(ymd.day, 2);
-  }
-
-  boost::gregorian::date string_to_date(std::string d) {
-    char *d_c_str = new char[d.length() + 1];
-    std::strcpy(d_c_str, d.c_str());
-    char *tok = strtok(d_c_str,"-");
-    int year = atoi(tok);
-    tok = strtok(NULL,"-");
-    int month = atoi(tok);
-    tok = strtok(NULL,"-");
-    int day = atoi(tok);
-    delete[] d_c_str;
-    return boost::gregorian::date(year, month, day);    
-  }
-  
-  std::vector<std::string> generate_file_names(boost::gregorian::date from,
-                                               boost::gregorian::date to,
-                                               std::string prefix,
-                                               std::string suffix) {
-    std::vector<std::string> file_names;
-    while (from < to) {
-      file_names.push_back(prefix + date_to_string(from) + suffix);
-      from += boost::gregorian::date_duration(1);
-    }
-    return file_names;
-  }
-
-  std::map<std::string, std::string> parse_query_string(std::string query_string) {
-    std::map<std::string, std::string> kv;
-    std::vector<std::string> entries;
-    boost::split(entries, query_string, boost::is_any_of("=&"));
-    auto it = entries.begin();
-    for (; it != entries.end(); ++it) {
-      boost::replace_all(*(it + 1),"+"," ");
-      kv[*it] = *(it + 1); ++it;
-    }
-    return kv;
   }
 }
 
