@@ -14,7 +14,7 @@ TEST(find, Multi) {
   ASSERT_THAT(match_positions0["china"],
               ::testing::ElementsAre(0, 9, 18));
   ASSERT_THAT(match_positions0["is"],
-              ::testing::ElementsAre(7, 15));
+              ::testing::ElementsAre(6, 15));
 }
 
 TEST(find, Default) {

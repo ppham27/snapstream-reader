@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+
 #include "snap.h"
 #include "Program.h"
 
@@ -25,57 +27,70 @@ namespace snap {
     }
     return search_string;
   }
-  
+
   std::map<std::string, std::vector<int>> find(const std::vector<std::string> &patterns,
                                                const std::string &s) {
     std::map<std::string, std::vector<int>> match_positions;
     std::map<std::string, std::string> search_strings;
     std::priority_queue<std::pair<int, std::string>, std::vector<std::pair<int, std::string>>,
                         std::greater<std::pair<int, std::string>>> next_positions;
+    
+    // initialize by trimming and finding first instance
     int current_position = 0;
     int next_position;
     for (auto it = patterns.begin(); it != patterns.end(); ++it) {
       match_positions[*it] = std::vector<int>(0);
       search_strings[*it] = pattern_to_search_string(*it);
-      next_position = s.find(search_strings[*it], current_position);
-      next_positions.emplace(next_position, *it);
+      next_position = s.find(search_strings[*it]);      
+      if (next_position != -1) { next_positions.emplace(next_position, *it); }
     }
+    // begin searching
     while (!next_positions.empty()) {
       std::pair<int, std::string> current_pair = next_positions.top();
       next_positions.pop();
-    }
-    return match_positions;
-  }
-  std::map<std::string, std::vector<int>> find(const std::string &pattern,
-                                               const std::string &s) {
-    std::string search_string = pattern_to_search_string(pattern);
-    std::map<std::string, std::vector<int>> match_positions;
-    std::vector<int> match_position;
-    int current_position = 0;    
-    int next_position;
-    while ((next_position = s.find(search_string, current_position)) != -1) {
-      current_position = next_position + search_string.length(); 
-      if ((next_position == 0 || isspace(s[next_position-1]) || ispunct(s[next_position-1]) || pattern.front() == '*') &&
-          (current_position == s.length() || isspace(s[current_position]) || ispunct(s[current_position]) || pattern.back() == '*')) {
-        match_position.push_back(next_position);
+      current_position = current_pair.first;
+      std::string pattern = current_pair.second;      
+      next_position = current_position + search_strings[pattern].length();
+      // check for a valid match, if not wildcard, check for space/punct in front and back
+      if ((current_position == 0 ||
+           isspace(s[current_position-1]) ||
+           ispunct(s[current_position-1]) ||
+           pattern.front() == '*') &&
+          (next_position == s.length() ||
+           isspace(s[next_position]) ||
+           ispunct(s[next_position]) ||
+           pattern.back() == '*')) {        
+        match_positions[pattern].push_back(current_position);
       }
-      // go to the next word
+      // move the current position after the word
+      current_position = next_position;   
       while (!(current_position == s.length() ||
                isspace(s[current_position]) ||
                ispunct(s[current_position]))) {
         ++current_position;
       }
+      //  find next instance and queue it
+      next_position = s.find(search_strings[pattern], current_position);
+      if (next_position != -1) {
+        next_positions.emplace(next_position, pattern);
+      }
     }
-    match_positions[pattern] = match_position;
     return match_positions;
+  }
+  
+  std::map<std::string, std::vector<int>> find(const std::string &pattern,
+                                               const std::string &s) {
+    return find(std::vector<std::string>{pattern}, s);
   }
 
   std::map<std::string, std::vector<int>> near(const std::string &pattern1,
                                                const std::string &pattern2,
                                                int distance,
                                                const std::string &s) {
-    std::vector<int> pattern1_locii = find(pattern1, s)[pattern1];
-    std::vector<int> pattern2_locii = find(pattern2, s)[pattern2];    
+    std::map<std::string, std::vector<int>> pre_match_positions = find(std::vector<std::string>{pattern1, pattern2},
+                                                                       s);
+    std::vector<int> pattern1_locii = pre_match_positions[pattern1];
+    std::vector<int> pattern2_locii = pre_match_positions[pattern2];    
     std::map<std::string, std::vector<int>> match_positions;
     match_positions[pattern1] = std::vector<int>();
     match_positions[pattern2] = std::vector<int>();
