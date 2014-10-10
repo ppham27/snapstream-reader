@@ -21,7 +21,11 @@ namespace snap {
                                                const std::string &s);
   
   namespace web {
-    std::map<std::string, std::string> parse_query_string(std::string query_string);
+    std::map<std::string, std::string> parse_query_string(const std::string &query_string);
+    void print_header();
+    void close_html();
+    void print_excerpts(std::vector<snap::Excerpt> &excerpts, int n);
+    void print_excerpt(const snap::Excerpt &e);
   }
   
   namespace io {
