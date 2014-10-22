@@ -19,6 +19,9 @@ namespace snap {
                                                const std::string &pattern2,
                                                int distance,
                                                const std::string &s);
+
+  std::map<std::string, std::map<std::string, int>> pair(std::map<std::string, std::vector<int>> match_positions,
+                                                         int distance);
   
   namespace web {
     std::map<std::string, std::string> parse_query_string(const std::string &query_string);

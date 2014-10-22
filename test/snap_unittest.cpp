@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <map>
 #include <string>
 #include <vector>
@@ -8,6 +9,32 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
+TEST(pair, Default) {
+  std::string text = "There is therefore now no condemnation for those who are in Christ Jesus. For the law of the Spirit of life has set you free in Christ Jesus from the law of sin and death. For God has done what the law, weakened by the flesh, could not do. By sending his own Son in the likeness of sinful flesh and for sin, he condemned sin in the flesh, in order that the righteous requirement of the law might be fulfilled in us, who walk not according to the flesh but according to the Spirit. For those who live according to the flesh set their minds on the things of the flesh, but those who live according to the Spirit set their minds on the things of the Spirit. For to set the mind on the flesh is death, but to set the mind on the Spirit is life and peace. For the mind that is set on the flesh is hostile to God, for it does not submit to God’s law; indeed, it cannot. Those who are in the flesh cannot please God";
+  std::string lower_text(text);
+  std::transform(lower_text.begin(), lower_text.end(), lower_text.begin(), ::tolower);
+  std::vector<std::string> patterns{"there","condemn*","spirit",
+      "sin*", "death", "god", "submit", "flesh", "christ"};
+  std::map<std::string, std::vector<int>> match_positions = snap::find(patterns, lower_text);
+  ASSERT_THAT(match_positions["there"],
+              ::testing::ElementsAre(0));
+  ASSERT_THAT(match_positions["condemn*"],
+              ::testing::ElementsAre(26, 311));
+  ASSERT_THAT(match_positions["spirit"],
+              ::testing::ElementsAre(93, 473, 603, 647, 725));
+  ASSERT_THAT(match_positions["sin*"],
+              ::testing::ElementsAre(157, 282, 303, 321));
+  ASSERT_THAT(match_positions["death"],
+              ::testing::ElementsAre(165, 691));
+  ASSERT_THAT(match_positions["god"],
+              ::testing::ElementsAre(176, 803, 907));
+  ASSERT_THAT(match_positions["submit"],
+              ::testing::ElementsAre(824));
+  ASSERT_THAT(match_positions["flesh"],
+              ::testing::ElementsAre(219, 289, 332, 446, 517, 560, 682, 783, 887));
+  ASSERT_THAT(match_positions["christ"],
+              ::testing::ElementsAre(60, 128));
+}
 
 TEST(find, Multi) {
   std::map<std::string, std::vector<int>> match_positions0 = snap::find(std::vector<std::string>{"china","is"}, "china is china is china");

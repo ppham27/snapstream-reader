@@ -106,6 +106,13 @@ namespace snap {
     }
     return match_positions;
   }
+
+  std::map<std::string, std::map<std::string, int>> pair(std::map<std::string, std::vector<int>> match_positions,
+                                                         int distance) {
+    std::map<std::string, std::map<std::string, int>> cooccurences;
+    
+    return cooccurences;
+  }
 }
 
 
