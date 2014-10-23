@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include "snap.h"
 #include "Program.h"
@@ -107,10 +108,31 @@ namespace snap {
     return match_positions;
   }
 
-  std::map<std::string, std::map<std::string, int>> pair(std::map<std::string, std::vector<int>> match_positions,
+  std::map<std::string, std::map<std::string, int>> pair(const std::map<std::string, std::vector<int>> &match_positions,
                                                          int distance) {
+    // initialize coocurrence count
     std::map<std::string, std::map<std::string, int>> cooccurences;
-    
+    for (auto it0 = match_positions.begin(); it0 != match_positions.end(); ++it0) {
+      for (auto it1(it0); it1 != match_positions.end(); ++it1) {
+        cooccurences[it0 -> first][it1 -> first] = 0;
+      }
+    }
+    std::vector<std::pair<int, std::string>> positions;
+    for (auto it0 = match_positions.begin(); it0 != match_positions.end(); ++it0) {
+      for (auto it1 = (it0 -> second).begin(); it1 != (it0 -> second).end(); ++it1) {
+        positions.emplace_back(*it1, it0 -> first);
+      }
+    }
+    std::sort(positions.begin(), positions.end());
+    for (auto it0 = positions.begin(); it0 != positions.end(); ++it0) {
+      for (auto it1(it0); it1 >= positions.begin() && (it0 -> first) - (it1 -> first) <= distance; --it1) {
+        if ((it0 -> second) <= (it1 -> second)) {
+          ++cooccurences[it0 -> second][it1 -> second];
+        } else {
+          ++cooccurences[it1 -> second][it0 -> second];
+        }
+      }
+    }
     return cooccurences;
   }
 }

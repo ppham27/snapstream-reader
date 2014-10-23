@@ -20,7 +20,7 @@ namespace snap {
                                                int distance,
                                                const std::string &s);
 
-  std::map<std::string, std::map<std::string, int>> pair(std::map<std::string, std::vector<int>> match_positions,
+  std::map<std::string, std::map<std::string, int>> pair(const std::map<std::string, std::vector<int>> &match_positions,
                                                          int distance);
   
   namespace web {

@@ -34,6 +34,19 @@ TEST(pair, Default) {
               ::testing::ElementsAre(219, 289, 332, 446, 517, 560, 682, 783, 887));
   ASSERT_THAT(match_positions["christ"],
               ::testing::ElementsAre(60, 128));
+  
+  std::map<std::string, std::map<std::string, int>> low_distance_cooccurences = snap::pair(match_positions, 50);
+  std::map<std::string, std::map<std::string, int>> middle_distance_cooccurences = snap::pair(match_positions, 100);
+  std::map<std::string, std::map<std::string, int>> long_distance_cooccurences = snap::pair(match_positions, 150);
+  ASSERT_EQ(9, low_distance_cooccurences.size());
+  ASSERT_EQ(1, low_distance_cooccurences["condemn*"]["there"]);
+  ASSERT_EQ(1, long_distance_cooccurences["condemn*"]["there"]);
+  ASSERT_EQ(0, low_distance_cooccurences["christ"]["there"]);
+  ASSERT_EQ(1, middle_distance_cooccurences["christ"]["there"]);
+  ASSERT_EQ(2, long_distance_cooccurences["christ"]["there"]);
+  ASSERT_EQ(3, low_distance_cooccurences["flesh"]["god"]);
+  ASSERT_EQ(4, middle_distance_cooccurences["flesh"]["god"]);
+  ASSERT_EQ(2, low_distance_cooccurences["christ"]["spirit"]);
 }
 
 TEST(find, Multi) {
