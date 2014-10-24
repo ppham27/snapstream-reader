@@ -2,6 +2,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <cstdio>
+#include <ctime>
 #include <iostream>
 #include <string>
 
@@ -16,7 +17,9 @@ const int max_input_size = 1000000;
 const int excerpt_size = 150;
 const int num_excerpts = 100;
 
-int main() { 
+int main() {
+  clock_t start_time = std::clock();
+  
   snap::web::print_header();
 
   // get user input
@@ -114,6 +117,10 @@ int main() {
     }
   }
   std::cout << "</pre>" << std::endl;
+
+  double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
+
+  std::cout << "<span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
   
   snap::web::close_html();
   return 0;
