@@ -17,6 +17,7 @@ const int excerpt_size = 150;
 const int num_excerpts = 100;
 
 int main() {
+  clock_t start_time = std::clock();
   
   snap::web::print_header();
 
@@ -83,6 +84,10 @@ int main() {
   
   // print excerpts
   snap::web::print_excerpts(excerpts, num_excerpts);
+
+  double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
+  std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
+  
   snap::web::close_html();
   return 0;
 }

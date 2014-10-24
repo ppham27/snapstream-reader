@@ -119,8 +119,7 @@ int main() {
   std::cout << "</pre>" << std::endl;
 
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
-
-  std::cout << "<span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
+  std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
   
   snap::web::close_html();
   return 0;
