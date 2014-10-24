@@ -13,7 +13,7 @@
       <span>Search string: <input type="text" name="search-string"></span><br/>
       <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date"></span><br/>
       <span>To date, exclusive (YYYY-MM-DD): <input type="text" name="to-date"></span><br/>
-      <input type="submit" value="Search">
+      <input type="submit" value="Simple search">
     </form>
     <h2>Near search</h2>
     <form action="cgi-bin/near_search" method="POST">
@@ -22,7 +22,17 @@
       <span>Character distance: <input type="text" name="distance"></span><br/>
       <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date"></span><br/>
       <span>To date, exclusive (YYYY-MM-DD): <input type="text" name="to-date"></span><br/>
-      <input type="submit" value="Search">
+      <input type="submit" value="Near search">
+    </form>
+
+    <h2>Pair search</h2>
+    <form action="cgi-bin/pair_search" method="POST">
+      <span>Search strings:</span><br/>
+      <textarea name="search-strings" rows="10" cols="50"></textarea><br/>
+      <span>Character distance: <input type="text" name="distance"></span><br/>
+      <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date"></span><br/>
+      <span>To date, exclusive (YYYY-MM-DD): <input type="text" name="to-date"></span><br/>
+      <input type="submit" value="Pair search">
     </form>
   </body>
 </html>

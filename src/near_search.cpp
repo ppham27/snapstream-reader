@@ -35,7 +35,7 @@ int main() {
   std::cout << "Distance: " << arguments["distance"] << "<br/>" << std::endl;
   std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
   std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
-  std::cout << "</p>" << std::endl;  
+  std::cout << "</p>" << std::endl;
 
   // process user input
   std::string search_string01 = boost::algorithm::trim_copy(arguments["search-string-1"]);

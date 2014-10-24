@@ -5,7 +5,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "snap.h"
 #include "Program.h"
