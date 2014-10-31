@@ -116,6 +116,7 @@ int main() {
                 << (it1 -> second).first << '\t' << (it1 -> second).second << std::endl;      
     }
   }
+  snap::web::print_matrix(results);
   std::cout << "</pre>" << std::endl;
 
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;

@@ -29,6 +29,7 @@ namespace snap {
     void close_html();
     void print_excerpts(std::vector<snap::Excerpt> &excerpts, int n);
     void print_excerpt(const snap::Excerpt &e);
+    void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results);
   }
   
   namespace io {

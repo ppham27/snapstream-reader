@@ -66,5 +66,56 @@ font-family: Helvetica;
       std::cout << "<br/>" << e.text << "<br/>";    
       std::cout << "</div>" << std::endl;  
     }
+
+    void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results) {
+      std::vector<std::string> keys;
+      for (auto it = results.begin(); it != results.end(); ++it) { keys.push_back(it -> first); }
+
+      // print matching programs
+      std::cout << std::endl;      
+      std::cout << "matching_programs" << '\t';
+      for (auto it = keys.begin(); it != keys.end(); ++it) {
+        if (it != keys.end() - 1) {
+          std::cout << *it << '\t';
+        } else {
+          std::cout << *it << std::endl;
+        }
+      }
+      for (auto it0 = keys.begin(); it0 != keys.end(); ++it0) {
+        std::cout << *it0 << '\t';
+        for (auto it1 = keys.begin(); it1 != keys.end(); ++it1) {
+          int stat = *it1 <= *it0 ? results[*it1][*it0].first : results[*it0][*it1].first;
+          if (it1 != keys.end() - 1) {
+            std::cout << stat << '\t';
+          } else {
+            std::cout << stat << std::endl;
+          }          
+        }
+      }
+      std::cout << std::endl;
+
+      // print total matches
+      std::cout << std::endl;      
+      std::cout << "total_matches" << '\t';
+      for (auto it = keys.begin(); it != keys.end(); ++it) {
+        if (it != keys.end() - 1) {
+          std::cout << *it << '\t';
+        } else {
+          std::cout << *it << std::endl;
+        }
+      }
+      for (auto it0 = keys.begin(); it0 != keys.end(); ++it0) {
+        std::cout << *it0 << '\t';
+        for (auto it1 = keys.begin(); it1 != keys.end(); ++it1) {
+          int stat = *it1 <= *it0 ? results[*it1][*it0].second : results[*it0][*it1].second;
+          if (it1 != keys.end() - 1) {
+            std::cout << stat << '\t';
+          } else {
+            std::cout << stat << std::endl;
+          }          
+        }
+      }
+      std::cout << std::endl; 
+    }
   }
 }
