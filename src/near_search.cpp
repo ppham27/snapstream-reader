@@ -14,7 +14,6 @@ const std::string prefix = "Data/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 const int excerpt_size = 150;
-const int num_excerpts = 100;
 
 int main() {
   clock_t start_time = std::clock();
@@ -36,6 +35,7 @@ int main() {
   std::cout << "Distance: " << arguments["distance"] << "<br/>" << std::endl;
   std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
   std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
+  std::cout << "Number of Excerpts: " << arguments["num-excerpts"] << "<br/>" << std::endl;
   std::cout << "</p>" << std::endl;
 
   // process user input
@@ -45,6 +45,7 @@ int main() {
   boost::gregorian::date current_date = snap::date::string_to_date(arguments["from-date"]);
   boost::gregorian::date from_date = snap::date::string_to_date(arguments["from-date"]);
   boost::gregorian::date to_date = snap::date::string_to_date(arguments["to-date"]);
+  int num_excerpts = stoi(arguments["num-excerpts"]);
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
 
     // begin to iteratively process files

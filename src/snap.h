@@ -22,6 +22,8 @@ namespace snap {
 
   std::map<std::string, std::map<std::string, int>> pair(const std::map<std::string, std::vector<int>> &match_positions,
                                                          int distance);
+
+  std::string convert_infix_to_rpn(std::string expression);
   
   namespace web {
     std::map<std::string, std::string> parse_query_string(const std::string &query_string);
