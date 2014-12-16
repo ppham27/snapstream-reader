@@ -14,8 +14,6 @@
 const std::string prefix = "Data/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
-const int excerpt_size = 150;
-const int num_excerpts = 100;
 
 int main() {
   clock_t start_time = std::clock();
