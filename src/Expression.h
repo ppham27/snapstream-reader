@@ -2,6 +2,7 @@
 #define EXPRESSION_H
 
 #include <string>
+#include <queue>
 #include <vector>
 
 namespace snap {
@@ -14,6 +15,10 @@ namespace snap {
     std::vector<std::pair<std::string, snap::TokenType>> tokenized_expression;
     Expression(const std::string &e);
     std::vector<std::pair<std::string, snap::TokenType>> tokenize(const std::string &e);
+    std::queue<std::pair<std::string, snap::TokenType>> convert_to_rpn(const std::vector<std::pair<std::string, snap::TokenType>> &e);
+    std::queue<std::pair<std::string, snap::TokenType>> rpn();
+  private:
+    std::queue<std::pair<std::string, snap::TokenType>> rpn_expression;
   };
 }
 
