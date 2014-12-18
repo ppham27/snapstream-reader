@@ -11,7 +11,9 @@ TEST(constructor, Default) {
   ASSERT_EQ(e1.raw_expression, "{expression}");
   std::vector<std::pair<std::string, snap::TokenType>> v1;
   v1.emplace_back("expression", snap::TokenType::STRING);
-  ASSERT_EQ(v1, e1.tokenized_expression);  
+  ASSERT_EQ(v1, e1.tokenized_expression);
+  std::vector<std::string> p1{"expression"};
+  ASSERT_EQ(p1, e1.patterns);
 
   snap::Expression e2 = snap::Expression("{expression0}@{expression1}");
   std::vector<std::pair<std::string, snap::TokenType>> v2;
@@ -19,6 +21,8 @@ TEST(constructor, Default) {
   v2.emplace_back("@", snap::TokenType::OPERATOR);
   v2.emplace_back("expression1", snap::TokenType::STRING);
   ASSERT_EQ(v2, e2.tokenized_expression);
+  std::vector<std::string> p2{"expression0","expression1"};
+  ASSERT_EQ(p2, e2.patterns);
 
   snap::Expression e3 = snap::Expression("({s0} + {s1})@100({s2} & {s3})");
   std::vector<std::pair<std::string, snap::TokenType>> v3;
@@ -34,6 +38,8 @@ TEST(constructor, Default) {
   v3.emplace_back("s3", snap::TokenType::STRING);
   v3.emplace_back(")", snap::TokenType::OPERATOR);
   ASSERT_EQ(v3, e3.tokenized_expression);
+  std::vector<std::string> p3{"s0","s1","s2","s3"};
+  ASSERT_EQ(p3, e3.patterns);
 }
 
 TEST(rpn, Default) {

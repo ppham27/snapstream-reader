@@ -10,6 +10,9 @@
 snap::Expression::Expression(const std::string &e) {
   this -> raw_expression = e;
   this -> tokenized_expression = tokenize(e);
+  for (auto it = (this -> tokenized_expression).begin(); it != (this -> tokenized_expression).end(); ++it) {
+    if (it -> second == snap::TokenType::STRING) { (this -> patterns).push_back(it -> first); }
+  }
   this -> rpn_expression = convert_to_rpn(this -> tokenized_expression);
 }
 
