@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <cctype>
 #include <chrono> 
 #include <iostream>
 #include <map>
@@ -23,6 +25,7 @@ namespace snap {
       boost::replace_all(s, "%27", "'");
       boost::replace_all(s, "%28", "(");
       boost::replace_all(s, "%29", ")");
+      std::transform(s.begin(), s.end(), s.begin(), ::tolower);
       return s;
     }
     
