@@ -9,6 +9,7 @@
 
 #include "Program.h"
 #include "Excerpt.h"
+#include "Expression.h"
 
 namespace snap {
   std::map<std::string, std::vector<int>> find(const std::vector<std::string> &patterns,
@@ -24,6 +25,14 @@ namespace snap {
                                                          int distance);
 
   std::string convert_infix_to_rpn(std::string expression);
+
+  std::vector<int> andv(const std::vector<int> &a, const std::vector<int> &b);
+  std::vector<int> notandv(const std::vector<int> &a, const std::vector<int> &b);
+  std::vector<int> orv(const std::vector<int> &a, const std::vector<int> &b);
+  std::vector<int> nearv(const std::vector<int> &a, const std::vector<int> &b, int distance);
+  std::vector<int> notnearv(const std::vector<int> &a, const std::vector<int> &b, int distance);
+
+  std::vector<int> evaluate_expression(snap::Expression &e, std::map<std::string, std::vector<int>> &locations);
   
   namespace web {
     std::map<std::string, std::string> parse_query_string(const std::string &query_string);
@@ -49,7 +58,7 @@ namespace snap {
   }
   /* int or(); */
   /* int not(); */
-  /* int and(); */
+
 }
 
 #endif

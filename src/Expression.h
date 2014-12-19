@@ -2,15 +2,19 @@
 #define EXPRESSION_H
 
 #include <string>
+#include <map>
 #include <queue>
 #include <vector>
+
 
 namespace snap {
 
   enum TokenType { STRING, OPERATOR };
   
-  class Expression {
+  class Expression {    
   public:
+      // first is precendence, second is associativity
+    std::map<std::string, std::pair<int, bool>> operator_precedence;
     std::string raw_expression;
     std::vector<std::pair<std::string, snap::TokenType>> tokenized_expression;
     std::vector<std::string> patterns;

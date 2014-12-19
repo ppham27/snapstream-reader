@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cctype>
 #include <queue>
+#include <stack>
 #include <functional>
 #include <map>
 #include <string>
@@ -9,7 +10,104 @@
 #include "snap.h"
 #include "Program.h"
 
+#include <iostream>
+
 namespace snap {
+
+
+  std::vector<int> orv(const std::vector<int> &a, const std::vector<int> &b) {
+    std::vector<int> c; 
+    c.insert(c.end(), a.begin(), a.end());
+    c.insert(c.end(), b.begin(), b.end());
+    std::sort(c.begin(), c.end());
+    return c;
+  }
+  
+  std::vector<int> andv(const std::vector<int> &a, const std::vector<int> &b) {
+    if (a.size() == 0 || b.size() == 0) {
+      std::vector<int> c;
+      return c;
+    }
+    return orv(a, b);
+  }
+
+  std::vector<int> notandv(const std::vector<int> &a, const std::vector<int> &b) {
+    std::vector<int> c;
+    if (b.size() == 0) {
+      c.insert(c.end(), a.begin(), a.end());
+    }
+    return c;
+  }
+
+  std::vector<int> nearv(const std::vector<int> &a, const std::vector<int> &b, int distance) {
+    std::vector<int> c;
+    if (b.size() == 0) { return c; }
+    auto bit = b.begin();
+    for (auto ait = a.begin(); ait != a.end(); ++ait) {
+      while (bit != b.end()-1 && *bit  < *ait && *ait - *bit > distance) {
+        ++bit;
+      }
+      if (abs(*ait - *bit) <= distance) { c.push_back(*ait); }
+    }
+    return c;
+  }
+  
+  std::vector<int> notnearv(const std::vector<int> &a, const std::vector<int> &b, int distance) {
+    std::vector<int> c;
+    if (b.size() == 0) {
+      c.insert(c.end(), a.begin(), a.end());
+      return c;
+    }
+    auto bit = b.begin();
+    for (auto ait = a.begin(); ait != a.end(); ++ait) {
+      while (bit != b.end()-1 && *bit  < *ait && *ait - *bit > distance) {
+        ++bit;
+      }
+      if (abs(*ait - *bit) > distance) { c.push_back(*ait); }
+    }
+    return c;
+  }
+
+  std::vector<int> evaluate_expression(snap::Expression &e, std::map<std::string, std::vector<int>> &locations) {
+    std::queue<std::pair<std::string,snap::TokenType>> rpn = e.rpn();
+    std::stack<std::pair<std::string,snap::TokenType>> operands;
+    std::map<std::string, std::vector<int>> new_locations;
+    while (!rpn.empty()) {
+      std::pair<std::string,snap::TokenType> token = rpn.front(); rpn.pop();
+      if (token.second == TokenType::OPERATOR) {
+        std::pair<std::string,snap::TokenType> b = operands.top(); operands.pop();
+        std::pair<std::string,snap::TokenType> a = operands.top(); operands.pop();
+        std::vector<int> aloci = locations.count(a.first) ? locations[a.first] : new_locations[a.first];
+        std::vector<int> bloci = locations.count(b.first) ? locations[b.first] : new_locations[b.first];
+        std::string new_key = "(" + a.first + " " + token.first + " " + b.first + ")";
+        if (token.first == "&") {
+          new_locations[new_key] = andv(aloci, bloci);
+        } else if (token.first == "!&") {          
+          new_locations[new_key] = notandv(aloci, bloci);
+        } else if (token.first == "+") {
+          new_locations[new_key] = orv(aloci, bloci);
+        } else {
+          // near cases
+          int distance = 100;   // default distance
+          if (token.first.substr(0,2) == "!@") {            
+            if (token.first.length() > 2) { distance = stoi(token.first.substr(2)); }
+            new_locations[new_key] = notnearv(aloci, bloci, distance);
+          } else {
+            if (token.first.length() > 1) { distance = stoi(token.first.substr(1)); }
+            new_locations[new_key] = nearv(aloci, bloci, distance);
+          }
+        }
+        operands.emplace(new_key, snap::TokenType::STRING);
+      } else {
+        operands.push(token);
+      }        
+    }    
+    if (locations.count(operands.top().first)) {
+      return locations[operands.top().first];
+    } else {
+      return new_locations[operands.top().first];
+    }
+  }
   
   std::string pattern_to_search_string(const std::string &pattern) {
     std::string search_string;

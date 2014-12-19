@@ -3,8 +3,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-#include <iostream>
-
 
 TEST(constructor, Default) {
   snap::Expression e1 = snap::Expression("{expression}");

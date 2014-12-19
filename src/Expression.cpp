@@ -3,11 +3,14 @@
 #include <map>
 #include <stack>
 
-#include <iostream>
-
 #include "Expression.h"
 
 snap::Expression::Expression(const std::string &e) {
+  this -> operator_precedence["!@"] = std::make_pair(2, false);
+  this -> operator_precedence["@"] = std::make_pair(2, false);
+  this -> operator_precedence["!&"] = std::make_pair(2, false);
+  this -> operator_precedence["&"] = std::make_pair(2, false);
+  this -> operator_precedence["+"] = std::make_pair(2, false);
   this -> raw_expression = e;
   this -> tokenized_expression = tokenize(e);
   for (auto it = (this -> tokenized_expression).begin(); it != (this -> tokenized_expression).end(); ++it) {
@@ -41,13 +44,6 @@ std::vector<std::pair<std::string, snap::TokenType>> snap::Expression::tokenize(
 }
 
 std::queue<std::pair<std::string, snap::TokenType>> snap::Expression::convert_to_rpn(const std::vector<std::pair<std::string, snap::TokenType>> &e) {
-  // first is precendence, second is associativity
-  std::map<std::string, std::pair<int, bool>> operator_precedence;
-  operator_precedence["!@"] = std::make_pair(2, false);
-  operator_precedence["@"] = std::make_pair(2, false);
-  operator_precedence["!&"] = std::make_pair(2, false);
-  operator_precedence["&"] = std::make_pair(2, false);
-  operator_precedence["+"] = std::make_pair(2, false);
 
   std::stack<std::pair<std::string, snap::TokenType>> s;
   std::queue<std::pair<std::string, snap::TokenType>> q;
