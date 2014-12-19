@@ -16,15 +16,13 @@ namespace snap {
                                                const std::string &s);
   std::map<std::string, std::vector<int>> find(const std::string &pattern,
                                                const std::string &s);
-  std::map<std::string, std::vector<int>> near(snap::Expression &pattern1,
-                                               snap::Expression &pattern2,
+  std::map<std::string, std::vector<int>> near(const snap::Expression &pattern1,
+                                               const snap::Expression &pattern2,
                                                int distance,
                                                const std::string &s);
 
   std::map<std::string, std::map<std::string, int>> pair(const std::map<std::string, std::vector<int>> &match_positions,
                                                          int distance);
-
-  std::string convert_infix_to_rpn(std::string expression);
 
   std::vector<int> andv(const std::vector<int> &a, const std::vector<int> &b);
   std::vector<int> notandv(const std::vector<int> &a, const std::vector<int> &b);
@@ -32,8 +30,9 @@ namespace snap {
   std::vector<int> nearv(const std::vector<int> &a, const std::vector<int> &b, int distance);
   std::vector<int> notnearv(const std::vector<int> &a, const std::vector<int> &b, int distance);
 
-  std::vector<int> evaluate_expression(snap::Expression &e, std::map<std::string, std::vector<int>> &locations);
-  std::map<std::string, std::vector<int>> evaluate_expressions(std::vector<snap::Expression> &expressions, std::map<std::string, std::vector<int>> &locations);
+  std::vector<int> evaluate_expression(const snap::Expression &e, const std::map<std::string, std::vector<int>> &locations);
+  std::map<std::string, std::vector<int>> evaluate_expressions(const std::vector<snap::Expression> &expressions,
+                                                               const std::map<std::string, std::vector<int>> &locations);
   
   namespace web {
     std::map<std::string, std::string> parse_query_string(const std::string &query_string);

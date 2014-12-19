@@ -95,6 +95,6 @@ std::queue<std::pair<std::string, snap::TokenType>> snap::Expression::convert_to
   return q;    
 }
 
-std::queue<std::pair<std::string, snap::TokenType>> snap::Expression::rpn() {
+std::queue<std::pair<std::string, snap::TokenType>> snap::Expression::rpn() const {
   return this -> rpn_expression;
 }

@@ -68,7 +68,7 @@ namespace snap {
     return c;
   }
 
-  std::vector<int> evaluate_expression(snap::Expression &e, std::map<std::string, std::vector<int>> &locations) {
+  std::vector<int> evaluate_expression(const snap::Expression &e, const std::map<std::string, std::vector<int>> &locations) {
     std::queue<std::pair<std::string,snap::TokenType>> rpn = e.rpn();
     std::stack<std::pair<std::string,snap::TokenType>> operands;
     std::map<std::string, std::vector<int>> new_locations;
@@ -77,8 +77,8 @@ namespace snap {
       if (token.second == TokenType::OPERATOR) {
         std::pair<std::string,snap::TokenType> b = operands.top(); operands.pop();
         std::pair<std::string,snap::TokenType> a = operands.top(); operands.pop();
-        std::vector<int> aloci = locations.count(a.first) ? locations[a.first] : new_locations[a.first];
-        std::vector<int> bloci = locations.count(b.first) ? locations[b.first] : new_locations[b.first];
+        std::vector<int> aloci = locations.count(a.first) ? locations.at(a.first) : new_locations.at(a.first);
+        std::vector<int> bloci = locations.count(b.first) ? locations.at(b.first) : new_locations.at(b.first);
         std::string new_key = "(" + a.first + " " + token.first + " " + b.first + ")";
         if (token.first == "&") {
           new_locations[new_key] = andv(aloci, bloci);
@@ -103,13 +103,14 @@ namespace snap {
       }        
     }    
     if (locations.count(operands.top().first)) {
-      return locations[operands.top().first];
+      return locations.at(operands.top().first);
     } else {
       return new_locations[operands.top().first];
     }
   }
 
-  std::map<std::string, std::vector<int>> evaluate_expressions(std::vector<snap::Expression> &expressions, std::map<std::string, std::vector<int>> &locations) {
+  std::map<std::string, std::vector<int>> evaluate_expressions(const std::vector<snap::Expression> &expressions,
+                                                               const std::map<std::string, std::vector<int>> &locations) {
     std::map<std::string, std::vector<int>> res;
     for (auto e = expressions.begin(); e != expressions.end(); ++e) {
       res[e -> raw_expression] = evaluate_expression(*e, locations);
@@ -186,8 +187,8 @@ namespace snap {
     return find(std::vector<std::string>{pattern}, s);
   }
 
-  std::map<std::string, std::vector<int>> near(snap::Expression &e1,
-                                               snap::Expression &e2,
+  std::map<std::string, std::vector<int>> near(const snap::Expression &e1,
+                                               const snap::Expression &e2,
                                                int distance,
                                                const std::string &s) {
     std::vector<std::string> patterns;
