@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <ctime>
 #include <iostream>
+#include <set>
 #include <string>
 
 #include "boost/algorithm/string.hpp"
@@ -44,6 +45,15 @@ int main() {
   }
   std::sort(search_strings.begin(), search_strings.end());
   
+  std::vector<snap::Expression> expressions;
+  std::set<std::string> pattern_set;
+  for (auto it = search_strings.begin(); it != search_strings.end(); ++it) {
+    expressions.emplace_back(*it);
+    pattern_set.insert(expressions.back().patterns.begin(), expressions.back().patterns.end());
+  }
+  std::vector<std::string> patterns;
+  patterns.insert(patterns.end(), pattern_set.begin(), pattern_set.end());
+  
   // print output for user to verify
   std::cout << "<p>" << std::endl;
   std::cout << "Search strings:" << "<br/>" << std::endl;
@@ -64,10 +74,10 @@ int main() {
 
   // initiate result matrix
   std::map<std::string, std::map<std::string, std::pair<int, int>>> results;
-  for (auto it0 = search_strings.begin(); it0 != search_strings.end(); ++it0) {
-    results[*it0] = std::map<std::string, std::pair<int, int>>();
-    for (auto it1(it0); it1 != search_strings.end(); ++it1) {
-      results[*it0][*it1] = std::make_pair(0, 0);
+  for (auto it0 = expressions.begin(); it0 != expressions.end(); ++it0) {
+    results[it0 -> raw_expression] = std::map<std::string, std::pair<int, int>>();
+    for (auto it1(it0); it1 != expressions.end(); ++it1) {
+      results[it0 -> raw_expression][it1 -> raw_expression] = std::make_pair(0, 0);
     }
   }
   int total_programs_cnt = 0;
@@ -84,7 +94,8 @@ int main() {
       total_programs_cnt += programs.size();
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         ++selected_programs_cnt;
-        std::map<std::string, std::vector<int>> match_positions = snap::find(search_strings, p -> lower_text);
+        std::map<std::string, std::vector<int>> raw_match_positions = snap::find(patterns, p -> lower_text);
+        std::map<std::string, std::vector<int>> match_positions = evaluate_expressions(expressions, raw_match_positions);
         std::map<std::string, std::map<std::string, int>> cooccurences = snap::pair(match_positions, distance);
         for (auto it0 = cooccurences.begin(); it0 != cooccurences.end(); ++it0) {
           for (auto it1 = (it0 -> second).begin(); it1 != (it0 -> second).end(); ++it1) {
