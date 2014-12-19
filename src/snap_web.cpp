@@ -10,6 +10,22 @@
 
 namespace snap {
   namespace web {
+
+    std::string sanitize_string(std::string s) {
+      boost::replace_all(s, "%0D%0A", "\n");
+      boost::replace_all(s, "%21", "!");
+      boost::replace_all(s, "%26", "&");
+      boost::replace_all(s, "%40", "@");
+      boost::replace_all(s, "%2B", "+");
+      boost::replace_all(s, "%7B", "{");
+      boost::replace_all(s, "%7D", "}");
+      boost::replace_all(s, "%2C", ",");
+      boost::replace_all(s, "%27", "'");
+      boost::replace_all(s, "%28", "(");
+      boost::replace_all(s, "%29", ")");
+      return s;
+    }
+    
     std::map<std::string, std::string> parse_query_string(const std::string &query_string) {
       std::map<std::string, std::string> kv;
       std::vector<std::string> entries;

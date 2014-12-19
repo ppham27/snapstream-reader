@@ -27,22 +27,24 @@ int main() {
   std::string query_string(input);
   delete[] input;
 
-  // display user input
-  std::cout << "<p>" << std::endl;  
-  std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
-  std::cout << "Search string: " << arguments["search-string"] << "<br/>" << std::endl;
-  std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
-  std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
-  std::cout << "Number of Excerpts: " << arguments["num-excerpts"] << "<br/>" << std::endl;
-  std::cout << "</p>" << std::endl;  
-
   // process user input
-  std::string search_string = boost::algorithm::trim_copy(arguments["search-string"]);
+  std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
+  std::string search_string = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string"]));
   boost::gregorian::date current_date = snap::date::string_to_date(arguments["from-date"]);
   boost::gregorian::date from_date = snap::date::string_to_date(arguments["from-date"]);
   boost::gregorian::date to_date = snap::date::string_to_date(arguments["to-date"]);
   int num_excerpts = stoi(arguments["num-excerpts"]);
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
+  std::vector<snap::Expression> expressions;
+  expressions.emplace_back(search_string);
+
+  // display user input
+  std::cout << "<p>" << std::endl;    
+  std::cout << "Search string: " << search_string << "<br/>" << std::endl;
+  std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
+  std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
+  std::cout << "Number of Excerpts: " << arguments["num-excerpts"] << "<br/>" << std::endl;
+  std::cout << "</p>" << std::endl;  
 
   // begin to iteratively process files
   std::vector<snap::Excerpt> excerpts;
@@ -57,18 +59,16 @@ int main() {
       int matching_programs = 0;
       int total_matches = 0;
       for (auto p = programs.begin(); p != programs.end(); ++p) {
-        std::map<std::string, std::vector<int>> match_positions;
-        if (std::any_of(search_string.begin(), search_string.end(), ::isupper)) {
-          match_positions = snap::find(search_string, p -> text);
-        } else {
-          match_positions = snap::find(search_string, p -> lower_text);
-        }
+        std::map<std::string, std::vector<int>> raw_match_positions = snap::find(expressions.back().patterns, p -> lower_text);
+        std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
         if (match_positions[search_string].size() > 0) {
           ++matching_programs;
           total_matches += match_positions[search_string].size();
           for (auto it = match_positions[search_string].begin(); it != match_positions[search_string].end(); ++it) {
             excerpts.emplace_back(*p, *it-excerpt_size, *it+excerpt_size);
-            excerpts.back().highlight_word(search_string);
+            for (auto pattern = expressions.back().patterns.begin(); pattern != expressions.back().patterns.end(); ++pattern) {
+              excerpts.back().highlight_word(*pattern);
+            }
           }
         }
         match_positions.clear();

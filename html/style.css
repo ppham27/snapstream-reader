@@ -6,5 +6,9 @@ body {
     float: right;
     margin-top: 40px;
     margin-right: 40px;
-    width: 350px;
+    width: 375px;
+}
+
+.search-term {
+    color: green;
 }

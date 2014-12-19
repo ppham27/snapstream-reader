@@ -108,6 +108,14 @@ namespace snap {
       return new_locations[operands.top().first];
     }
   }
+
+  std::map<std::string, std::vector<int>> evaluate_expressions(std::vector<snap::Expression> &expressions, std::map<std::string, std::vector<int>> &locations) {
+    std::map<std::string, std::vector<int>> res;
+    for (auto e = expressions.begin(); e != expressions.end(); ++e) {
+      res[e -> raw_expression] = evaluate_expression(*e, locations);
+    }
+    return res;    
+  }
   
   std::string pattern_to_search_string(const std::string &pattern) {
     std::string search_string;
@@ -178,27 +186,29 @@ namespace snap {
     return find(std::vector<std::string>{pattern}, s);
   }
 
-  std::map<std::string, std::vector<int>> near(const std::string &pattern1,
-                                               const std::string &pattern2,
+  std::map<std::string, std::vector<int>> near(snap::Expression &e1,
+                                               snap::Expression &e2,
                                                int distance,
                                                const std::string &s) {
-    std::map<std::string, std::vector<int>> pre_match_positions = find(std::vector<std::string>{pattern1, pattern2},
-                                                                       s);
-    std::vector<int> pattern1_locii = pre_match_positions[pattern1];
-    std::vector<int> pattern2_locii = pre_match_positions[pattern2];    
+    std::vector<std::string> patterns;
+    patterns.insert(patterns.end(), e1.patterns.begin(), e1.patterns.end());
+    patterns.insert(patterns.end(), e2.patterns.begin(), e2.patterns.end());
+    std::map<std::string, std::vector<int>> pre_match_positions = find(patterns, s);
+    std::vector<int> pattern1_locii = evaluate_expression(e1, pre_match_positions);
+    std::vector<int> pattern2_locii = evaluate_expression(e2, pre_match_positions);
     std::map<std::string, std::vector<int>> match_positions;
-    match_positions[pattern1] = std::vector<int>();
-    match_positions[pattern2] = std::vector<int>();
+    match_positions[e1.raw_expression] = std::vector<int>();
+    match_positions[e2.raw_expression] = std::vector<int>();
     if (pattern1_locii.size() == 0 || pattern2_locii.size() == 0) { return match_positions; }
     auto q = pattern2_locii.begin();
     for (int p : pattern1_locii) {
       while (q + 1 != pattern2_locii.end() && *q < p && p - *q > distance) { ++q; }
       if (abs(p - *q) <= distance) {
-        match_positions[pattern1].push_back(p);
-        match_positions[pattern2].push_back(*q);
+        match_positions[e1.raw_expression].push_back(p);
+        match_positions[e2.raw_expression].push_back(*q);
         while (q + 1 != pattern2_locii.end() && abs(p-*(q+1)) <= distance) {
           ++q;
-          match_positions[pattern2].push_back(*q);
+          match_positions[e2.raw_expression].push_back(*q);
         }
       }
     }

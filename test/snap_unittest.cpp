@@ -86,26 +86,28 @@ TEST(find, Default) {
 TEST(near, Default) {
   std::map<std::string, std::vector<int>> match_positions;
   std::string pattern1;
-  std::string pattern2;
+  std::string pattern2; 
   int distance;
   std::string text;
-  
 
-  pattern1 = "china";
-  pattern2 = "russia";
+  pattern1 = "{china}";
+  pattern2 = "{russia}";
+  snap::Expression e1(pattern1);
+  snap::Expression e2(pattern2);  
+
   distance = 15;
   text = "there are no matches here";
   ASSERT_EQ(match_positions[pattern1].size(), 0);
   ASSERT_EQ(match_positions[pattern2].size(), 0);
-  match_positions = snap::near(pattern1, pattern2, distance, text);
+  match_positions = snap::near(e1, e2, distance, text);
   text = "together are china and russia blah blah blah blah blah china blah blah russia blah";
-  match_positions = snap::near(pattern1, pattern2, distance, text);
+  match_positions = snap::near(e1, e2, distance, text);
   ASSERT_THAT(match_positions[pattern1],
               ::testing::ElementsAre(13));
   ASSERT_THAT(match_positions[pattern2],
               ::testing::ElementsAre(23));
   distance = 20;
-  match_positions = snap::near(pattern1, pattern2, distance, text);
+  match_positions = snap::near(e1, e2, distance, text);
   ASSERT_THAT(match_positions[pattern1],
               ::testing::ElementsAre(13, 55));
   ASSERT_THAT(match_positions[pattern2],

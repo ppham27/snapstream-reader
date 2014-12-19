@@ -30,11 +30,7 @@ int main() {
   
   // process search strings
   std::vector<std::string> search_strings;
-  boost::replace_all(arguments["search-strings"], "%0D%0A", "\n");
-  boost::replace_all(arguments["search-strings"], "%2C", ",");
-  boost::replace_all(arguments["search-strings"], "%27", "'");
-  boost::replace_all(arguments["search-strings"], "%28", "(");
-  boost::replace_all(arguments["search-strings"], "%29", ")");
+  arguments["search-strings"] = snap::web::sanitize_string(arguments["search-strings"]);
   boost::split(search_strings, arguments["search-strings"], boost::is_any_of("\n"));
   // remove empty strings  
   auto search_string_iterator = search_strings.begin();

@@ -27,28 +27,35 @@ int main() {
   std::string query_string(input);
   delete[] input;
 
-  // display user input
-  std::cout << "<p>" << std::endl;  
-  std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
-  std::cout << "Search string 1: " << arguments["search-string-1"] << "<br/>" << std::endl;
-  std::cout << "Search string 2: " << arguments["search-string-2"] << "<br/>" << std::endl;
-  std::cout << "Distance: " << arguments["distance"] << "<br/>" << std::endl;
-  std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
-  std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
-  std::cout << "Number of Excerpts: " << arguments["num-excerpts"] << "<br/>" << std::endl;
-  std::cout << "</p>" << std::endl;
-
   // process user input
-  std::string search_string01 = boost::algorithm::trim_copy(arguments["search-string-1"]);
-  std::string search_string02 = boost::algorithm::trim_copy(arguments["search-string-2"]);
+  std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
+  std::string search_string01 = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string-1"]));
+  std::string search_string02 = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string-2"]));
   int distance = stoi(arguments["distance"]);
   boost::gregorian::date current_date = snap::date::string_to_date(arguments["from-date"]);
   boost::gregorian::date from_date = snap::date::string_to_date(arguments["from-date"]);
   boost::gregorian::date to_date = snap::date::string_to_date(arguments["to-date"]);
   int num_excerpts = stoi(arguments["num-excerpts"]);
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
+  std::vector<snap::Expression> expressions;
+  expressions.emplace_back(search_string01);
+  expressions.emplace_back(search_string02);
+  std::vector<std::string> patterns;
+  for (auto it = expressions.begin(); it != expressions.end(); ++it) {
+    patterns.insert(patterns.end(), (it -> patterns).begin(), (it -> patterns).end());
+  }
 
-    // begin to iteratively process files
+  // display user input
+  std::cout << "<p>" << std::endl;  
+  std::cout << "Search string 1: " << search_string01 << "<br/>" << std::endl;
+  std::cout << "Search string 2: " << search_string02 << "<br/>" << std::endl;
+  std::cout << "Distance: " << arguments["distance"] << "<br/>" << std::endl;
+  std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
+  std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
+  std::cout << "Number of Excerpts: " << arguments["num-excerpts"] << "<br/>" << std::endl;
+  std::cout << "</p>" << std::endl;
+  
+  // begin to iteratively process files
   std::vector<snap::Excerpt> excerpts;
   std::cout << "<pre>" << std::endl;
   std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt1\ttotal_matches_cnt2\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
@@ -62,21 +69,17 @@ int main() {
       int total_matches01 = 0; int total_matches02 = 0;
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         std::map<std::string, std::vector<int>> match_positions;
-        if (std::any_of(search_string01.begin(), search_string01.end(), ::isupper) ||
-            std::any_of(search_string02.begin(), search_string02.end(), ::isupper)) {
-          match_positions = snap::near(search_string01, search_string02,
-                                       distance, p -> text);
-        } else {
-          match_positions = snap::near(search_string01, search_string02,
-                                       distance, p -> lower_text);
-        }
-        if (match_positions[search_string01].size() > 0 || match_positions[search_string02].size() > 0) {
+        match_positions = snap::near(expressions[0], expressions[1],
+                                     distance, p -> lower_text);
+        if (match_positions[expressions[0].raw_expression].size() > 0 || match_positions[expressions[1].raw_expression].size() > 0) {
           ++matching_programs;
-          total_matches01 += match_positions[search_string01].size();
-          total_matches02 += match_positions[search_string02].size();
-          for (auto it = match_positions[search_string01].begin(); it != match_positions[search_string01].end(); ++it) {
+          total_matches01 += match_positions[expressions[0].raw_expression].size();
+          total_matches02 += match_positions[expressions[1].raw_expression].size();
+          for (auto it = match_positions[expressions[0].raw_expression].begin(); it != match_positions[expressions[0].raw_expression].end(); ++it) {
             excerpts.emplace_back(*p, *it-distance-excerpt_size, *it+distance+excerpt_size);
-            excerpts.back().highlight_word(search_string01); excerpts.back().highlight_word(search_string02);
+            for (auto pattern = patterns.begin(); pattern != patterns.end(); ++pattern) {
+              excerpts.back().highlight_word(*pattern);
+            }
           }
         }
         match_positions.clear();

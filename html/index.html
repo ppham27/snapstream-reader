@@ -12,6 +12,28 @@
       <p>
         This web application searches the closed captioning text of TV programs.
       </p>
+      <p>
+        Enclose your search terms in curly braces. This is very important. To search for china, use <span class="search-term">{china}</span>.
+        You can refine your search by including special operators.        
+        <ul>
+          <li>+ matches either of the two terms. For example, <span class="search-term">{china} + {beijing}</span> looks for both
+            china and beijing.</li>
+          <li>& matches two terms that occur in the same program. For example, <span class="search-term">{china} & {russia}</span> looks for
+            china and russia occuring together in the same program.</li>
+          <li>@[optional argument] matches two terms appearing close together. For example, <span class="search-term">{china} @ {russia}</span> looks for both
+            china and russia within 100 characters of each other. <span class="search-term">{china} @50 {russia}</span> looks for china and russia within
+            50 characters of each other.</li>
+          <li>! can negate & and @. <span class="search-term">{china} !& {russia}</span> looks for china in programs where russia does <em>not</em> occur.
+            <span class="search-term">{china} !@ {russia}</span> looks for occurences of china is <em>not</em> within 100 characters of russia.
+            <span class="search-term">{china} !@50 {russia}</span> looks for occurences of china is <em>not</em> within 50 characters of russia.
+          </li>
+        </ul>
+
+        Parentheses can be used to build searchs of aribitrary complexity. <span class="search-term">({china} @ {russia}) & ({afghanistan} @ {iraq})</span>
+        looks for programs where both china occurs near russia <em>and</em> afghanistan occurs near iraq.
+      </p>
+      
+
     </div>
     <h1>Snapstream Searcher</h1>
     <h2>Single string search</h2>

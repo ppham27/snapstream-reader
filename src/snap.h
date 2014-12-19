@@ -16,8 +16,8 @@ namespace snap {
                                                const std::string &s);
   std::map<std::string, std::vector<int>> find(const std::string &pattern,
                                                const std::string &s);
-  std::map<std::string, std::vector<int>> near(const std::string &pattern1,
-                                               const std::string &pattern2,
+  std::map<std::string, std::vector<int>> near(snap::Expression &pattern1,
+                                               snap::Expression &pattern2,
                                                int distance,
                                                const std::string &s);
 
@@ -33,6 +33,7 @@ namespace snap {
   std::vector<int> notnearv(const std::vector<int> &a, const std::vector<int> &b, int distance);
 
   std::vector<int> evaluate_expression(snap::Expression &e, std::map<std::string, std::vector<int>> &locations);
+  std::map<std::string, std::vector<int>> evaluate_expressions(std::vector<snap::Expression> &expressions, std::map<std::string, std::vector<int>> &locations);
   
   namespace web {
     std::map<std::string, std::string> parse_query_string(const std::string &query_string);
@@ -41,6 +42,7 @@ namespace snap {
     void print_excerpts(std::vector<snap::Excerpt> &excerpts, int n);
     void print_excerpt(const snap::Excerpt &e);
     void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results);
+    std::string sanitize_string(std::string s);
   }
   
   namespace io {

@@ -71,6 +71,11 @@ TEST(evaluate_expression, default) {
       "sin*", "death", "god", "submit", "flesh", "christ","jesus","lolidunno"};
   std::map<std::string, std::vector<int>> match_positions = snap::find(patterns, lower_text);
 
+  snap::Expression e0("{sin*}");
+  std::vector<int> a0 = evaluate_expression(e0, match_positions);
+  ASSERT_THAT(a0,
+              ::testing::ElementsAre(157, 282, 303, 321));  
+  
   snap::Expression e1("{god} & {lolidunno}");
   std::vector<int> a1 = evaluate_expression(e1, match_positions);
   ASSERT_EQ(0, a1.size());
@@ -114,6 +119,11 @@ TEST(evaluate_expression, default) {
   std::vector<int> a9 = evaluate_expression(e9, match_positions);
   ASSERT_THAT(a9,
               ::testing::ElementsAre(60,128));
+
+  std::vector<snap::Expression> expressions{e9,e2,e3};
+  ASSERT_EQ(a9, evaluate_expressions(expressions, match_positions)[e9.raw_expression]);
+  ASSERT_EQ(a2, evaluate_expressions(expressions, match_positions)[e2.raw_expression]);
+  ASSERT_EQ(a3, evaluate_expressions(expressions, match_positions)[e3.raw_expression]);
 }
 
 int main(int argc, char **argv) {
