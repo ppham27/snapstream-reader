@@ -12,3 +12,7 @@ body {
 .search-term {
     color: green;
 }
+
+.error {
+    color: DarkRed;
+}

@@ -17,6 +17,10 @@ TEST(string_to_date, Default) {
             snap::date::string_to_date("2014-5-7"));
   ASSERT_EQ(d2,
             snap::date::string_to_date("2014-12-23"));
+  ASSERT_THROW(snap::date::string_to_date(""),
+               snap::date::InvalidDateException);
+  ASSERT_THROW(snap::date::string_to_date("this is not a date"),
+               snap::date::InvalidDateException);
 }
 
 TEST(date_to_string, Default) {

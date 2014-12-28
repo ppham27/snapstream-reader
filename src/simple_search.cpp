@@ -2,6 +2,7 @@
 #include <cctype>
 #include <cstdlib>
 #include <cstdio>
+#include <exception>
 #include <iostream>
 #include <string>
 
@@ -30,9 +31,16 @@ int main() {
   // process user input
   std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
   std::string search_string = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string"]));
-  boost::gregorian::date current_date = snap::date::string_to_date(arguments["from-date"]);
-  boost::gregorian::date from_date = snap::date::string_to_date(arguments["from-date"]);
-  boost::gregorian::date to_date = snap::date::string_to_date(arguments["to-date"]);
+  boost::gregorian::date current_date, from_date, to_date;
+  try {
+    current_date = snap::date::string_to_date(arguments["from-date"]);
+    std::cout << current_date << std::endl;
+    from_date = snap::date::string_to_date(arguments["from-date"]);
+    to_date = snap::date::string_to_date(arguments["to-date"]);
+  } catch (snap::date::InvalidDateException &e) {
+    std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+    exit(-1);
+  }
   int num_excerpts = stoi(arguments["num-excerpts"]);
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
   std::vector<snap::Expression> expressions;

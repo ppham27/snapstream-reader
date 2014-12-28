@@ -52,6 +52,9 @@ namespace snap {
 body {
 font-family: Helvetica;
 }
+.error {
+color: DarkRed;
+}
 </style>
 </head>
 <body>)ZZZ"<< std::endl;

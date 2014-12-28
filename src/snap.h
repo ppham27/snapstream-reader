@@ -2,6 +2,7 @@
 #define SNAP_H
 
 #include <map>
+#include <exception>
 #include <string>
 #include <vector>
 
@@ -56,10 +57,18 @@ namespace snap {
   namespace date {
     boost::gregorian::date string_to_date(std::string d);
     std::string date_to_string(boost::gregorian::date d);
+    class InvalidDateException: public std::runtime_error {
+    private:
+      std::string d;
+    public:
+    InvalidDateException(std::string d) : std::runtime_error(" is not a valid date"), d(d) {}      
+      virtual const char* what() const noexcept {
+        std::string error_message(std::runtime_error::what());
+        error_message = d + error_message;
+        return error_message.c_str();
+      }
+    };
   }
-  /* int or(); */
-  /* int not(); */
-
 }
 
 #endif
