@@ -34,7 +34,6 @@ int main() {
   boost::gregorian::date current_date, from_date, to_date;
   try {
     current_date = snap::date::string_to_date(arguments["from-date"]);
-    std::cout << current_date << std::endl;
     from_date = snap::date::string_to_date(arguments["from-date"]);
     to_date = snap::date::string_to_date(arguments["to-date"]);
   } catch (snap::date::InvalidDateException &e) {
@@ -44,7 +43,12 @@ int main() {
   int num_excerpts = stoi(arguments["num-excerpts"]);
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
   std::vector<snap::Expression> expressions;
-  expressions.emplace_back(search_string);
+  try {
+    expressions.emplace_back(search_string);
+  } catch(snap::ExpressionSyntaxError &e) {
+    std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+    exit(-1);    
+  }
 
   // display user input
   std::cout << "<p>" << std::endl;    

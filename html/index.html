@@ -13,7 +13,9 @@
         This web application searches the closed captioning text of TV programs.
       </p>
       <p>
-        Enclose your search terms in curly braces. This is very important. To search for china, use <span class="search-term">{china}</span>.
+        Enclose your search terms in curly braces. This is very important. To search for china, use <span class="search-term">{china}</span>. * is a wildcard that can be placed at then end or beginning of a search term. For example, <span class="search-term">{chin*}</span> will match chinese and china. Spaces can be included, too, so <span class="search-term">{united states}</span> will match united states.
+      </p>
+      <p>
         You can refine your search by including special operators.        
         <ul>
           <li>+ matches either of the two terms. For example, <span class="search-term">{china} + {beijing}</span> looks for both
@@ -37,6 +39,7 @@
     </div>
     <h1>Snapstream Searcher</h1>
     <h2>Single string search</h2>
+    <h4>Just search for a single expression...</h4>
     <form action="cgi-bin/simple_search" method="POST">      
       <span>Search string: <input type="text" name="search-string"></span><br/>
       <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date" value="YYYY-MM-DD"></span><br/>
@@ -45,6 +48,7 @@
       <input type="submit" value="Simple search">
     </form>
     <h2>Near search</h2>
+    <h4>Search for a pair of expressions within a certain distance...</h4>
     <form action="cgi-bin/near_search" method="POST">
       <span>Search String 1: <input type="text" name="search-string-1"></span><br/>
       <span>Search String 2: <input type="text" name="search-string-2"></span><br/>
@@ -55,7 +59,8 @@
       <input type="submit" value="Near search">
     </form>
 
-    <h2>Pair search</h2>
+    <h2>Matrix search</h2>
+    <h4>Enter a list of expressions on new lines. This returns a matrix of pairwise matches...</h4>
     <form action="cgi-bin/pair_search" method="POST">
       <span>Search strings:</span><br/>
       <textarea name="search-strings" rows="10" cols="50"></textarea><br/>

@@ -1,6 +1,7 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
+#include <exception>
 #include <string>
 #include <map>
 #include <queue>
@@ -24,6 +25,20 @@ namespace snap {
     std::queue<std::pair<std::string, snap::TokenType>> rpn() const;
   private:
     std::queue<std::pair<std::string, snap::TokenType>> rpn_expression;
+  };
+
+  class ExpressionSyntaxError: public std::runtime_error {
+  private:
+    std::string e; std::string msg;
+  public:
+    ExpressionSyntaxError(std::string e) : std::runtime_error(" is not a valid expression."), e(e) { msg = ""; }
+    ExpressionSyntaxError(std::string e, std::string msg) : std::runtime_error(" is not a valid expression."), e(e), msg(msg) {}
+    virtual const char* what() const noexcept {
+      std::string error_message(std::runtime_error::what());
+      error_message = e + error_message;
+      if (!msg.empty()) { error_message += " " + msg; }
+      return error_message.c_str();
+    }
   };
 }
 

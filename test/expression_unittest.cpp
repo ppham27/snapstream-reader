@@ -4,6 +4,15 @@
 #include "gmock/gmock.h"
 
 
+TEST(constructor, Exceptions) {
+  ASSERT_THROW(snap::Expression(""),
+               snap::ExpressionSyntaxError);
+  ASSERT_THROW(snap::Expression("china}"),
+               snap::ExpressionSyntaxError);
+  ASSERT_THROW(snap::Expression("{china"),
+               snap::ExpressionSyntaxError);
+}
+
 TEST(constructor, Default) {
   snap::Expression e1 = snap::Expression("{expression}");
   ASSERT_EQ(e1.raw_expression, "{expression}");

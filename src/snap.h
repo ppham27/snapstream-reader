@@ -61,7 +61,7 @@ namespace snap {
     private:
       std::string d;
     public:
-    InvalidDateException(std::string d) : std::runtime_error(" is not a valid date"), d(d) {}      
+      InvalidDateException(std::string d) : std::runtime_error(" is not a valid date"), d(d) {}      
       virtual const char* what() const noexcept {
         std::string error_message(std::runtime_error::what());
         error_message = d + error_message;
