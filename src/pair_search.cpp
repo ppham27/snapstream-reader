@@ -28,6 +28,19 @@ int main() {
   std::string query_string(input);
   delete[] input;
   std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
+
+  // turn inputs into C++ types
+  int distance = stoi(arguments["distance"]);
+  boost::gregorian::date current_date, from_date, to_date;
+  try {
+    current_date = snap::date::string_to_date(arguments["from-date"]);
+    from_date = snap::date::string_to_date(arguments["from-date"]);
+    to_date = snap::date::string_to_date(arguments["to-date"]);
+  } catch (snap::date::InvalidDateException &e) {
+    std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+    exit(-1);
+  }
+  std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
   
   // process search strings
   std::vector<std::string> search_strings;
@@ -56,7 +69,7 @@ int main() {
       expressions.emplace_back(*it);
     } catch(snap::ExpressionSyntaxError &e) {
       std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
-      exit(-1);     
+      exit(-1);
     }
     pattern_set.insert(expressions.back().patterns.begin(), expressions.back().patterns.end());
   }
@@ -73,19 +86,6 @@ int main() {
   std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
   std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
   std::cout << "</p>" << std::endl;
-
-  // turn inputs into C++ types
-  int distance = stoi(arguments["distance"]);
-  boost::gregorian::date current_date, from_date, to_date;
-  try {
-    current_date = snap::date::string_to_date(arguments["from-date"]);
-    from_date = snap::date::string_to_date(arguments["from-date"]);
-    to_date = snap::date::string_to_date(arguments["to-date"]);
-  } catch (snap::date::InvalidDateException &e) {
-    std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
-    exit(-1);
-  }
-  std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
 
   // initiate result matrix
   std::map<std::string, std::map<std::string, std::pair<int, int>>> results;
