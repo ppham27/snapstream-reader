@@ -11,7 +11,18 @@ TEST(constructor, Exceptions) {
                snap::ExpressionSyntaxError);
   ASSERT_THROW(snap::Expression("{china"),
                snap::ExpressionSyntaxError);
+  ASSERT_THROW(snap::Expression("({fsafsa}"),
+               snap::ExpressionSyntaxError);
+  ASSERT_THROW(snap::Expression("{fsafsa})"),
+               snap::ExpressionSyntaxError);
+  ASSERT_THROW(snap::Expression("({fsafsa}) & ({fsd}"),
+               snap::ExpressionSyntaxError);
+  ASSERT_THROW(snap::Expression("({fsafsa}) % ({fsd})"),
+               snap::ExpressionSyntaxError);
+  ASSERT_THROW(snap::Expression("({fsafsa}) %238 ({fsd})"),
+               snap::ExpressionSyntaxError);
 }
+
 
 TEST(constructor, Default) {
   snap::Expression e1 = snap::Expression("{expression}");

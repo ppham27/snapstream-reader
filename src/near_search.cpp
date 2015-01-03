@@ -32,14 +32,25 @@ int main() {
   std::string search_string01 = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string-1"]));
   std::string search_string02 = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string-2"]));
   int distance = stoi(arguments["distance"]);
-  boost::gregorian::date current_date = snap::date::string_to_date(arguments["from-date"]);
-  boost::gregorian::date from_date = snap::date::string_to_date(arguments["from-date"]);
-  boost::gregorian::date to_date = snap::date::string_to_date(arguments["to-date"]);
+  boost::gregorian::date current_date, from_date, to_date;
+  try {
+    current_date = snap::date::string_to_date(arguments["from-date"]);
+    from_date = snap::date::string_to_date(arguments["from-date"]);
+    to_date = snap::date::string_to_date(arguments["to-date"]);
+  } catch (snap::date::InvalidDateException &e) {
+    std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+    exit(-1);
+  }
   int num_excerpts = stoi(arguments["num-excerpts"]);
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
   std::vector<snap::Expression> expressions;
-  expressions.emplace_back(search_string01);
-  expressions.emplace_back(search_string02);
+  try {
+    expressions.emplace_back(search_string01);
+    expressions.emplace_back(search_string02);
+  } catch(snap::ExpressionSyntaxError &e) {
+    std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+    exit(-1);    
+  }
   std::vector<std::string> patterns;
   for (auto it = expressions.begin(); it != expressions.end(); ++it) {
     patterns.insert(patterns.end(), (it -> patterns).begin(), (it -> patterns).end());

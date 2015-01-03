@@ -43,12 +43,21 @@ int main() {
       ++search_string_iterator;
     }
   }
+  if (search_strings.size() == 0) {
+    std::cout << "<span class=\"error\">" << "Error: There are no search strings." << "</span>" << std::endl;
+    exit(-1);
+  }
   std::sort(search_strings.begin(), search_strings.end());
   
   std::vector<snap::Expression> expressions;
   std::set<std::string> pattern_set;
   for (auto it = search_strings.begin(); it != search_strings.end(); ++it) {
-    expressions.emplace_back(*it);
+    try {
+      expressions.emplace_back(*it);
+    } catch(snap::ExpressionSyntaxError &e) {
+      std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+      exit(-1);     
+    }
     pattern_set.insert(expressions.back().patterns.begin(), expressions.back().patterns.end());
   }
   std::vector<std::string> patterns;
@@ -67,9 +76,15 @@ int main() {
 
   // turn inputs into C++ types
   int distance = stoi(arguments["distance"]);
-  boost::gregorian::date current_date = snap::date::string_to_date(arguments["from-date"]);
-  boost::gregorian::date from_date = snap::date::string_to_date(arguments["from-date"]);
-  boost::gregorian::date to_date = snap::date::string_to_date(arguments["to-date"]);
+  boost::gregorian::date current_date, from_date, to_date;
+  try {
+    current_date = snap::date::string_to_date(arguments["from-date"]);
+    from_date = snap::date::string_to_date(arguments["from-date"]);
+    to_date = snap::date::string_to_date(arguments["to-date"]);
+  } catch (snap::date::InvalidDateException &e) {
+    std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+    exit(-1);
+  }
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
 
   // initiate result matrix
