@@ -139,5 +139,19 @@ color: DarkRed;
       }
       std::cout << std::endl; 
     }
+
+    void print_corrupt_files(const std::vector<std::string> &corrupt_files) {
+      if (corrupt_files.size() > 0) {
+        std::cout << "<span class=\"error\">Warning: ";
+        for (auto it = corrupt_files.begin(); it != corrupt_files.end() - 1; ++it) {
+          std::cout << *it << ", ";
+        }
+        if (corrupt_files.size() == 1) {
+          std::cout << corrupt_files.back() << " is corrupt.</span>" << std::endl;
+        } else {
+          std::cout << " and " << corrupt_files.back() << " are corrupt.</span>" << std::endl;
+        }
+      }
+    }
   }
 }

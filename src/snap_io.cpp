@@ -26,7 +26,11 @@ namespace snap {
       std::vector<snap::Program> prog_vector;
       const int read_size = 1000000;
       char *program_text = new char[read_size];
+      int cnt = 0;
       while (!input.eof()) {
+        if (input.tellg() == -1) {
+          throw snap::io::CorruptFileException();
+        }
         input.getline(program_text, read_size, -65);
         input.getline(program_text, read_size, -61);
         std::string program_string(program_text);

@@ -99,13 +99,22 @@ int main() {
   int selected_programs_cnt = 0;
 
   // run through dates
+  std::vector<std::string> corrupt_files;
   for (auto it = file_list.begin(); it != file_list.end(); ++it) {
     boost::gregorian::date::ymd_type ymd = current_date.year_month_day();
     std::cout << "<span>Processing " << ymd.month << " "
               << ymd.day << "," << ymd.year
               << "...</span></br>" << std::endl;
     if (snap::io::file_exists(*it)) {
-      std::vector<snap::Program> programs = snap::io::parse_programs(*it);
+      std::vector<snap::Program> programs;
+      try {
+        programs = snap::io::parse_programs(*it);
+      } catch (snap::io::CorruptFileException &e) {
+        programs.clear();
+        current_date += boost::gregorian::date_duration(1);
+        corrupt_files.push_back(*it);
+        continue;
+      }
       total_programs_cnt += programs.size();
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         ++selected_programs_cnt;
@@ -124,6 +133,7 @@ int main() {
     }
     current_date += boost::gregorian::date_duration(1);
   }
+  snap::web::print_corrupt_files(corrupt_files);
 
   // print results
   std::cout << "<pre>" << std::endl;

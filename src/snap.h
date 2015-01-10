@@ -41,6 +41,7 @@ namespace snap {
     void close_html();
     void print_excerpts(std::vector<snap::Excerpt> &excerpts, int n);
     void print_excerpt(const snap::Excerpt &e);
+    void print_corrupt_files(const std::vector<std::string> &corrupt_files);
     void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results);
     std::string sanitize_string(std::string s);
   }
@@ -53,6 +54,14 @@ namespace snap {
                                                  boost::gregorian::date to,
                                                  std::string prefix,
                                                  std::string suffix);
+    class CorruptFileException: public std::runtime_error {
+    public:
+      CorruptFileException() : std::runtime_error("File is corrupt.") {}
+      virtual const char* what() const noexcept {
+        std::string error_message(std::runtime_error::what());
+        return error_message.c_str();
+      }
+    };
   }
   namespace date {
     boost::gregorian::date string_to_date(std::string d);

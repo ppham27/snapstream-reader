@@ -14,7 +14,6 @@
 const std::string prefix = "Data/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
-const int excerpt_size = 400;
 
 int main() {
   clock_t start_time = std::clock();
@@ -41,6 +40,7 @@ int main() {
     exit(-1);
   }
   int num_excerpts = stoi(arguments["num-excerpts"]);
+  int excerpt_size = stoi(arguments["excerpt-size"]);
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
   std::vector<snap::Expression> expressions;
   try {
@@ -56,9 +56,11 @@ int main() {
   std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
   std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
   std::cout << "Number of Excerpts: " << arguments["num-excerpts"] << "<br/>" << std::endl;
+  std::cout << "Excerpt Size: " << arguments["excerpt-size"] << "<br/>" << std::endl;
   std::cout << "</p>" << std::endl;  
 
   // begin to iteratively process files
+  std::vector<std::string> corrupt_files;
   std::vector<snap::Excerpt> excerpts;
   std::cout << "<pre>" << std::endl;
   std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
@@ -66,7 +68,15 @@ int main() {
        it != file_list.end();
        ++it) {
     if (snap::io::file_exists(*it)) {      
-      std::vector<snap::Program> programs = snap::io::parse_programs(*it);
+      std::vector<snap::Program> programs;
+      try {
+        programs = snap::io::parse_programs(*it);
+      } catch (snap::io::CorruptFileException &e) {
+        programs.clear();
+        current_date += boost::gregorian::date_duration(1);
+        corrupt_files.push_back(*it);
+        continue;
+      }
       std::cout << snap::date::date_to_string(current_date);
       int matching_programs = 0;
       int total_matches = 0;
@@ -94,6 +104,7 @@ int main() {
     current_date += boost::gregorian::date_duration(1);
   }
   std::cout << "</pre>" << std::endl;
+  snap::web::print_corrupt_files(corrupt_files);   
   
   // print excerpts
   snap::web::print_excerpts(excerpts, num_excerpts);
