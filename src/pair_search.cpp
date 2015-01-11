@@ -68,7 +68,9 @@ int main() {
     try {
       expressions.emplace_back(*it);
     } catch(snap::ExpressionSyntaxError &e) {
-      std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+      const char *error_msg = e.what();
+      std::cout << "<span class=\"error\">" << error_msg << "</span>" << std::endl;
+      delete[] error_msg;
       exit(-1);
     }
     pattern_set.insert(expressions.back().patterns.begin(), expressions.back().patterns.end());

@@ -1,12 +1,12 @@
 #ifndef EXPRESSION_H
 #define EXPRESSION_H
 
+#include <cstring>
 #include <exception>
 #include <string>
 #include <map>
 #include <queue>
 #include <vector>
-
 
 namespace snap {
 
@@ -37,7 +37,9 @@ namespace snap {
       std::string error_message(std::runtime_error::what());
       error_message = e + error_message;
       if (!msg.empty()) { error_message += " " + msg; }
-      return error_message.c_str();
+      char *error_msg_c_str = new char[error_message.length() + 1];
+      strcpy(error_msg_c_str, error_message.c_str());
+      return error_msg_c_str;
     }
   };
 }

@@ -37,7 +37,9 @@ int main() {
     from_date = snap::date::string_to_date(arguments["from-date"]);
     to_date = snap::date::string_to_date(arguments["to-date"]);
   } catch (snap::date::InvalidDateException &e) {
-    std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+    const char *error_msg = e.what();
+    std::cout << "<span class=\"error\">" << error_msg << "</span>" << std::endl;
+    delete[] error_msg;
     exit(-1);
   }
   int num_excerpts = stoi(arguments["num-excerpts"]);

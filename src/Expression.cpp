@@ -1,4 +1,3 @@
-
 #include <cctype>
 #include <map>
 #include <stack>

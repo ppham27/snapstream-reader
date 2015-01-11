@@ -46,7 +46,9 @@ int main() {
   try {
     expressions.emplace_back(search_string);
   } catch(snap::ExpressionSyntaxError &e) {
-    std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
+    const char *error_msg = e.what();
+    std::cout << "<span class=\"error\">" << error_msg << "</span>" << std::endl;
+    delete[] error_msg;
     exit(-1);    
   }
 
