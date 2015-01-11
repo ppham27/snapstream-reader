@@ -21,6 +21,8 @@ TEST(string_to_date, Default) {
                snap::date::InvalidDateException);
   ASSERT_THROW(snap::date::string_to_date("this is not a date"),
                snap::date::InvalidDateException);
+  ASSERT_THROW(snap::date::string_to_date("2014=12-01"),
+               snap::date::InvalidDateException);
 }
 
 TEST(date_to_string, Default) {

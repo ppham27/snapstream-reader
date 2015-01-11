@@ -6,6 +6,7 @@
 #include "boost/algorithm/string.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
 
+#include <iostream>
 
 #include "snap.h"
 
@@ -27,17 +28,25 @@ namespace snap {
 
     boost::gregorian::date string_to_date(std::string d) {
       if (d.size() == 0) { throw InvalidDateException("{empty string}"); }      
+      int dashCount = 0;
+      for (auto it = d.begin(); it != d.end(); ++it) {
+        if (*it == '-') { ++dashCount; }
+      }
+      if (dashCount != 2) { throw InvalidDateException(d); }
       char *d_c_str = new char[d.length() + 1];
       std::strcpy(d_c_str, d.c_str());
       char *tok = strtok(d_c_str,"-");
-      int year = atoi(tok);
-      if (year == 0) { delete[] d_c_str; throw InvalidDateException(d); }      
-      tok = strtok(NULL,"-");
-      int month = atoi(tok);
-      if (month == 0) { delete[] d_c_str; throw InvalidDateException(d); }      
-      tok = strtok(NULL,"-");
-      int day = atoi(tok);
-      if (day == 0) { delete[] d_c_str; throw InvalidDateException(d); }      
+      int year, month, day;
+      // use stoi instead of atoi, it's better behaved since it throws exceptions
+      try {
+        year = stoi(std::string(tok));
+        tok = strtok(NULL,"-");
+        month = stoi(std::string(tok));
+        tok = strtok(NULL,"-");
+        day = stoi(std::string(tok));
+      } catch (std::exception &e) {
+        delete[] d_c_str; throw InvalidDateException(d);
+      }
       delete[] d_c_str;
       return boost::gregorian::date(year, month, day);    
     }
