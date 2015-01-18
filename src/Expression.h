@@ -14,7 +14,7 @@ namespace snap {
   
   class Expression {    
   public:
-      // first is precendence, second is associativity
+    // first is precendence, second is associativity
     std::map<std::string, std::pair<int, bool>> operator_precedence;
     std::string raw_expression;
     std::vector<std::pair<std::string, snap::TokenType>> tokenized_expression;

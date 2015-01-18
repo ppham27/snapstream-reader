@@ -7,6 +7,10 @@
 TEST(constructor, Exceptions) {
   ASSERT_THROW(snap::Expression(""),
                snap::ExpressionSyntaxError);
+  ASSERT_THROW(snap::Expression("{{}"),
+               snap::ExpressionSyntaxError);
+  ASSERT_THROW(snap::Expression("{(})"),
+               snap::ExpressionSyntaxError);
   ASSERT_THROW(snap::Expression("china}"),
                snap::ExpressionSyntaxError);
   ASSERT_THROW(snap::Expression("{china"),

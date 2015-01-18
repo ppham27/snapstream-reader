@@ -26,20 +26,29 @@ std::vector<std::pair<std::string, snap::TokenType>> snap::Expression::tokenize(
   std::vector<std::pair<std::string, snap::TokenType>> tokenized_expression;
   int idx = 0;  
   std::stack<char> parentheses_stack;
+  for (char c : e) {
+    if (c == '{' || c == '(') { parentheses_stack.push(c); }
+    if (c == '}') {
+      if (parentheses_stack.empty() || parentheses_stack.top() != '{') {
+        throw ExpressionSyntaxError(e, "Mismatched parentheses/curly braces.");
+      }
+      parentheses_stack.pop();
+    }
+    if (c == ')') {
+      if (parentheses_stack.empty() || parentheses_stack.top() != '(') {
+        throw ExpressionSyntaxError(e, "Mismatched parentheses/curly braces.");
+      } 
+      parentheses_stack.pop();
+    }
+  }
+  if (!parentheses_stack.empty()) { throw ExpressionSyntaxError(e, "Mismatched parentheses/curly braces."); }
   while (idx < e.length()) {
     if (isspace(e[idx])) { ++idx; continue; }
     if (e[idx] == '{') {
       int next_idx = e.find("}", idx + 1);
-      if (next_idx == -1) { throw ExpressionSyntaxError(e, "There is no closing curly brace."); }
       tokenized_expression.emplace_back(e.substr(idx+1, next_idx - idx - 1), snap::TokenType::STRING);
       idx = next_idx + 1;
     } else if (e[idx] == '(' || e[idx] == ')') {
-      if (e[idx] == '(') { 
-        parentheses_stack.push('('); 
-      } else if (e[idx] == ')') {
-        if (parentheses_stack.empty()) { throw ExpressionSyntaxError(e, "Mismatched parentheses."); }
-        parentheses_stack.pop();
-      }          
       tokenized_expression.emplace_back(e.substr(idx, 1), snap::TokenType::OPERATOR);
       ++idx;
     } else {
@@ -51,7 +60,6 @@ std::vector<std::pair<std::string, snap::TokenType>> snap::Expression::tokenize(
       idx = next_idx;
     }
   }
-  if (!parentheses_stack.empty()) { throw ExpressionSyntaxError(e, "Mismatched parentheses."); }
   return tokenized_expression;
 }
 
