@@ -70,6 +70,11 @@ int main() {
   std::cout << "</p>" << std::endl;
   
   // begin to iteratively process files
+  int matching_programs_sum = 0;
+  int total_matches01_sum = 0;
+  int total_matches02_sum = 0;
+  int selected_programs_sum = 0;
+  int total_programs_sum = 0;
   std::vector<std::string> corrupt_files;
   std::vector<snap::Excerpt> excerpts;
   std::cout << "<pre>" << std::endl;
@@ -107,6 +112,11 @@ int main() {
         }
         match_positions.clear();
       }
+      matching_programs_sum += matching_programs;
+      total_matches01_sum += total_matches01;
+      total_matches02_sum += total_matches02;
+      selected_programs_sum += programs.size();
+      total_programs_sum += programs.size();
       std::cout << '\t' << matching_programs;
       std::cout << '\t' << total_matches01;
       std::cout << '\t' << total_matches02;
@@ -116,6 +126,12 @@ int main() {
     }
     current_date += boost::gregorian::date_duration(1);
   }
+  std::cout << "Grand Total:";
+  std::cout << '\t' << matching_programs_sum;
+  std::cout << '\t' << total_matches01_sum;
+  std::cout << '\t' << total_matches02_sum;
+  std::cout << '\t' << selected_programs_sum;
+  std::cout << '\t' << total_programs_sum << std::endl;
   std::cout << "</pre>" << std::endl;
   snap::web::print_corrupt_files(corrupt_files);
   
