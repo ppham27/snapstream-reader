@@ -16,7 +16,9 @@ namespace snap {
     std::string sanitize_string(std::string s) {
       boost::replace_all(s, "%0D%0A", "\n");
       boost::replace_all(s, "%21", "!");
+      boost::replace_all(s, "%22", "\"");
       boost::replace_all(s, "%26", "&");
+      boost::replace_all(s, "%2F", "/");
       boost::replace_all(s, "%40", "@");
       boost::replace_all(s, "%2B", "+");
       boost::replace_all(s, "%7B", "{");
@@ -25,6 +27,13 @@ namespace snap {
       boost::replace_all(s, "%27", "'");
       boost::replace_all(s, "%28", "(");
       boost::replace_all(s, "%29", ")");
+      boost::replace_all(s, "%3A", ":");
+      boost::replace_all(s, "%3B", ";");
+      boost::replace_all(s, "%3C", "<");
+      boost::replace_all(s, "%3E", ">");
+      boost::replace_all(s, "%3F", "?");
+      boost::replace_all(s, "%5B", "[");
+      boost::replace_all(s, "%5D", "]");
       std::transform(s.begin(), s.end(), s.begin(), ::tolower);
       return s;
     }
