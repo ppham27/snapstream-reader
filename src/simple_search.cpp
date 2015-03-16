@@ -66,10 +66,10 @@ int main() {
   int total_matches_sum = 0;
   int selected_programs_sum = 0;
   int total_programs_sum = 0;
+  std::vector<std::vector<std::string>> search_results;
   std::vector<std::string> corrupt_files;
+  std::vector<std::string> missing_files;
   std::vector<snap::Excerpt> excerpts;
-  std::cout << "<pre>" << std::endl;
-  std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
   for (auto it = file_list.begin();
        it != file_list.end();
        ++it) {
@@ -83,7 +83,6 @@ int main() {
         corrupt_files.push_back(*it);
         continue;
       }
-      std::cout << snap::date::date_to_string(current_date);
       int matching_programs = 0;
       int total_matches = 0;
       for (auto p = programs.begin(); p != programs.end(); ++p) {
@@ -97,6 +96,9 @@ int main() {
             for (auto pattern = expressions.back().patterns.begin(); pattern != expressions.back().patterns.end(); ++pattern) {
               excerpts.back().highlight_word(*pattern);
             }
+            if (excerpts.size() <= num_excerpts) {
+              snap::web::print_excerpt(excerpts.back());
+            }
           }
         }
         match_positions.clear();
@@ -105,13 +107,29 @@ int main() {
       total_matches_sum += total_matches;
       selected_programs_sum += programs.size();
       total_programs_sum += programs.size();
-      std::cout << '\t' << matching_programs;
-      std::cout << '\t' << total_matches;
-      std::cout << '\t' << programs.size();
-      std::cout << '\t' << programs.size() << std::endl;
+      search_results.push_back(std::vector<std::string>());
+      search_results.back().push_back(snap::date::date_to_string(current_date));
+      search_results.back().push_back(std::to_string(matching_programs));
+      search_results.back().push_back(std::to_string(total_matches));      
+      search_results.back().push_back(std::to_string(programs.size()));
+      search_results.back().push_back(std::to_string(programs.size()));
       programs.clear();
+    } else {
+      missing_files.push_back(*it);
     }
     current_date += boost::gregorian::date_duration(1);
+  }  
+  std::cout << "<div>";
+  std::cout << "<br/>" << std::endl;
+  snap::web::print_missing_files(missing_files);
+  std::cout << "<br/>" << std::endl;
+  snap::web::print_corrupt_files(corrupt_files);
+  std::cout << "</div>" << std::endl;
+  std::cout << "<pre>" << std::endl;
+  std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
+  for (auto it = search_results.begin(); it != search_results.end(); ++it) {
+    std::copy(it -> begin(), it -> end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));
+    std::cout << it -> back() << std::endl;
   }
   std::cout << "Grand Total:";
   std::cout << '\t' << matching_programs_sum;
@@ -119,11 +137,7 @@ int main() {
   std::cout << '\t' << selected_programs_sum;
   std::cout << '\t' << total_programs_sum << std::endl;
   std::cout << "</pre>" << std::endl;
-  snap::web::print_corrupt_files(corrupt_files);   
   
-  // print excerpts
-  snap::web::print_excerpts(excerpts, num_excerpts);
-
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
   

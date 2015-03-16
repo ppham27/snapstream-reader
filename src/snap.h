@@ -41,6 +41,7 @@ namespace snap {
     void close_html();
     void print_excerpts(std::vector<snap::Excerpt> &excerpts, int n);
     void print_excerpt(const snap::Excerpt &e);
+    void print_missing_files(const std::vector<std::string> &missing_files);
     void print_corrupt_files(const std::vector<std::string> &corrupt_files);
     void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results);
     std::string sanitize_string(std::string s);

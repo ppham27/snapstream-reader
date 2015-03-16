@@ -149,6 +149,20 @@ color: DarkRed;
       std::cout << std::endl; 
     }
 
+    void print_missing_files(const std::vector<std::string> &missing_files) {
+      if (missing_files.size() > 0) {
+        std::cout << "<span class=\"error\">Warning: ";
+        for (auto it = missing_files.begin(); it != missing_files.end() - 1; ++it) {
+          std::cout << *it << ", ";
+        }
+        if (missing_files.size() == 1) {
+          std::cout << missing_files.back() << " is missing.</span>" << std::endl;
+        } else {
+          std::cout << " and " << missing_files.back() << " are missing.</span>" << std::endl;
+        }
+      }
+    }
+
     void print_corrupt_files(const std::vector<std::string> &corrupt_files) {
       if (corrupt_files.size() > 0) {
         std::cout << "<span class=\"error\">Warning: ";
