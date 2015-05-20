@@ -136,7 +136,7 @@ int main() {
   snap::web::print_corrupt_files(corrupt_files);
   
   // print excerpts
-  snap::web::print_excerpts(excerpts, num_excerpts);
+  snap::web::print_excerpts(excerpts, num_excerpts, true);
 
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;

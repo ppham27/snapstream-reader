@@ -1,9 +1,11 @@
 #include <algorithm>
 #include <cctype>
+#include <chrono> 
 #include <cstdlib>
 #include <cstdio>
 #include <exception>
 #include <iostream>
+#include <random> 
 #include <string>
 
 #include "boost/algorithm/string.hpp"
@@ -30,9 +32,8 @@ int main() {
   // process user input
   std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
   std::string search_string = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string"]));
-  boost::gregorian::date current_date, from_date, to_date;
+  boost::gregorian::date from_date, to_date;
   try {
-    current_date = snap::date::string_to_date(arguments["from-date"]);
     from_date = snap::date::string_to_date(arguments["from-date"]);
     to_date = snap::date::string_to_date(arguments["to-date"]);
   } catch (snap::date::InvalidDateException &e) {
@@ -41,7 +42,13 @@ int main() {
   }
   int num_excerpts = stoi(arguments["num-excerpts"]);
   int excerpt_size = stoi(arguments["excerpt-size"]);
+  bool random = arguments["random"] == "on";
+  
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
+  if (random) {
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::shuffle(file_list.begin(), file_list.end(), std::default_random_engine(seed));
+  }
   std::vector<snap::Expression> expressions;
   try {
     expressions.emplace_back(search_string);
@@ -70,21 +77,29 @@ int main() {
   std::vector<std::string> corrupt_files;
   std::vector<std::string> missing_files;
   std::vector<snap::Excerpt> excerpts;
+  if (!random) {
+    std::cout << "<pre>" << std::endl;
+    std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
+  }
   for (auto it = file_list.begin();
        it != file_list.end();
        ++it) {
+    boost::gregorian::date current_date = snap::date::string_to_date((*it).substr(prefix.length(), 10));
     if (snap::io::file_exists(*it)) {      
       std::vector<snap::Program> programs;
       try {
         programs = snap::io::parse_programs(*it);
       } catch (snap::io::CorruptFileException &e) {
         programs.clear();
-        current_date += boost::gregorian::date_duration(1);
         corrupt_files.push_back(*it);
         continue;
       }
       int matching_programs = 0;
       int total_matches = 0;
+      if (random) {
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::shuffle(programs.begin(), programs.end(), std::default_random_engine(seed));
+      }
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         std::map<std::string, std::vector<int>> raw_match_positions = snap::find(expressions.back().patterns, p -> lower_text);
         std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
@@ -96,7 +111,7 @@ int main() {
             for (auto pattern = expressions.back().patterns.begin(); pattern != expressions.back().patterns.end(); ++pattern) {
               excerpts.back().highlight_word(*pattern);
             }
-            if (excerpts.size() <= num_excerpts) {
+            if (random && excerpts.size() <= num_excerpts) {
               snap::web::print_excerpt(excerpts.back());
             }
           }
@@ -113,31 +128,41 @@ int main() {
       search_results.back().push_back(std::to_string(total_matches));      
       search_results.back().push_back(std::to_string(programs.size()));
       search_results.back().push_back(std::to_string(programs.size()));
+      if (!random) {
+        std::copy(search_results.back().begin(), search_results.back().end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));
+        std::cout << search_results.back().back() << std::endl;
+      }
       programs.clear();
     } else {
       missing_files.push_back(*it);
     }
-    current_date += boost::gregorian::date_duration(1);
   }  
-  std::cout << "<div>";
-  std::cout << "<br/>" << std::endl;
-  snap::web::print_missing_files(missing_files);
-  std::cout << "<br/>" << std::endl;
-  snap::web::print_corrupt_files(corrupt_files);
-  std::cout << "</div>" << std::endl;
-  std::cout << "<pre>" << std::endl;
-  std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
-  for (auto it = search_results.begin(); it != search_results.end(); ++it) {
-    std::copy(it -> begin(), it -> end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));
-    std::cout << it -> back() << std::endl;
+  if (random) {
+    std::cout << "<pre>" << std::endl;
+    std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
+    sort(search_results.begin(), search_results.end(),
+         [](std::vector<std::string> a, std::vector<std::string> b) -> bool { return a.front() < b.front(); });
+    for (auto it = search_results.begin(); it != search_results.end(); ++it) {
+      std::copy(it -> begin(), it -> end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));
+      std::cout << it -> back() << std::endl;
+    }
   }
   std::cout << "Grand Total:";
   std::cout << '\t' << matching_programs_sum;
   std::cout << '\t' << total_matches_sum;
   std::cout << '\t' << selected_programs_sum;
   std::cout << '\t' << total_programs_sum << std::endl;
-  std::cout << "</pre>" << std::endl;
+  std::cout << "</pre>" << std::endl;  
   
+  std::cout << "<div>";
+  std::cout << "<br/>" << std::endl;
+  snap::web::print_missing_files(missing_files);
+  std::cout << "<br/>" << std::endl;
+  snap::web::print_corrupt_files(corrupt_files);
+  std::cout << "</div>" << std::endl;
+
+  if (!random) snap::web::print_excerpts(excerpts, num_excerpts, true);
+
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
   

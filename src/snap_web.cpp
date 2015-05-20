@@ -74,9 +74,12 @@ color: DarkRed;
     }
 
     void print_excerpts(std::vector<snap::Excerpt> &excerpts,
-                        int n) {
-      unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-      std::shuffle(excerpts.begin(), excerpts.end(), std::default_random_engine(seed));
+                        int n,
+                        bool random = false) {
+      if (random) { 
+        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        std::shuffle(excerpts.begin(), excerpts.end(), std::default_random_engine(seed));
+      }
       std::cout << "<div>" << std::endl;
       for (int i = 0; i < std::min((int) excerpts.size(), n); ++i) {
         snap::web::print_excerpt(excerpts[i]);
