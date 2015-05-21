@@ -1,6 +1,7 @@
 #ifndef SNAP_H
 #define SNAP_H
 
+#include <functional>
 #include <map>
 #include <exception>
 #include <string>
@@ -39,12 +40,15 @@ namespace snap {
     std::map<std::string, std::string> parse_query_string(const std::string &query_string);
     void print_header();
     void close_html();
-    void print_excerpts(std::vector<snap::Excerpt> &excerpts, int n, bool random);
+    void print_excerpts(std::vector<snap::Excerpt> &excerpts, int n, bool random = false);
     void print_excerpt(const snap::Excerpt &e);
     void print_missing_files(const std::vector<std::string> &missing_files);
     void print_corrupt_files(const std::vector<std::string> &corrupt_files);
-    void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results);
+    void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results,
+                      std::function<int(std::pair<int, int>)> getter,
+                      std::ostream &outputStream, bool header = true, char sep = '\t');
     std::string sanitize_string(std::string s);
+    std::string create_link(std::string href, std::string text);
   }
   
   namespace io {

@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>
+#include <fstream>
 #include <iostream>
 #include <set>
 #include <string>
@@ -13,6 +14,7 @@
 #include "snap.h"
 
 const std::string prefix = "Data/";
+const std::string outputPath = "/tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
@@ -148,12 +150,35 @@ int main() {
                 << (it1 -> second).first << '\t' << (it1 -> second).second << std::endl;      
     }
   }
-  snap::web::print_matrix(results);
+
+  std::cout << std::endl << "Matching Programs" << std::endl;
+  snap::web::print_matrix(results, 
+                          [](std::pair<int, int> x) -> int { return x.first; },
+                          std::cout, true, '\t');
+
+  std::cout << std::endl << "Total Matches" << std::endl;
+  snap::web::print_matrix(results, 
+                          [](std::pair<int, int> x) -> int { return x.second; },
+                          std::cout, true, '\t');
   std::cout << "</pre>" << std::endl;
 
+  srand(time(NULL));
+  std::string randomId = std::to_string(rand());
+  std::string outputMatrixFilePath = outputPath + snap::date::date_to_string(from_date) + "_matrix_" + randomId + ".csv";
+  std::ofstream outputMatrixFile(".." + outputMatrixFilePath, std::ios::out);
+  snap::web::print_matrix(results, 
+                          [](std::pair<int, int> x) -> int { return x.first; },
+                          outputMatrixFile, false, ',');
+  outputMatrixFile.close();
+  std::string outputKeyFilePath = outputPath + snap::date::date_to_string(from_date) + "_keys_" + randomId + ".csv";
+  std::ofstream outputKeyFile(".." + outputKeyFilePath, std::ios::out);
+  for (auto it = results.begin(); it != results.end(); ++it) outputKeyFile << it -> first << '\n';
+  outputKeyFile.close();
+
+  std::cout << snap::web::create_link(outputMatrixFilePath, "Matching programs matrix") << "<br/>" << std::endl;
+  std::cout << snap::web::create_link(outputKeyFilePath, "Matrix row and column names") << "<br/>" << std::endl;
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
-  
   snap::web::close_html();
   return 0;
 }
