@@ -151,12 +151,12 @@ int main() {
     }
   }
 
-  std::cout << std::endl << "Matching Programs" << std::endl;
+  std::cout << "\nMatching Programs\n" << std::endl;
   snap::web::print_matrix(results, 
                           [](std::pair<int, int> x) -> int { return x.first; },
                           std::cout, true, '\t');
 
-  std::cout << std::endl << "Total Matches" << std::endl;
+  std::cout << "\nTotal Matches\n" << std::endl;
   snap::web::print_matrix(results, 
                           [](std::pair<int, int> x) -> int { return x.second; },
                           std::cout, true, '\t');
@@ -170,12 +170,19 @@ int main() {
                           [](std::pair<int, int> x) -> int { return x.first; },
                           outputMatrixFile, false, ',');
   outputMatrixFile.close();
+  std::string outputMatrixWithHeadersFilePath = outputPath + snap::date::date_to_string(from_date) + "_matrix_with_headers_" + randomId + ".csv";
+  std::ofstream outputMatrixWithHeadersFile(outputMatrixWithHeadersFilePath, std::ios::out);
+  snap::web::print_matrix(results, 
+                          [](std::pair<int, int> x) -> int { return x.first; },
+                          outputMatrixWithHeadersFile, true, ',');
+  outputMatrixWithHeadersFile.close();
   std::string outputKeyFilePath = outputPath + snap::date::date_to_string(from_date) + "_keys_" + randomId + ".csv";
   std::ofstream outputKeyFile(outputKeyFilePath, std::ios::out);
   for (auto it = results.begin(); it != results.end(); ++it) outputKeyFile << it -> first << '\n';
   outputKeyFile.close();
 
-  std::cout << snap::web::create_link(outputMatrixFilePath, "Matching programs matrix") << "<br/>" << std::endl;
+  std::cout << snap::web::create_link(outputMatrixFilePath, "Matching programs matrix (numbers only)") << "<br/>" << std::endl;
+  std::cout << snap::web::create_link(outputMatrixWithHeadersFilePath, "Matching programs matrix (with headers)") << "<br/>" << std::endl;
   std::cout << snap::web::create_link(outputKeyFilePath, "Matrix row and column names") << "<br/>" << std::endl;
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;

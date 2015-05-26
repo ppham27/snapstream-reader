@@ -108,7 +108,6 @@ color: DarkRed;
 
       // print matching programs
       if (header) {
-        outputStream << std::endl;      
         outputStream << sep;
         for (auto it = keys.begin(); it != keys.end(); ++it) {
           if (it != keys.end() - 1) {
