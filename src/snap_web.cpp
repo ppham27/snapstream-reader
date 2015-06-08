@@ -73,6 +73,13 @@ color: DarkRed;
       std::cout << "</body>\n</html>" << std::endl; 
     }
 
+    void redirect(const std::string &href) {
+      std::cout << "<script charset=\"utf-8\">"
+                << "window.location.href='"
+                << href << "'"
+                << "</script>" << std::endl;      
+    }
+
     void print_excerpts(std::vector<snap::Excerpt> &excerpts,
                         int n, bool random) {
       if (random) { 

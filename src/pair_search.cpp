@@ -107,7 +107,7 @@ int main() {
   for (auto it = file_list.begin(); it != file_list.end(); ++it) {
     boost::gregorian::date::ymd_type ymd = current_date.year_month_day();
     std::cout << "<span>Processing " << ymd.month << " "
-              << ymd.day << "," << ymd.year
+              << ymd.day << ", " << ymd.year
               << "...</span></br>" << std::endl;
     if (snap::io::file_exists(*it)) {
       std::vector<snap::Program> programs;

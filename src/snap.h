@@ -40,6 +40,7 @@ namespace snap {
     std::map<std::string, std::string> parse_query_string(const std::string &query_string);
     void print_header();
     void close_html();
+    void redirect(const std::string &href);
     void print_excerpts(std::vector<snap::Excerpt> &excerpts, int n, bool random = false);
     void print_excerpt(const snap::Excerpt &e);
     void print_missing_files(const std::vector<std::string> &missing_files);
