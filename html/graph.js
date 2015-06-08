@@ -48,16 +48,16 @@ info.append("h2").text("Upload File");
 var fileUploader = info.append("form").attr("method", "POST")
                    .attr("action",'cgi-bin/process_file')
                    .attr("enctype",'multipart/form-data');
-fileUploader.append("span").text("File 1:").attr("class", "file-label");
+fileUploader.append("span").text("Matrix:").attr("class", "file-label");
 fileUploader.append("input")
 .attr("type", "file")
 .attr("name", "matrix_file")
 .attr("accept", "text/plain");
 fileUploader.append("br");
-fileUploader.append("span").text("File 2:").attr("class", "file-label");
+fileUploader.append("span").text("Key:").attr("class", "file-label");
 fileUploader.append("input")
 .attr("type", "file")
-.attr("name", "other_file")
+.attr("name", "key_file")
 .attr("accept", "text/plain");
 fileUploader.append("br");
 fileUploader.append("input")

@@ -23,6 +23,47 @@ TEST(parse_query_string, Default) {
   ASSERT_EQ(expected_kv, snap::web::parse_query_string(query_string1));
 }
 
+TEST(parse_multiform_data, Default) {
+  std::string content_type1("multipart/form-data; boundary=----WebKitFormBoundaryZJ1caIw5vYNf0vwv");
+  std::string body1 = R"ZZZ(------WebKitFormBoundaryZJ1caIw5vYNf0vwv
+Content-Disposition: form-data; name="matrix_file"; filename="tmp.txt"
+Content-Type: text/plain
+
+hello, world!
+
+------WebKitFormBoundaryZJ1caIw5vYNf0vwv
+Content-Disposition: form-data; name="other_file"; filename="bye.txt"
+Content-Type: text/plain
+
+goodebye, cruel world...
+
+------WebKitFormBoundaryZJ1caIw5vYNf0vwv--)ZZZ";
+  std::string content_type2("multipart/form-data; boundary=----WebKitFormBoundary8wkTw0rFXBx7zXbe");
+  std::string body2 = R"ZZZ(------WebKitFormBoundary8wkTw0rFXBx7zXbe
+Content-Disposition: form-data; name="matrix_file"; filename="2014-08-01_matrix_1033111095.csv"
+Content-Type: text/csv
+
+472,18,52
+18,1085,70
+52,70,414
+
+------WebKitFormBoundary8wkTw0rFXBx7zXbe
+Content-Disposition: form-data; name="other_file"; filename="2014-08-01_keys_1030102642.csv"
+Content-Type: text/csv
+
+{china}
+{iraq}
+{russia}
+
+------WebKitFormBoundary8wkTw0rFXBx7zXbe--)ZZZ";
+  std::map<std::string, std::string> form1 = snap::web::parse_multiform_data(content_type1, body1);
+  ASSERT_EQ("hello, world!", form1.at("matrix_file"));
+  ASSERT_EQ("goodebye, cruel world...", form1.at("other_file"));
+  std::map<std::string, std::string> form2 = snap::web::parse_multiform_data(content_type2, body2);
+  ASSERT_EQ("472,18,52\n18,1085,70\n52,70,414", form2.at("matrix_file"));
+  ASSERT_EQ("{china}\n{iraq}\n{russia}", form2.at("other_file"));
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();    

@@ -50,6 +50,29 @@ namespace snap {
       return kv;
     }
 
+    std::map<std::string, std::string> parse_multiform_data(const std::string &content_type,
+                                                            const std::string &body) {
+      // first get the boundary
+      std::map<std::string, std::string> kv;
+      std::string boundary = content_type.substr(content_type.find("boundary="));
+      boundary = boundary.substr(9);
+      if (boundary.find(';') != -1) boundary = boundary.substr(0, boundary.find(';'));
+      int cursor = body.find(boundary) + boundary.length();
+      while (cursor < body.length()) {
+        int nextBoundaryIdx = body.find(boundary, cursor);
+        while (body[nextBoundaryIdx - 1] == '-') --nextBoundaryIdx;
+        std::string part = body.substr(cursor, nextBoundaryIdx - cursor);
+        int partCursor = part.find("name=\"") + 6;
+        std::string name = part.substr(partCursor, part.find('"', partCursor)-partCursor);
+        for (int i = 0; i < 3; ++i) partCursor = part.find('\n', partCursor) + 1;
+        std::string file = part.substr(partCursor, part.length() - partCursor - 2);
+        kv[name] = file;
+        cursor = body.find(boundary, cursor) + boundary.length();
+        if (body.find(boundary, cursor) == -1) break;
+      }
+      return kv;
+    }
+
     void print_header() {
       std::cout << R"ZZZ(Content-type: text/html; charset=iso-8859-1
 

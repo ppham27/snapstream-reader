@@ -30,7 +30,7 @@ namespace snap {
   std::vector<int> notandv(const std::vector<int> &a, const std::vector<int> &b);
   std::vector<int> orv(const std::vector<int> &a, const std::vector<int> &b);
   std::vector<int> nearv(const std::vector<int> &a, const std::vector<int> &b, int distance);
-  std::vector<int> notnearv(const std::vector<int> &a, const std::vector<int> &b, int distance);
+  std::vector<int> notnearv(const std::vector<int> &a, const std::vector<int> &b, int distance);  
 
   std::vector<int> evaluate_expression(const snap::Expression &e, const std::map<std::string, std::vector<int>> &locations);
   std::map<std::string, std::vector<int>> evaluate_expressions(const std::vector<snap::Expression> &expressions,
@@ -38,6 +38,8 @@ namespace snap {
   
   namespace web {
     std::map<std::string, std::string> parse_query_string(const std::string &query_string);
+    std::map<std::string, std::string> parse_multiform_data(const std::string &content_type,
+                                                            const std::string &body);
     void print_header();
     void close_html();
     void redirect(const std::string &href);
