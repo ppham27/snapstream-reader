@@ -18,6 +18,63 @@ const std::string outputPath = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
+void remove_zero_keys(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results) {
+  std::vector<std::string> zero_keys;
+  for (auto it0 = results.begin(); it0 != results.end(); ++it0) {
+    bool all_zero = true;
+    for (auto it1 = results.begin(); it1 != results.end(); ++it1) {
+      std::string key0 = it0 -> first;
+      std::string key1 = it1 -> first;
+      if (key0 <= key1 && results[key0][key1].first != 0) {
+        all_zero = false;
+        break;
+      } else if(results[key1][key0].first != 0) {
+        all_zero = false;
+        break;
+      }
+    }
+    if (all_zero) {
+      zero_keys.push_back(it0 -> first);
+    }
+  }
+  for (std::string zero_key : zero_keys) {
+    for (auto it = results.rbegin(); (it -> first) > zero_key; ++it) {
+      (it -> second).erase(zero_key);
+    }
+    results.erase(zero_key);
+  }
+}
+
+void output_files(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results, 
+                  std::string uid, std::string prefix, std::string description) {
+  boost::algorithm::trim(description);
+  std::string file_description = "";
+  if (description != "") {
+    file_description = description + "_"; 
+    boost::replace_all(file_description, " ", "_");
+  }
+  std::string outputMatrixFilePath = outputPath + prefix + "_matrix_" + file_description + uid + ".csv";
+  std::ofstream outputMatrixFile(outputMatrixFilePath, std::ios::out);
+  snap::web::print_matrix(results, 
+                          [](std::pair<int, int> x) -> int { return x.first; },
+                          outputMatrixFile, false, ',');
+  outputMatrixFile.close();
+  std::string outputMatrixWithHeadersFilePath = outputPath + prefix + "_matrix_with_headers_" + file_description + uid + ".csv";
+  std::ofstream outputMatrixWithHeadersFile(outputMatrixWithHeadersFilePath, std::ios::out);
+  snap::web::print_matrix(results, 
+                          [](std::pair<int, int> x) -> int { return x.first; },
+                          outputMatrixWithHeadersFile, true, ',');
+  outputMatrixWithHeadersFile.close();
+  std::string outputKeyFilePath = outputPath + prefix + "_keys_" + file_description + uid + ".csv";
+  std::ofstream outputKeyFile(outputKeyFilePath, std::ios::out);
+  for (auto it = results.begin(); it != results.end(); ++it) outputKeyFile << it -> first << '\n';
+  outputKeyFile.close();
+
+  std::cout << snap::web::create_link(outputMatrixFilePath, "Matching programs matrix (numbers only) " + description) << "<br/>" << std::endl;
+  std::cout << snap::web::create_link(outputMatrixWithHeadersFilePath, "Matching programs matrix (with headers) " + description) << "<br/>" << std::endl;
+  std::cout << snap::web::create_link(outputKeyFilePath, "Matrix row and column names " + description) << "<br/>" << std::endl;  
+}
+
 int main() {
   clock_t start_time = std::clock();
   
@@ -103,6 +160,7 @@ int main() {
   int selected_programs_cnt = 0;
 
   // run through dates
+  std::vector<std::string> missing_files;
   std::vector<std::string> corrupt_files;
   for (auto it = file_list.begin(); it != file_list.end(); ++it) {
     boost::gregorian::date::ymd_type ymd = current_date.year_month_day();
@@ -134,10 +192,17 @@ int main() {
           }
         }
       }
+    } else {
+      missing_files.push_back(*it);
     }
     current_date += boost::gregorian::date_duration(1);
   }
+  std::cout << "<div>";
+  std::cout << "<br/>" << std::endl;
+  snap::web::print_missing_files(missing_files);
+  std::cout << "<br/>" << std::endl;
   snap::web::print_corrupt_files(corrupt_files);
+  std::cout << "</div>" << std::endl;
 
   // print results
   std::cout << "<pre>" << std::endl;
@@ -162,28 +227,15 @@ int main() {
                           std::cout, true, '\t');
   std::cout << "</pre>" << std::endl;
 
+
+  std::cout << "<h3>Output Files</h3>" << std::endl;
   srand(time(NULL));
   std::string randomId = std::to_string(rand());
-  std::string outputMatrixFilePath = outputPath + snap::date::date_to_string(from_date) + "_matrix_" + randomId + ".csv";
-  std::ofstream outputMatrixFile(outputMatrixFilePath, std::ios::out);
-  snap::web::print_matrix(results, 
-                          [](std::pair<int, int> x) -> int { return x.first; },
-                          outputMatrixFile, false, ',');
-  outputMatrixFile.close();
-  std::string outputMatrixWithHeadersFilePath = outputPath + snap::date::date_to_string(from_date) + "_matrix_with_headers_" + randomId + ".csv";
-  std::ofstream outputMatrixWithHeadersFile(outputMatrixWithHeadersFilePath, std::ios::out);
-  snap::web::print_matrix(results, 
-                          [](std::pair<int, int> x) -> int { return x.first; },
-                          outputMatrixWithHeadersFile, true, ',');
-  outputMatrixWithHeadersFile.close();
-  std::string outputKeyFilePath = outputPath + snap::date::date_to_string(from_date) + "_keys_" + randomId + ".csv";
-  std::ofstream outputKeyFile(outputKeyFilePath, std::ios::out);
-  for (auto it = results.begin(); it != results.end(); ++it) outputKeyFile << it -> first << '\n';
-  outputKeyFile.close();
 
-  std::cout << snap::web::create_link(outputMatrixFilePath, "Matching programs matrix (numbers only)") << "<br/>" << std::endl;
-  std::cout << snap::web::create_link(outputMatrixWithHeadersFilePath, "Matching programs matrix (with headers)") << "<br/>" << std::endl;
-  std::cout << snap::web::create_link(outputKeyFilePath, "Matrix row and column names") << "<br/>" << std::endl;
+  output_files(results, randomId, snap::date::date_to_string(from_date), "");
+  remove_zero_keys(results);
+  output_files(results, randomId, snap::date::date_to_string(from_date), "no zeroes");
+ 
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
   snap::web::close_html();

@@ -25,7 +25,7 @@ int main() {
   std::cout << input_string << std::flush;
 
   // too lazy to send a proper redirect request, so just insert some javascript instead
-  // snap::web::redirect("../index.html");
+  snap::web::redirect("../visualize.html");
   snap::web::close_html();
 
   return 0;
