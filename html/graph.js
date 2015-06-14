@@ -100,7 +100,8 @@ d3.json(fileName, function(err, graph) {
     timeSelectorForm.append("span").attr("class", "time-label").text(graphData.times[i].name);
     if (i !== graphData.times.length - 1) timeSelectorForm.append("br");
   }
-
+  if (graphData.times.length === 1) timeSelector.style("display", "none");
+  
   // build link data
   var links = [];
   var timeKey = getTimeKey();

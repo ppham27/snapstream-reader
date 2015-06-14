@@ -9,6 +9,7 @@
 
 #include "snap.h"
 #include "boost/algorithm/string.hpp"
+#include "boost/format.hpp"
 
 namespace snap {
   namespace web {
@@ -75,7 +76,49 @@ namespace snap {
 
     std::string matrix_to_json(std::string matrix) {
       // matrix comes in CSV form
-      return "";
+      std::vector<std::string> rows;
+      boost::split(rows, matrix, boost::is_any_of("\n"));
+      // remove blank rows?
+      auto it = rows.begin();
+      while (it != rows.end()) {
+        boost::algorithm::trim(*it);
+        if (*it == "") {
+          it = rows.erase(it);
+        } else {
+          ++it;        
+        }
+      }
+      int N = rows.size();      // number of countries
+      std::vector<std::vector<std::string>> rowsSplit(N);
+      // item info, for countries, tuple is symbol, name, size
+      std::ostringstream json;
+      json << "{\"nodes\":[";
+      for (int i = 0; i < N; ++i) {
+        boost::split(rowsSplit[i], rows[i], boost::is_any_of(","));
+        json << boost::format("{\"symbol\":\"%s\",\"name\":\"%s\",\"size\":%f}") % rowsSplit[i][0] % rowsSplit[i][1] % rowsSplit[i][2];
+        if (i < N - 1) {
+          json << ',';
+        } else {
+          json << "],\"times\":[{\"name\":\"1\",\"key\":\"1\"}],\"links\":[";
+        }
+      }
+      for (int i = 0; i < N; ++i) {
+        json << '[';
+        for (int j = 0; j < N; ++j) {
+          int k = 1;
+          if (i == j) k = -1;
+          json << boost::format("{\"1\":%f,\"k\":%d}") % rowsSplit[i][j + 3] % k;
+          if (j < N - 1) {
+            json << ',';
+          }
+        }
+        if (i < N - 1) {
+          json << "],";
+        } else {
+          json << "]]}";
+        }
+      }      
+      return json.str();
     }
 
     void print_header() {
