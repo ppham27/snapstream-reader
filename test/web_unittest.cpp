@@ -64,7 +64,15 @@ Content-Type: text/csv
   ASSERT_EQ("{china}\n{iraq}\n{russia}", form2.at("other_file"));
 }
 
+TEST(matrix_to_json, Default) {
+  std::string matrix = "USA,United States,85,-1,94,31\nGBR,Great Britain,40,94,-1,57\nRUS,Russia,70,31,57,-1";
+  std::string json = R"ZZZ({"nodes":[{"symbol":"USA","name":"United States","size":85},{"symbol":"GBR","name":"Great Britain","size":40},{"symbol":"RUS","name":"Russia","size":70}],"times":[{"name":"1","key":"1"}],"links":[[{"1":-1,"k":-1},{"1":94,"k":1},{"1":31,"k":1}],[{"1":94,"k":1},{"1":-1,"k":-1},{"1":57,"k":1}],[{"1":31,"k":1},{"1":57,"k":1},{"1":-1,"k":-1}]]})ZZZ";
+  ASSERT_EQ(json, snap::web::matrix_to_json(matrix));    
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();    
 }
+
+

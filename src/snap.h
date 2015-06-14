@@ -40,6 +40,7 @@ namespace snap {
     std::map<std::string, std::string> parse_query_string(const std::string &query_string);
     std::map<std::string, std::string> parse_multiform_data(const std::string &content_type,
                                                             const std::string &body);
+    std::string matrix_to_json(std::string matrix);
     void print_header();
     void close_html();
     void redirect(const std::string &href);

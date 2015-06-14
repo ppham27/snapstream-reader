@@ -54,12 +54,6 @@ fileUploader.append("input")
 .attr("name", "matrix_file")
 .attr("accept", "text/plain");
 fileUploader.append("br");
-fileUploader.append("span").text("Key:").attr("class", "file-label");
-fileUploader.append("input")
-.attr("type", "file")
-.attr("name", "key_file")
-.attr("accept", "text/plain");
-fileUploader.append("br");
 fileUploader.append("input")
 .attr("type", "submit")
 .attr("value", "Submit");

@@ -73,6 +73,11 @@ namespace snap {
       return kv;
     }
 
+    std::string matrix_to_json(std::string matrix) {
+      // matrix comes in CSV form
+      return "";
+    }
+
     void print_header() {
       std::cout << R"ZZZ(Content-type: text/html; charset=iso-8859-1
 
