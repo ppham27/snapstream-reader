@@ -14,7 +14,7 @@
 #include "snap.h"
 
 const std::string prefix = "Data/";
-const std::string outputPath = "../tmp/";
+const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
@@ -53,19 +53,19 @@ void output_files(std::map<std::string, std::map<std::string, std::pair<int, int
     file_description = description + "_"; 
     boost::replace_all(file_description, " ", "_");
   }
-  std::string outputMatrixFilePath = outputPath + prefix + "_matrix_" + file_description + uid + ".csv";
+  std::string outputMatrixFilePath = output_path + prefix + "_matrix_" + file_description + uid + ".csv";
   std::ofstream outputMatrixFile(outputMatrixFilePath, std::ios::out);
   snap::web::print_matrix(results, 
                           [](std::pair<int, int> x) -> int { return x.first; },
                           outputMatrixFile, false, ',');
   outputMatrixFile.close();
-  std::string outputMatrixWithHeadersFilePath = outputPath + prefix + "_matrix_with_headers_" + file_description + uid + ".csv";
+  std::string outputMatrixWithHeadersFilePath = output_path + prefix + "_matrix_with_headers_" + file_description + uid + ".csv";
   std::ofstream outputMatrixWithHeadersFile(outputMatrixWithHeadersFilePath, std::ios::out);
   snap::web::print_matrix(results, 
                           [](std::pair<int, int> x) -> int { return x.first; },
                           outputMatrixWithHeadersFile, true, ',');
   outputMatrixWithHeadersFile.close();
-  std::string outputKeyFilePath = outputPath + prefix + "_keys_" + file_description + uid + ".csv";
+  std::string outputKeyFilePath = output_path + prefix + "_keys_" + file_description + uid + ".csv";
   std::ofstream outputKeyFile(outputKeyFilePath, std::ios::out);
   for (auto it = results.begin(); it != results.end(); ++it) outputKeyFile << it -> first << '\n';
   outputKeyFile.close();
@@ -230,11 +230,11 @@ int main() {
 
   std::cout << "<h3>Output Files</h3>" << std::endl;
   srand(time(NULL));
-  std::string randomId = std::to_string(rand());
+  std::string random_id = std::to_string(rand());
 
-  output_files(results, randomId, snap::date::date_to_string(from_date), "");
+  output_files(results, random_id, snap::date::date_to_string(from_date), "");
   remove_zero_keys(results);
-  output_files(results, randomId, snap::date::date_to_string(from_date), "no zeroes");
+  output_files(results, random_id, snap::date::date_to_string(from_date), "no zeroes");
  
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;

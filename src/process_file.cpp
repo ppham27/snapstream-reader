@@ -6,7 +6,9 @@
 
 #include "snap.h"
 
+const std::string output_path = "../tmp/";
 const int CHUNK_SIZE = 100;
+
 
 int main() {
   snap::web::print_header();
@@ -21,11 +23,20 @@ int main() {
   } 
   delete[] input;
   std::string input_string = input_stream.str();
-  std::cout << content_type << std::endl;
-  std::cout << input_string << std::flush;
 
-  // too lazy to send a proper redirect request, so just insert some javascript instead
-  snap::web::redirect("../visualize.html");
+  std::map<std::string, std::string> files = snap::web::parse_multiform_data(content_type, input_string);
+  // std::cout << files["matrix_file"] << std::endl;
+  std::string json = snap::web::matrix_to_json(files["matrix_file"]);
+
+  srand(time(NULL));
+  std::string random_id = std::to_string(rand());
+  std::string filename = random_id + ".json";
+  std::ofstream out_file(output_path + filename, std::ios::out);
+  out_file << json;
+  out_file.close();
+    
+  // too lazy to send a proper redirect request, so just insert some javascript instead  
+  snap::web::redirect("../visualize.html?filename=tmp%2F" + filename);
   snap::web::close_html();
 
   return 0;

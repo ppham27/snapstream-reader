@@ -87,7 +87,7 @@ window.location.search.slice(1).split('&').forEach(function(keyValues) {
   var kvSplit = keyValues.split('=');  
   urlQuery[kvSplit[0]] = kvSplit[1];
 });
-var fileName = urlQuery['filename'] || 'default.json';
+var fileName = decodeURIComponent(urlQuery['filename'] || 'default.json');
 d3.json(fileName, function(err, graph) {
   graphData = graph;
   // add times
@@ -104,17 +104,19 @@ d3.json(fileName, function(err, graph) {
   
   // build link data
   var links = [];
+  var maxLinkDistance = -1;
   var timeKey = getTimeKey();
   for (var i = 0; i < graph.nodes.length - 1; ++i) {
     for (var j = i + 1; j < graph.nodes.length; ++j) {
       links.push({source: i, target: j, distance: graphData.links[i][j][timeKey]});
       graphData.links[i][j].l = graphData.links[j][i].l = graphData.links[i][j][timeKey];
+      if (graphData.links[i][j].l > maxLinkDistance) maxLinkDistance = graphData.links[i][j].l;
     }
   }
   // renormalize length
   graphData.links.forEach(function(d) {
     d.forEach(function(dd) {
-      dd.l = minDistance + (maxDistance - minDistance)*dd.l/100;
+      dd.l = minDistance + (maxDistance - minDistance)*dd.l/maxLinkDistance;
     });
   });
   link = link.data(links)
@@ -122,10 +124,11 @@ d3.json(fileName, function(err, graph) {
          .attr("class", "link data")
          .on('mouseover', linkTip.show)
          .on('mouseout', linkTip.hide);
+  var maxNodeSize = d3.max(graph.nodes, function(d) { return d.size; })
   node = node.data(graph.nodes)
          .enter().append("circle")
          .attr("class", "node data")
-         .attr("r", function(d) { return maxSize*Math.sqrt(d.size/100); })
+         .attr("r", function(d) { return maxSize*Math.sqrt(d.size/maxNodeSize); })
          .on('mouseover', function(d) { 
            var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
            nodeTip.show(d, target.node());
