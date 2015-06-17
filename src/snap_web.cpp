@@ -77,7 +77,7 @@ namespace snap {
     std::string matrix_to_json(std::string matrix) {
       // matrix comes in CSV form
       std::vector<std::string> rows;
-      boost::split(rows, matrix, boost::is_any_of("\n"));
+      boost::split(rows, matrix, boost::is_any_of("\r\n"));
       // remove blank rows?
       auto it = rows.begin();
       while (it != rows.end()) {

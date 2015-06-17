@@ -1,8 +1,8 @@
 /*global graphData */
 var width = 720, height = 720;
 var maxSize = 50;
-var minDistance = 2*maxSize;
-var maxDistance = width - 2*maxSize;
+var minDistance = 75;
+var maxDistance = 600;
 var margin = maxSize;
 var rightSidebar = d3.select("#graph")
                    .append("div")
@@ -71,9 +71,10 @@ var linkTip = d3.tip()
                 return [this.getBBox().height/2, 120];
               })
               .html(function (d) {
+                var formatter = d3.format("0.3f");
                 return '<span style="color:#e41a1c">' + graphData.nodes[d.source].name + '</span><br>'
                      + '<span style="color:#e41a1c">' + graphData.nodes[d.target].name + '</span><br>'
-                     + '<strong>Distance:</strong> <span style="color:#e41a1c">' + d.distance + '</span>';
+                     + '<strong>Distance:</strong> <span style="color:#e41a1c">' + formatter(d.distance) + '</span>';
               });
 svg.call(nodeTip);
 svg.call(linkTip);
@@ -259,7 +260,7 @@ function springEmbedLayout() {
       }
     }
     var deltaEi = maxEi;
-    while (deltaEi > 0.000001) {
+    while (deltaEi > 0.00001) {
       // iterate with Newton's method      
       // [ a b ]
       // [ c d ]

@@ -25,9 +25,7 @@ int main() {
   std::string input_string = input_stream.str();
 
   std::map<std::string, std::string> files = snap::web::parse_multiform_data(content_type, input_string);
-  // std::cout << files["matrix_file"] << std::endl;
   std::string json = snap::web::matrix_to_json(files["matrix_file"]);
-
   srand(time(NULL));
   std::string random_id = std::to_string(rand());
   std::string filename = random_id + ".json";
