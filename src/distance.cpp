@@ -4,6 +4,7 @@
 #include <cmath>
 #include <vector>
 #include <queue>
+#include <sstream>
 
 
 namespace distance {
@@ -47,5 +48,40 @@ namespace distance {
       sizes[it->first] = pow(M.at(it -> first).at(it -> first), p);      
     }
     return sizes;
+  }
+
+
+  std::map<std::string, std::map<std::string, double>> distance_inv(const std::map<std::string, std::map<std::string, int>> &M) {
+    std::map<std::string, std::map<std::string, double>> newM;
+    for (auto it = M.begin(); it != M.end(); ++it) {
+      newM[it -> first] = std::map<std::string, double>();
+      auto jt(it);
+      newM[it -> first][jt -> first] = 0;
+      ++jt;
+      for (; jt != M.end(); ++jt) {
+        newM[it -> first][jt -> first] = 1.0/(1 + M.at(it -> first).at(jt -> first));
+      }
+    }
+    return newM;      
+  }
+
+  std::string size_distance_to_csv(std::map<std::string, double> sizes,
+                                   std::map<std::string, std::map<std::string, double>> distance) {
+    std::ostringstream out;
+    for (auto it = sizes.begin(); it != sizes.end(); ++it) {
+      if (it != sizes.begin()) out << '\n';
+      std::string symbol = it -> first;
+      std::string name = it -> first;
+      double size = it -> second;
+      out << symbol << ',' << name << ',' << size;
+      for (auto jt = sizes.begin(); jt != sizes.end(); ++jt) {
+        if (it -> first <= jt -> first) {
+          out << ',' << distance.at(it -> first).at(jt -> first);
+        } else {
+          out << ',' << distance.at(jt -> first).at(it -> first);
+        }
+      }
+    }
+    return out.str();
   }
 }

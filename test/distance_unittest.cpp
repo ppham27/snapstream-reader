@@ -6,7 +6,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-
+#include <iostream>
 
 
 TEST(filter_top, Default) {
@@ -73,6 +73,77 @@ TEST(size_pow, Default) {
   ASSERT_NEAR(1.709976, sizes["C"], 1e-6);
   ASSERT_NEAR(1.0, sizes["D"], 1e-6);
   ASSERT_NEAR(1.587401, sizes["E"], 1e-6);
+}
+
+TEST(distance_inv, Default) {
+  std::map<std::string, std::map<std::string, int>> M;
+  M["A"] = std::map<std::string, int>();
+  M["B"] = std::map<std::string, int>();
+  M["C"] = std::map<std::string, int>();
+  M["D"] = std::map<std::string, int>();
+  M["E"] = std::map<std::string, int>();
+
+  M["A"]["A"] = 10;
+  M["A"]["B"] = 20;
+  M["A"]["C"] = 30;
+  M["A"]["D"] = 40;
+  M["A"]["E"] = 50;
+
+  M["B"]["B"] = 100;
+  M["B"]["C"] = 90;
+  M["B"]["D"] = 70;
+  M["B"]["E"] = 80;
+
+  M["C"]["C"] = 70;
+  M["C"]["D"] = 60;
+  M["C"]["E"] = 50;
+
+  M["D"]["D"] = 20;
+  M["D"]["E"] = 100;
+
+  M["E"]["E"] = 21;
+  std::map<std::string, std::map<std::string, double>> N = distance::distance_inv(M);
+  
+  ASSERT_EQ(0, N["A"]["A"]);
+  ASSERT_EQ(0, N["B"]["B"]);
+  ASSERT_EQ(0, N["E"]["E"]);
+  ASSERT_NEAR(1.0/(1+20), N["A"]["B"], 1e-6);
+  ASSERT_NEAR(1.0/(1+70), N["B"]["D"], 1e-6);
+  ASSERT_NEAR(1.0/(1+60), N["C"]["D"], 1e-6);
+  ASSERT_NEAR(1.0/(1+100), N["D"]["E"], 1e-6);
+}
+
+TEST(size_distance_to_csv, Default) {
+  std::map<std::string, std::map<std::string, int>> M;
+  M["A"] = std::map<std::string, int>();
+  M["B"] = std::map<std::string, int>();
+  M["C"] = std::map<std::string, int>();
+  M["D"] = std::map<std::string, int>();
+  M["E"] = std::map<std::string, int>();
+
+  M["A"]["A"] = 10;
+  M["A"]["B"] = 20;
+  M["A"]["C"] = 30;
+  M["A"]["D"] = 40;
+  M["A"]["E"] = 50;
+
+  M["B"]["B"] = 100;
+  M["B"]["C"] = 90;
+  M["B"]["D"] = 70;
+  M["B"]["E"] = 80;
+
+  M["C"]["C"] = 70;
+  M["C"]["D"] = 60;
+  M["C"]["E"] = 50;
+
+  M["D"]["D"] = 20;
+  M["D"]["E"] = 100;
+
+  M["E"]["E"] = 21;
+
+  std::map<std::string, double> sizes = distance::size_pow(M, 1.0/3);
+  std::map<std::string, std::map<std::string, double>> distances = distance::distance_inv(M);
+  std::cout << distance::size_distance_to_csv(sizes, distances) << std::endl;  
 }
 
 

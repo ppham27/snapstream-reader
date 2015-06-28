@@ -25,6 +25,14 @@ namespace distance {
   // get size by taking to the power of occurrences which are along the diagonal
   std::map<std::string, double> size_pow(const std::map<std::string, std::map<std::string, int>> &M, double p);
   
+  // calculate distance using 1/(1+M[i,j])
+  std::map<std::string, std::map<std::string, double>> distance_inv(const std::map<std::string, std::map<std::string, int>> &M);
+
+  // convert to csv before converting to json
+  std::string size_distance_to_csv(std::map<std::string, double> size,
+                                   std::map<std::string, std::map<std::string, double>> distance);
 }
+
+
 
 #endif
