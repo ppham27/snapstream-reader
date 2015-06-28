@@ -20,6 +20,7 @@ add_test(ExcerptTest test/bin/excerpt_unittest)
 add_test(DateTest test/bin/date_unittest)
 add_test(ExpressionTest test/bin/expression_unittest)
 add_test(EvaluatorTest test/bin/evaluator_unittest)
+add_test(DistanceTest test/bin/distance_unittest)
 
 
 file(COPY ${CMAKE_SOURCE_DIR}/html/index.html DESTINATION ${CMAKE_BINARY_DIR})
