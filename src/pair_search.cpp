@@ -19,6 +19,45 @@ const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
+void output_visualization(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results, std::string uid, std::string dt) {
+  // first turn the results to just program matches
+  std::map<std::string, std::map<std::string, int>> program_matches;
+  for (auto it = results.begin(); it != results.end(); ++it) {
+    program_matches[it->first] = std::map<std::string, int>();
+    for (auto jt = (it -> second).begin(); jt != (it -> second).end(); ++jt) {
+      program_matches[it->first][jt -> first] = (jt -> second).first;
+    }
+  }
+  
+  std::map<std::string, std::map<std::string, int>> filtered_program_matches = distance::filter_top(program_matches, 20);
+
+  std::map<std::string, double> sizes = distance::size_pow(filtered_program_matches, 1.0/3);
+
+  std::map<std::string, std::map<std::string, double>> distances = distance::distance_inv(filtered_program_matches);
+  
+  std::string csv = distance::size_distance_to_csv(sizes, distances);
+  
+  // std::cout << "<pre>" << csv << "</pre>" << std::endl;
+  std::string visualization_file_path = output_path + dt + "_visualization_" + uid + ".csv";
+  std::ofstream visualization_file(visualization_file_path, std::ios::out);
+  visualization_file << csv;
+  visualization_file.close();
+  std::cout << snap::web::create_link(visualization_file_path, "Visualization File") << "<br/>" << std::endl;
+
+  std::string json = snap::web::matrix_to_json(csv);
+  std::string json_file_name = dt + "_visualization_" + uid + ".json";
+  std::string visualization_json_path = output_path + json_file_name;
+  std::ofstream visualization_json(visualization_json_path, std::ios::out);
+  visualization_json << json;
+  visualization_json.close();  
+  
+  std::cout << "<br>"
+            << "<a href=\"../visualize.html?filename=tmp%2F" + json_file_name + "\">" 
+            << "Visualization"
+            << "</a><br>"
+            << std::endl;
+}
+
 void remove_zero_keys(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results) {
   std::vector<std::string> zero_keys;
   for (auto it0 = results.begin(); it0 != results.end(); ++it0) {
@@ -74,45 +113,6 @@ void output_files(std::map<std::string, std::map<std::string, std::pair<int, int
   std::cout << snap::web::create_link(outputMatrixFilePath, "Matching programs matrix (numbers only) " + description) << "<br/>" << std::endl;
   std::cout << snap::web::create_link(outputMatrixWithHeadersFilePath, "Matching programs matrix (with headers) " + description) << "<br/>" << std::endl;
   std::cout << snap::web::create_link(outputKeyFilePath, "Matrix row and column names " + description) << "<br/>" << std::endl;  
-}
-
-void output_visualization(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results, std::string uid, std::string dt) {
-  // first turn the results to just program matches
-  std::map<std::string, std::map<std::string, int>> program_matches;
-  for (auto it = results.begin(); it != results.end(); ++it) {
-    program_matches[it->first] = std::map<std::string, int>();
-    for (auto jt = (it -> second).begin(); jt != (it -> second).end(); ++jt) {
-      program_matches[it->first][jt -> first] = (jt -> second).first;
-    }
-  }
-  
-  std::map<std::string, std::map<std::string, int>> filtered_program_matches = distance::filter_top(program_matches, 20);
-
-  std::map<std::string, double> sizes = distance::size_pow(program_matches, 1.0/3);
-
-  std::map<std::string, std::map<std::string, double>> distances = distance::distance_inv(program_matches);
-  
-  std::string csv = distance::size_distance_to_csv(sizes, distances);
-  
-  // std::cout << "<pre>" << csv << "</pre>" << std::endl;
-  std::string visualization_file_path = output_path + dt + "_visualization_" + uid + ".csv";
-  std::ofstream visualization_file(visualization_file_path, std::ios::out);
-  visualization_file << csv;
-  visualization_file.close();
-  std::cout << snap::web::create_link(visualization_file_path, "Visualization File") << "<br/>" << std::endl;
-
-  std::string json = snap::web::matrix_to_json(csv);
-  std::string json_file_name = dt + "_visualization_" + uid + ".json";
-  std::string visualization_json_path = output_path + json_file_name;
-  std::ofstream visualization_json(visualization_json_path, std::ios::out);
-  visualization_json << json;
-  visualization_json.close();  
-  
-  std::cout << "<br>"
-            << "<a href=\"../visualize.html?filename=tmp%2F" + json_file_name + "\">" 
-            << "Visualization"
-            << "</a><br>"
-            << std::endl;
 }
 
 int main() {
