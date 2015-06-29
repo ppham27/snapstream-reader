@@ -44,7 +44,7 @@ namespace snap {
                                                  std::string prefix,
                                                  std::string suffix) {
       std::vector<std::string> file_names;
-      while (from < to) {
+      while (from <= to) {
         file_names.push_back(prefix + snap::date::date_to_string(from) + suffix);
         from += boost::gregorian::date_duration(1);
       }

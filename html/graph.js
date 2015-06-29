@@ -1,9 +1,10 @@
 /*global graphData */
 var width = 720, height = 720;
+var minSize = 0;
 var maxSize = 50;
 var minDistance = 75;
 var maxDistance = 500;
-var margin = maxSize;
+var margin = 20;
 var rightSidebar = d3.select("#graph")
                    .append("div")
                    .attr("id", "rightSidebar");
@@ -129,7 +130,7 @@ d3.json(fileName, function(err, graph) {
   node = node.data(graph.nodes)
          .enter().append("circle")
          .attr("class", "node data")
-         .attr("r", function(d) { return maxSize*Math.sqrt(d.size/maxNodeSize); })
+         .attr("r", function(d) { return minSize + (maxSize-minSize)*Math.sqrt(d.size/maxNodeSize); })
          .on('mouseover', function(d) { 
            var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
            nodeTip.show(d, target.node());
