@@ -23,10 +23,10 @@
           <li>& matches two terms that occur in the same program. For example, <span class="search-term">{china} & {russia}</span> looks for
             china and russia occuring together in the same program.</li>
           <li>@[optional argument] matches two terms appearing close together. For example, <span class="search-term">{china} @ {russia}</span> looks for both
-            china and russia within 100 characters of each other. <span class="search-term">{china} @50 {russia}</span> looks for china and russia within
+            china and russia within 300 characters of each other. <span class="search-term">{china} @50 {russia}</span> looks for china and russia within
             50 characters of each other.</li>
           <li>! can negate & and @. <span class="search-term">{china} !& {russia}</span> looks for china in programs where russia does <em>not</em> occur.
-            <span class="search-term">{china} !@ {russia}</span> looks for occurences of china is <em>not</em> within 100 characters of russia.
+            <span class="search-term">{china} !@ {russia}</span> looks for occurences of china is <em>not</em> within 300 characters of russia.
             <span class="search-term">{china} !@50 {russia}</span> looks for occurences of china is <em>not</em> within 50 characters of russia.
           </li>
         </ul>
@@ -43,7 +43,7 @@
     <form action="cgi-bin/simple_search" method="POST">      
       <span>Search string: <input type="text" name="search-string"></span><br/>
       <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date" value="YYYY-MM-DD"></span><br/>
-      <span>To date, exclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/>
+      <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/>
       <span>Number of Excerpts: <input type="text" name="num-excerpts" value="100"></span><br/>
       <span>Excerpt Size: <input type="text" name="excerpt-size" value="400"></span><br/>
       <span>Random: <input type="checkbox" name="random"></span><br/>
@@ -55,7 +55,7 @@
       <span>Search String 1: <input type="text" name="search-string-1"></span><br/>
       <span>Search String 2: <input type="text" name="search-string-2"></span><br/>
       <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date" value="YYYY-MM-DD"></span><br/>
-      <span>To date, exclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/>
+      <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/>
       <span>Character distance: <input type="text" name="distance" value="300"></span><br/>      
       <span>Number of Excerpts: <input type="text" name="num-excerpts" value="100"></span><br/>
       <span>Excerpt Size: <input type="text" name="excerpt-size" value="400"></span><br/>
@@ -69,7 +69,7 @@
       <textarea name="search-strings" rows="10" cols="50"></textarea><br/>
       <span>Character distance: <input type="text" name="distance" value="300"></span><br/>
       <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date" value="YYYY-MM-DD"></span><br/>
-      <span>To date, exclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/> 
+      <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/> 
       <input type="submit" value="Matrix search">
     </form>
   </body>

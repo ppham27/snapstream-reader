@@ -68,7 +68,7 @@ TEST(evaluate_expression, default) {
   std::string lower_text(text);
   std::transform(lower_text.begin(), lower_text.end(), lower_text.begin(), ::tolower);
   std::vector<std::string> patterns{"there","condemn*","spirit",
-      "sin*", "death", "god", "submit", "flesh", "christ","jesus","lolidunno"};
+      "sin*", "death", "god", "submit", "flesh", "christ","jesus","lolidunno", "hostile"};
   std::map<std::string, std::vector<int>> match_positions = snap::find(patterns, lower_text);
 
   snap::Expression e0("{sin*}");
@@ -85,12 +85,12 @@ TEST(evaluate_expression, default) {
   ASSERT_THAT(a2,
               ::testing::ElementsAre(60, 128, 176, 803, 907));
 
-  snap::Expression e3("{sin*} @ {death}");
+  snap::Expression e3("{sin*} @100 {death}");
   std::vector<int> a3 = evaluate_expression(e3, match_positions);
   ASSERT_THAT(a3,
               ::testing::ElementsAre(157));
 
-  snap::Expression e4("{sin*} !@ {death}");
+  snap::Expression e4("{sin*} !@100 {death}");
   std::vector<int> a4 = evaluate_expression(e4, match_positions);
   ASSERT_THAT(a4,
               ::testing::ElementsAre(282, 303, 321));
@@ -119,6 +119,20 @@ TEST(evaluate_expression, default) {
   std::vector<int> a9 = evaluate_expression(e9, match_positions);
   ASSERT_THAT(a9,
               ::testing::ElementsAre(60,128));
+
+  // make sure default is 300
+  snap::Expression e10("{spirit} @ {flesh}");
+  snap::Expression e11("{spirit} @300 {flesh}");
+  std::vector<int> a10 = evaluate_expression(e10, match_positions);
+  std::vector<int> a11 = evaluate_expression(e11, match_positions);
+  ASSERT_EQ(a10, a11);
+
+  snap::Expression e12("{spirit} !@ {condemn*}");
+  snap::Expression e13("{spirit} !@300 {condemn*}");
+  std::vector<int> a12 = evaluate_expression(e12, match_positions);
+  std::vector<int> a13 = evaluate_expression(e13, match_positions);
+  ASSERT_EQ(a12, a13);
+
 
   std::vector<snap::Expression> expressions{e9,e2,e3};
   ASSERT_EQ(a9, evaluate_expressions(expressions, match_positions)[e9.raw_expression]);

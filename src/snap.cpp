@@ -88,7 +88,7 @@ namespace snap {
           new_locations[new_key] = orv(aloci, bloci);
         } else {
           // near cases
-          int distance = 100;   // default distance
+          int distance = 300;   // default distance
           if (token.first.substr(0,2) == "!@") {            
             if (token.first.length() > 2) { distance = stoi(token.first.substr(2)); }
             new_locations[new_key] = notnearv(aloci, bloci, distance);
