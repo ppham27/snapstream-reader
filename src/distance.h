@@ -29,8 +29,11 @@ namespace distance {
   std::map<std::string, std::map<std::string, double>> distance_inv(const std::map<std::string, std::map<std::string, int>> &M);
 
   // convert to csv before converting to json
-  std::string size_distance_to_csv(std::map<std::string, double> size,
-                                   std::map<std::string, std::map<std::string, double>> distance);
+  std::string size_distance_to_csv(const std::map<std::string, double> &size,
+                                   const std::map<std::string, std::map<std::string, double>> &distance);
+  std::string size_distance_to_csv(const std::map<std::string, double> &sizes,
+                                   const std::map<std::string, std::map<std::string, double>> &distance,
+                                   const std::map<std::string, std::pair<std::string, std::string>> &dict);
 }
 
 

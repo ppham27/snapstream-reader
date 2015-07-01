@@ -128,6 +128,41 @@ Hero before it became passe and awful like Facebook. Maybe we'll have something 
   ASSERT_EQ(prog1, prog_vector[1]);
 }
 
+TEST(read_dictionary, Default) {
+  std::string s = R"ZZZ(Afghanistan,{afghan*},AFG
+Akrotiri and Dhekelia,{akrotiri} + {dhekelia},AKD
+Albania,{albania*},ALB
+Algeria,{algeria*},ALG
+Andorra,{andorra*},AND
+Angola,{angola*},AGO
+Anguilla,{anguilla*},AGU
+Antarctica,{antarctica},ATC
+Antigua and Barbuda,{antigua} + {barbuda},AAB
+Argentina,{argentina} + {argentine} + {argentinian},ARG
+Armenia,{armenia},ARM
+Aruba,{aruba},ARU
+Ashmore and Cartier Islands,{ashmore and cartier islands},ACI
+Australia,{australia},AUL
+Austria,{austria},AUT
+Azerbaijan,{azerbaijan},AZB
+Bahamas,{bahamas},BHM
+Bahrain,{bahrain},BHR
+Bangladesh,{bangladesh*},BAN
+Barbados,{barbados},BAR
+Bassas da India,{bassas da india},BDI
+Belarus,{belarus},BLR
+Belgium,{belgium} + {belgian} !@ {waffles},BLG
+Belize,{belize},BLZ
+Benin,{benin},BEN)ZZZ";
+  std::istringstream iss(s);
+  std::map<std::string, std::pair<std::string, std::string>> dict = snap::io::read_dictionary(iss);
+  
+  ASSERT_EQ(dict["{afghan*}"].first, "AFG");
+  ASSERT_EQ(dict["{afghan*}"].second, "Afghanistan");
+  ASSERT_EQ(dict["{benin}"].first, "BEN");
+  ASSERT_EQ(dict["{benin}"].second, "Benin");
+}
+
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

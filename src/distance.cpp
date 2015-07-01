@@ -65,13 +65,40 @@ namespace distance {
     return newM;      
   }
 
-  std::string size_distance_to_csv(std::map<std::string, double> sizes,
-                                   std::map<std::string, std::map<std::string, double>> distance) {
+  std::string size_distance_to_csv(const std::map<std::string, double> &sizes,
+                                   const std::map<std::string, std::map<std::string, double>> &distance) {
     std::ostringstream out;
     for (auto it = sizes.begin(); it != sizes.end(); ++it) {
       if (it != sizes.begin()) out << '\n';
       std::string symbol = it -> first;
       std::string name = it -> first;
+      double size = it -> second;
+      out << symbol << ',' << name << ',' << size;
+      for (auto jt = sizes.begin(); jt != sizes.end(); ++jt) {
+        if (it -> first <= jt -> first) {
+          out << ',' << distance.at(it -> first).at(jt -> first);
+        } else {
+          out << ',' << distance.at(jt -> first).at(it -> first);
+        }
+      }
+    }
+    return out.str();
+  }
+
+  std::string size_distance_to_csv(const std::map<std::string, double> &sizes,
+                                   const std::map<std::string, std::map<std::string, double>> &distance,
+                                   const std::map<std::string, std::pair<std::string, std::string>> &dict) {
+    std::ostringstream out;
+    for (auto it = sizes.begin(); it != sizes.end(); ++it) {
+      if (it != sizes.begin()) out << '\n';
+      std::string symbol, name;
+      if (dict.count(it -> first)) {
+        symbol = dict.at(it -> first).first;
+        name = dict.at(it -> first).second;
+      } else {
+        symbol = it -> first;
+        name = it -> first;
+      }
       double size = it -> second;
       out << symbol << ',' << name << ',' << size;
       for (auto jt = sizes.begin(); jt != sizes.end(); ++jt) {
