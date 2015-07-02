@@ -51,7 +51,8 @@ namespace distance {
   }
 
 
-  std::map<std::string, std::map<std::string, double>> distance_inv(const std::map<std::string, std::map<std::string, int>> &M) {
+  std::map<std::string, std::map<std::string, double>> distance_inv(const std::map<std::string, std::map<std::string, int>> &M,
+                                                                    double d) {
     std::map<std::string, std::map<std::string, double>> newM;
     for (auto it = M.begin(); it != M.end(); ++it) {
       newM[it -> first] = std::map<std::string, double>();
@@ -59,7 +60,7 @@ namespace distance {
       newM[it -> first][jt -> first] = 0;
       ++jt;
       for (; jt != M.end(); ++jt) {
-        newM[it -> first][jt -> first] = 1.0/(1 + M.at(it -> first).at(jt -> first));
+        newM[it -> first][jt -> first] = 1.0/(d + M.at(it -> first).at(jt -> first));
       }
     }
     return newM;      

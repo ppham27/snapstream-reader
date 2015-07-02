@@ -102,15 +102,20 @@ TEST(distance_inv, Default) {
   M["D"]["E"] = 100;
 
   M["E"]["E"] = 21;
-  std::map<std::string, std::map<std::string, double>> N = distance::distance_inv(M);
+  std::map<std::string, std::map<std::string, double>> N = distance::distance_inv(M, 1.0);
+  std::map<std::string, std::map<std::string, double>> O = distance::distance_inv(M, 0.1);
   
   ASSERT_EQ(0, N["A"]["A"]);
   ASSERT_EQ(0, N["B"]["B"]);
   ASSERT_EQ(0, N["E"]["E"]);
   ASSERT_NEAR(1.0/(1+20), N["A"]["B"], 1e-6);
+  ASSERT_NEAR(1.0/(0.1+20), O["A"]["B"], 1e-6);
   ASSERT_NEAR(1.0/(1+70), N["B"]["D"], 1e-6);
+  ASSERT_NEAR(1.0/(0.1+70), O["B"]["D"], 1e-6);
   ASSERT_NEAR(1.0/(1+60), N["C"]["D"], 1e-6);
+  ASSERT_NEAR(1.0/(0.1+60), O["C"]["D"], 1e-6);
   ASSERT_NEAR(1.0/(1+100), N["D"]["E"], 1e-6);
+  ASSERT_NEAR(1.0/(0.1+100), O["D"]["E"], 1e-6);
 }
 
 TEST(size_distance_to_csv, Default) {
@@ -142,7 +147,7 @@ TEST(size_distance_to_csv, Default) {
   M["E"]["E"] = 21;
 
   std::map<std::string, double> sizes = distance::size_pow(M, 1.0/3);
-  std::map<std::string, std::map<std::string, double>> distances = distance::distance_inv(M);
+  std::map<std::string, std::map<std::string, double>> distances = distance::distance_inv(M, 1);
   std::cout << distance::size_distance_to_csv(sizes, distances) << std::endl;  
 }
 

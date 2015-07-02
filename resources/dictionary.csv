@@ -1,69 +1,53 @@
-Afghanistan,{afghan*},AFG
-Akrotiri and Dhekelia,{akrotiri} + {dhekelia},AKD
-Albania,{albania*},ALB
-Algeria,{algeria*},ALG
-Andorra,{andorra*},AND
-Angola,{angola*},AGO
-Anguilla,{anguilla*},AGU
+Afghanistan,{afghanistan},AFG
+Albania,{albania},ALB
+Algeria,{algeria},ALG
+Andorra,{andorra},AND
+Angola,{angola},AGO
 Antarctica,{antarctica},ATC
 Antigua and Barbuda,{antigua} + {barbuda},AAB
 Argentina,{argentina} + {argentine} + {argentinian},ARG
-Armenia,{armenia},ARM
+Armenia,{armenia} + {armenian},ARM
 Aruba,{aruba},ARU
-Ashmore and Cartier Islands,{ashmore and cartier islands},ACI
 Australia,{australia},AUL
 Austria,{austria},AUT
 Azerbaijan,{azerbaijan},AZB
 Bahamas,{bahamas},BHM
 Bahrain,{bahrain},BHR
-Bangladesh,{bangladesh*},BAN
+Bangladesh,{bangladesh},BAN
 Barbados,{barbados},BAR
-Bassas da India,{bassas da india},BDI
 Belarus,{belarus},BLR
-Belgium,{belgium} + {belgian} !@ {waffles},BLG
+Belgium,{belgium} ,BLG
 Belize,{belize},BLZ
-Benin,{benin},BEN
-Bermuda,{bermuda} !@ {triangle} + {shorts},BER
+Benin,{benin},BER
 Bhutan,{bhutan},BHU
 Bolivia,{bolivia},BOL
-Bosnia and Herzegovina,{bosnia} + {bosnia and herzegovina},BOS
-Botswana,{botswana},BOT
-Bouvet Island,{bouvet island},BOU
-Brazil,{brazil},BRZ
-British Indian Ocean Territory,{british indian ocean territory},BIO
-British Virgin Islands,{british virgin islands},BVI
+Bosnia and Herzegovina,{bosnia},BOS
+Botswana,{botswana},BOU
+Brazil,{brazil},BIO
 Brunei,{brunei},BRU
 Bulgaria,{bulgaria},BUL
 Burkina Faso,{burkina faso},BKF
-Burma or Myanmar,{burma} + {myanmar},MYA
+Burma (Myanmar),{burma} + {myanmar} ,MYA
 Burundi,{burundi},BUD
 Cambodia,{cambodia},CMB
 Cameroon,{Cameroon},CMN
 Canada,{canada},CAN
 Cape Verde,{Cape Verde},CPV
-Cayman Islands,{cayman islands},CAY
 Central African Republic,{central african republic},CAR
 Chad,{chad}@({sudan*}+{libya*}+{boko haram}+{africa*}+{islam*}+{niger*}+{cameroon}),CHD
 Chile,{chile} !@ {pepper},CHL
-China,{china} !@ {fine} ,PRC
-Christmas Island,{christmas island},XMA
-Clipperton Island,{clipperton island},CLI
-Cocos Islands or Keeling Islands,{cocos islands} + {keeling islands},KEE
+China,{china} !@ {fine},PRC
 Colombia,{colombia} !@ {district},COL
 Comoros,{comoros},COM
-Democratic Republic of Congo or DR Congo or Congo Kinshasa,,DRC
-Republic of Congo or Congo Republic or Congo Brazzaville,,CBR
-Cook Islands,{cook islands},COO
-Coral Sea Islands or Willis Island,{coral sea islands} + {willis island},WIL
 Costa Rica,{costa rica},CRA
-Cote d'Ivoire or Ivory Coast,{cote d'ivoire} + {ivory coast},CDI
+Cote d'Ivoire (Ivory Coast),{cote d'ivoire} + {ivory coast},CDI
 Croatia,{croatia},CRO
 Cuba,{cuba},CUB
 Cyprus,{cyprus} !@ {hill},CYP
 Czech Republic,{czech republic},CZR
+Democratic Republic of the Congo,{democratic republic of the congo} + {dr congo} + {congo kinshasa},DRC
 Denmark,{denmark},DEN
 Djibouti,{djibouti} !@ {city},DJI
-Dominica,{dominca} !@ {republic},DMI
 Dominican Republic,{dominican republic},DMR
 Ecuador,{ecuador},ECU
 Egypt,{egypt},EGY
@@ -72,59 +56,43 @@ Equatorial Guinea,{Equatorial Guinea} !@ ({bissau} + {papua}),EQG
 Eritrea,{eritrea},ERI
 Estonia,{estonia},EST
 Ethiopia,{ethiopia},ETH
-Europa Island,{europa island},EUI
-Falkland Islands or Islas Malvinas,{falkland islands} + {islas malvinas},FAL
-Faroe Islands,{faroe islands},FAR
+Falkland Islands,{falkland islands} + {islas malvinas},FAL
 Fiji,{fiji} !@ {water},FIJ
 Finland,{finland},FIN
 France,{france},FRA
-French Guiana,{french guiana},FGU
 French Polynesia,{french polynesia},FPO
-French Southern and Antarctic Lands or French Southern Territories,{French Southern and Antarctic Lands} + {French Southern Territories},FST
 Gabon,{gabon},GAB
 Gambia,{gambia},GAM
-Gaza,{gaza} !@ {strip},GAZ
-Georgia,( {georgia} @ ( {tbilisi}+{putin}+{russia}+{caucasus}) ) + {country georgia},GEO
+Gaza,{gaza},GAZ
+Georgia,({georgia} @ ( {tbilisi}+{putin}+{russia}+{caucasus}) ) + {country georgia},GEO
 Germany,{germany},GER
 Ghana,{ghana},GHA
-Gibraltar,{gibraltar} !@ ({rock of} + {strait of}),GIB
-Glorioso Islands,{glorioso islands},GLO
 Greece,{greece},GRC
 Greenland,{greenland},GRN
 Grenada,{grenada} !@ {mississippi},GRA
-Guadeloupe,{guadelope},GUP
 Guam,{guam},GUM
 Guatemala,{guatemala},GTM
-Guernsey,{guernsey},GUE
-Guinea or Guinea Conakry,({guinea} + {guinea conakry}) !@ ({bisseau} + {equatorial} + {papua new}),GUI
+Guinea,{guinea} + ({guinea conakry} !@ ({bisseau} + {equatorial} + {papua new})),GUI
 Guinea-Bissau,{guinea-bisseau},GUB
 Guyana,{guyana},GUY
 Haiti,{haiti},HAI
-Heard Island and McDonald Islands,{heard island} + {mcdonald islands},HMC
-Holy See or Vatican City,{holy see} + {vatican city},VAT
+Holy See (Vatican City),{holy see} + {vatican city},VAT
 Honduras,{honduras},HDS
 Hong Kong,{hong kong},HKG
 Hungary,{hungary} !@ {hungry},HUN
 Iceland,{iceland},ICE
 India,{india},INA
 Indonesia,{indonesia},IDN
-Iran,{iran} + {iranian},IRN
+Iran,{iran},IRN
 Iraq,{iraq},IRQ
 Ireland,{ireland},IRE
-Isle of Man,{isle of man},ISM
-Israel,{israel} + {israeli},ISR
-Italy,{italy} !@ {soccer},ITA
+Israel,{israel},ISR
+Italy,{italy},ITA
 Jamaica,{jamaica},JAM
-Jan Mayen,{jan mayen},JAN
 Japan,{japan},JAP
-Jersey,{jersey} !@ ({new} + {city} + {shore} + {boys}),JER
-Jordan,{jordan} !@ ({michael} + {air} + {brand}),JOR
-Juan de Nova Island,{juan de nova island},JDN
+Jordan,({jordan} @1000 ( {syria} + {middle east} + {arab*}) ) + {in jordan} + {king of jordan} + {jordanian},JOR
 Kazakhstan,{kazakhstan},KAZ
 Kenya,{kenya},KEN
-Kiribati,{kiribati},KIR
-North Korea or Democratic People's Republic of Korea,{north korea} + {democratic people's republic of korea} + {dprk},NKO
-South Korea or Republic of Korea,{south korea} + {republic of korea} !@50 {democratic people's},SKO
 Kuwait,{kuwait},KUW
 Kyrgyzstan,{kyrgyzstan},KYR
 Laos,{laos},LAO
@@ -138,69 +106,54 @@ Lithuania,{lithuania} !@ {band},LIT
 Luxembourg,{luxembourg} !@ {city},LUX
 Macau,{macau},MCA
 Macedonia,{macedonia},MCD
-Madagascar,{madegascar} !@ ({penguins of} + {movie}),MAD
+Madagascar,{madagascar} !@ ({penguins of} + {movie}),MAD
 Malawi,{malawi},MLW
 Malaysia,{malaysia} !@ {airlines},MLY
 Maldives,{maldives},MLD
 Mali,{mali} !@ ({shoes} + {Nouri Al}),MLI
 Malta,{malta},MLT
-Marshall Islands,{marshall islands},MAI
 Martinique,{martinique},MTQ
 Mauritania,{mauritania},MUA
 Mauritius,{mauritius},MUS
-Mayotte,{mayotte},MAY
 Mexico,{mexico},MEX
 Micronesia,{micronesia},MIC
-Moldova,{moldova},MOL
 Monaco,{monaco} !@ {AS},MCO
 Mongolia,{mongolia},MGA
-Montserrat,{montserrat} !@ ({barcelona} + {spain}),MSE
 Morocco,{morocco},MOR
 Mozambique,{mozambique},MOZ
 Namibia,{namibia},NAM
-Nauru,{nauru},NAU
-Navassa Island,{navassa island},NAV
 Nepal,{nepal} ,NEP
-Netherlands,{netherlands} !@ ({football} + {soccer}),NET
-Antilles or Lesser Antilles or Greater Antilles,{antilles} + {lesser antilles} + {greater antilles},ANT
+Netherlands,{netherlands},NET
 New Caledonia,{new caledonia},NCA
 New Zealand,{new zealand},NZE
 Nicaragua,{nicaragua},NUC
 Niger,{niger} !@ {state},NGR
 Nigeria,{nigeria},NGA
-Niue,{niue},NIU
-Norfolk Island,{norfolk island},NFI
-Northern Mariana Islands,{northern mariana islands},NMI
+North Korea,{north korea} + {democratic people's republic of korea} + {dprk},NKO
 Norway,{norway},NOR
 Oman,{oman},OMA
 Pakistan,{pakistan},PAK
 Palau,{palau},PAL
 Panama,{panama} !@ {canal},PAN
-Papua / Papua New Guinea / West Papua,{papua} + {papua new guinea} + {west papua},PAP
-Paracel Islands,{paracel islands},PCI
+Papua New Guinea,{papua} + {papua new guinea} + {west papua},PAP
 Paraguay,{paraguay},PGY
 Peru,{peru},PER
 Philippines,{philippines},PHI
-Pitcairn Islands,{pitcairn islands},PIT
 Poland,{poland},POL
 Portugal,{portugal},POR
 Puerto Rico,{puerto rico},PUE
 Qatar,{qatar},QAT
-Reunion island,{reunion island},REI
+Republic of the Congo,{republic of the congo} + {congo republic} + {brazzaville},CBR
 Romania,{romania},ROM
 Russia,{russia},RUS
 Rwanda,{rwanda},RWA
-Saint Helena,{saint helena},STH
-Saint Kitts and Nevis,{saint kitts and nevis},STK
 Saint Lucia,{saint lucia} !@ {band},STL
-Saint Pierre and Miquelon,{saint pierre and miquelon},STP
-Saint Vincent and the Grenadines,{saint vincent and the grenadines},STV
 Samoa,{samoa},SAM
 San Marino,{san marino} !@ {california},SMO
 Sao Tome and Principe,{sao tome} + {principe},SAO
 Saudi Arabia,{saudi arabia},SAU
 Senegal,{senegal},SEN
-Serbia and Montenegro,{serbia} + {montenegro},SER
+Serbia,{serbia} + {montenegro},SER
 Seychelles,{seychelles},SEY
 Sierra Leone,{sierra leone},SIE
 Singapore,{singapore},SIN
@@ -209,46 +162,37 @@ Slovenia,{slovenia},SVN
 Solomon Islands,{solomon islands},SOI
 Somalia,{somalia},SOM
 South Africa,{south africa},SAF
-South Georgia and South Sandwich Islands,{south georgia and south sandwich islands},SGA
-Spain,{spain} !@( {football} + {soccer}),SPA
-Spratly Islands,{spratly islands},SPI
-Sri Lanka,{sri lanka},SRI
+South Korea,{south korea} + {republic of korea} !@50 {democratic people's},SKO
 South Sudan,{south sudan},SSU
+Spain,{spain},SPA
+Sri Lanka,{sri lanka},SRI
 Sudan,{sudan} !@ {south},SUD
 Suriname,{suriname},SUR
-Svalbard,{svalbard},SVA
 Swaziland,{swaziland},SWA
 Sweden,{sweden},SWE
 Switzerland,{switzerland},SWI
-Syria,{syria*},SYR
+Syria,{syria},SYR
 Taiwan,{taiwan},TAI
 Tajikistan,{tajikistan},TAJ
 Tanzania,{tanzania},TAN
 Thailand,{thailiand},THA
 Timor,{timor},TIM
 Togo,{togo},TOG
-Tokelau,{tokelau},TOK
 Tonga,{tonga},TON
 Trinidad and Tobago,{trinidad} + {tobago},TTB
-Tromelin Island,{tromelin island},TRO
 Tunisia,{tunisia},TUN
-Turkey,{turkey} !@ ({thanksgiving} + {dinner} + {cooking}),TKY
+Turkey,{turkey} !& ( {breast} + {melt} + {thanksgiving} + {dinner} + {cooking} +{burger} + {roast} + {sandwich} + {a turkey} + {the turkey} + {talk turkey} + {cold turkey}),TKY
 Turkmenistan,{turkmenistan},TKM
-Turks and Caicos Islands,{turks islands} + {caicos islands} + {turks and caicos islands},TCI
-Tuvalu,{tuvalu},TUV
 Uganda,{uganda},UGA
 Ukraine,{ukraine},UKR
 United Arab Emirates (UAE),{united arab emirates},UAE
-United Kingdom (UK) or England or Scotland or Wales or Britain,({united kingdom} + {scotland} + {wales} + ({england} !@ {new})),UKG
-United States (US),{united states} + {united states of america},USA
+United Kingdom (UK) ,({united kingdom} + {scotland} + {wales} + ({england} !@ {new england})),UKG
+United States (US),{united states} + {united states of america} + {USA} ,USA
 Uruguay,{uruguay},URU
 Uzbekistan,{uzbekistan},UZB
 Vanuatu,{vanuatu},VAN
 Venezuela,{venezuela},VEN
 Vietnam,{vietnam},VIE
-Virgin Islands,{virgin islands} !@ {british},VGI
-Wake Island,{wake island},WAI
-Wallis and Futuna,{wallis and futuna},WAL
 West Bank,{west bank},WBK
 Western Sahara,{western sahara},WSA
 Yemen,{yemen},YEM

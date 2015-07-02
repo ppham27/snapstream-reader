@@ -1,6 +1,6 @@
 /*global graphData */
 var width = 720, height = 720;
-var minSize = 0;
+var minSize = 15;
 var maxSize = 50;
 var minDistance = 75;
 var maxDistance = 500;
@@ -72,7 +72,7 @@ var linkTip = d3.tip()
                 return [this.getBBox().height/2, 120];
               })
               .html(function (d) {
-                var formatter = d3.format("0.3f");
+                var formatter = d3.format("3.3f");
                 return '<span style="color:#e41a1c">' + graphData.nodes[d.source].name + '</span><br>'
                      + '<span style="color:#e41a1c">' + graphData.nodes[d.target].name + '</span><br>'
                      + '<strong>Distance:</strong> <span style="color:#e41a1c">' + formatter(d.distance) + '</span>';
@@ -106,6 +106,7 @@ d3.json(fileName, function(err, graph) {
   
   // build link data
   var links = [];
+  var minLinkDistance = Infinity;
   var maxLinkDistance = -1;
   var timeKey = getTimeKey();
   for (var i = 0; i < graph.nodes.length - 1; ++i) {
@@ -113,12 +114,13 @@ d3.json(fileName, function(err, graph) {
       links.push({source: i, target: j, distance: graphData.links[i][j][timeKey]});
       graphData.links[i][j].l = graphData.links[j][i].l = graphData.links[i][j][timeKey];
       if (graphData.links[i][j].l > maxLinkDistance) maxLinkDistance = graphData.links[i][j].l;
+      if (graphData.links[i][j].l < minLinkDistance) minLinkDistance = graphData.links[i][j].l;
     }
   }
   // renormalize length
   graphData.links.forEach(function(d) {
     d.forEach(function(dd) {
-      dd.l = minDistance + (maxDistance - minDistance)*dd.l/maxLinkDistance;
+      dd.l = minDistance + (maxDistance - minDistance)*(dd.l-minLinkDistance)/(maxLinkDistance-minLinkDistance);
     });
   });
   link = link.data(links)
@@ -126,11 +128,12 @@ d3.json(fileName, function(err, graph) {
          .attr("class", "link data")
          .on('mouseover', linkTip.show)
          .on('mouseout', linkTip.hide);
+  var minNodeSize = d3.min(graph.nodes, function(d) { return d.size; })
   var maxNodeSize = d3.max(graph.nodes, function(d) { return d.size; })
   node = node.data(graph.nodes)
          .enter().append("circle")
          .attr("class", "node data")
-         .attr("r", function(d) { return minSize + (maxSize-minSize)*Math.sqrt(d.size/maxNodeSize); })
+         .attr("r", function(d) { return minSize + (maxSize-minSize)*Math.sqrt((d.size-minNodeSize)/(maxNodeSize-minNodeSize)); })
          .on('mouseover', function(d) { 
            var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
            nodeTip.show(d, target.node());

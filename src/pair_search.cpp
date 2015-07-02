@@ -33,7 +33,7 @@ void output_visualization(std::map<std::string, std::map<std::string, std::pair<
 
   std::map<std::string, double> sizes = distance::size_pow(filtered_program_matches, 1.0/3);
 
-  std::map<std::string, std::map<std::string, double>> distances = distance::distance_inv(filtered_program_matches);
+  std::map<std::string, std::map<std::string, double>> distances = distance::distance_inv(filtered_program_matches, 0.1);
   
   std::string csv;
   if (snap::io::file_exists("dictionary.csv")) {
