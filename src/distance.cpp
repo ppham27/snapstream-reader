@@ -6,16 +6,30 @@
 #include <queue>
 #include <sstream>
 
+#include <iostream>
+
 
 namespace distance {
-  std::map<std::string, std::map<std::string, int>> filter_top(const std::map<std::string, std::map<std::string, int>> &M, 
-                                                               int n) {
+  std::map<std::string, std::map<std::string, double>> int_matrix_to_double_matrix(const std::map<std::string, std::map<std::string, int>> &M) {
+    std::map<std::string, std::map<std::string, double>> newM; 
+    for (auto it = M.begin(); it != M.end(); ++it) {
+      newM[it -> first] = std::map<std::string, double>();
+      for (auto jt = (it -> second).begin(); jt != (it -> second).end(); ++jt) {
+        newM[it->first][jt->first] = M.at(it -> first).at(jt -> first);
+      }
+    }    
+    return newM;
+  }
+  
+  std::map<std::string, std::map<std::string, double>> filter_top(const std::map<std::string, std::map<std::string, double>> &M, 
+                                                                  int n) {
 
     // use a priority queue, if N is the number of keys and we're filter for the top n
     // then we're O(N*logN) in time and O(n) in space since we only need to keep the top n keys    
     // found so far in the priority queue
-    auto comp = [](std::pair<std::string, int> a, std::pair<std::string, int> b) -> bool { return b.second < a.second; };
-    std::priority_queue<std::pair<std::string, int>, std::vector<std::pair<std::string, int>>, decltype(comp)> top_n_queue(comp);                       
+    auto comp = [](std::pair<std::string, double> a, std::pair<std::string, double> b) -> bool { return b.second < a.second; };
+    std::priority_queue<std::pair<std::string, double>, std::vector<std::pair<std::string, double>>, decltype(comp)> top_n_queue(comp);
+     
     for (auto it = M.begin(); it != M.end(); ++it) {
       if (top_n_queue.size() < n) {
         top_n_queue.emplace(it -> first, M.at(it -> first).at(it -> first));
@@ -31,10 +45,10 @@ namespace distance {
       top_n_queue.pop(); 
     }
 
-    std::map<std::string, std::map<std::string, int>> newM;
+    std::map<std::string, std::map<std::string, double>> newM;
     std::sort(top_keys.begin(), top_keys.end());     
     for (auto it = top_keys.begin(); it != top_keys.end(); ++it) {
-      newM[*it] = std::map<std::string, int>();
+      newM[*it] = std::map<std::string, double>();
       for (auto jt(it); jt != top_keys.end(); ++jt) {
         newM[*it][*jt] = M.at(*it).at(*jt);
       }
@@ -42,7 +56,37 @@ namespace distance {
     return newM;
   }
 
-  std::map<std::string, double> size_pow(const std::map<std::string, std::map<std::string, int>> &M, double p) {
+  std::map<std::string, std::map<std::string, double>> correlate_sum(const std::map<std::string, std::map<std::string, double>> &M) {
+    std::map<std::string, std::map<std::string, double>> A;
+    std::map<std::string, double> R;
+    std::map<std::string, double> C;
+    double S;    
+    for (auto it = M.begin(); it != M.end(); ++it) {
+      for (auto jt = (it -> second).begin(); jt != (it -> second).end(); ++jt) {
+        double value = M.at(it -> first).at(jt -> first);
+        if (it -> first == jt -> first) {
+          S += value;
+          R[it -> first] += value;
+          C[jt -> first] += value;
+        } else {
+          S += 2*value;
+          R[it -> first] += value;
+          R[jt -> first] += value;
+          C[it -> first] += value;
+          C[jt -> first] += value;          
+        }
+      }
+    }
+    for (auto it = M.begin(); it != M.end(); ++it) {
+      A[it->first] = std::map<std::string, double>();
+      for (auto jt = (it -> second).begin(); jt != (it -> second).end(); ++jt) {
+        A[it->first][jt->first] = S*M.at(it->first).at(jt->first)/R[it->first]/C[jt->first];
+      }
+    }    
+    return A;
+  }
+
+  std::map<std::string, double> size_pow(const std::map<std::string, std::map<std::string, double>> &M, double p) {
     std::map<std::string, double> sizes;
     for (auto it = M.begin(); it != M.end(); ++it) {
       sizes[it->first] = pow(M.at(it -> first).at(it -> first), p);      
@@ -51,7 +95,7 @@ namespace distance {
   }
 
 
-  std::map<std::string, std::map<std::string, double>> distance_inv(const std::map<std::string, std::map<std::string, int>> &M,
+  std::map<std::string, std::map<std::string, double>> distance_inv(const std::map<std::string, std::map<std::string, double>> &M,
                                                                     double d) {
     std::map<std::string, std::map<std::string, double>> newM;
     for (auto it = M.begin(); it != M.end(); ++it) {

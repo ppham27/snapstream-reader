@@ -28,8 +28,12 @@ void output_visualization(std::map<std::string, std::map<std::string, std::pair<
       program_matches[it->first][jt -> first] = (jt -> second).first;
     }
   }
+
+  std::map<std::string, std::map<std::string, double>> program_matches_double = distance::int_matrix_to_double_matrix(program_matches);
   
-  std::map<std::string, std::map<std::string, int>> filtered_program_matches = distance::filter_top(program_matches, 20);
+  std::map<std::string, std::map<std::string, double>> filtered_program_matches = distance::filter_top(program_matches_double, 20);
+  
+  filtered_program_matches = distance::correlate_sum(filtered_program_matches);
 
   std::map<std::string, double> sizes = distance::size_pow(filtered_program_matches, 1.0/3);
 

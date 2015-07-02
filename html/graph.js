@@ -1,9 +1,9 @@
 /*global graphData */
 var width = 720, height = 720;
-var minSize = 15;
+var minSize = 20;
 var maxSize = 50;
 var minDistance = 75;
-var maxDistance = 500;
+var maxDistance = 550;
 var margin = maxSize;
 var rightSidebar = d3.select("#graph")
                    .append("div")

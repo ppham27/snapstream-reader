@@ -16,7 +16,7 @@ Bahrain,{bahrain},BHR
 Bangladesh,{bangladesh},BAN
 Barbados,{barbados},BAR
 Belarus,{belarus},BLR
-Belgium,{belgium} ,BLG
+Belgium,{belgium},BLG
 Belize,{belize},BLZ
 Benin,{benin},BER
 Bhutan,{bhutan},BHU
@@ -27,7 +27,7 @@ Brazil,{brazil},BIO
 Brunei,{brunei},BRU
 Bulgaria,{bulgaria},BUL
 Burkina Faso,{burkina faso},BKF
-Burma (Myanmar),{burma} + {myanmar} ,MYA
+Burma (Myanmar),{burma} + {myanmar},MYA
 Burundi,{burundi},BUD
 Cambodia,{cambodia},CMB
 Cameroon,{Cameroon},CMN
@@ -122,7 +122,7 @@ Mongolia,{mongolia},MGA
 Morocco,{morocco},MOR
 Mozambique,{mozambique},MOZ
 Namibia,{namibia},NAM
-Nepal,{nepal} ,NEP
+Nepal,{nepal},NEP
 Netherlands,{netherlands},NET
 New Caledonia,{new caledonia},NCA
 New Zealand,{new zealand},NZE
@@ -186,8 +186,8 @@ Turkmenistan,{turkmenistan},TKM
 Uganda,{uganda},UGA
 Ukraine,{ukraine},UKR
 United Arab Emirates (UAE),{united arab emirates},UAE
-United Kingdom (UK) ,({united kingdom} + {scotland} + {wales} + ({england} !@ {new england})),UKG
-United States (US),{united states} + {united states of america} + {USA} ,USA
+United Kingdom (UK),({united kingdom} + {scotland} + {wales} + ({england} !@ {new england})),UKG
+United States (US),{united states} + {united states of america} + {usa},USA
 Uruguay,{uruguay},URU
 Uzbekistan,{uzbekistan},UZB
 Vanuatu,{vanuatu},VAN
