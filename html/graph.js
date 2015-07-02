@@ -3,7 +3,7 @@ var width = 720, height = 720;
 var minSize = 20;
 var maxSize = 50;
 var minDistance = 75;
-var maxDistance = 550;
+var maxDistance = 650;
 var margin = maxSize;
 var rightSidebar = d3.select("#graph")
                    .append("div")

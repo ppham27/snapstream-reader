@@ -71,9 +71,10 @@ namespace distance {
         } else {
           S += 2*value;
           R[it -> first] += value;
+          C[jt -> first] += value;
           R[jt -> first] += value;
           C[it -> first] += value;
-          C[jt -> first] += value;          
+
         }
       }
     }
