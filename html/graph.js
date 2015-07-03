@@ -306,8 +306,8 @@ function springEmbedLayout() {
       // [ -c a]/(ad - bc)
       var deltaX = -(d*dEdx(maxIdx) - b*dEdy(maxIdx))/(a*d-b*c);
       var deltaY = -(-c*dEdx(maxIdx) + a*dEdy(maxIdx))/(a*d-b*c);
-      nodes[maxIdx].x += deltaX;
-      nodes[maxIdx].y += deltaY;
+      nodes[maxIdx].x += deltaX*0.5;
+      nodes[maxIdx].y += deltaY*0.5;
       var dx = dEdx(maxIdx); 
       var dy = dEdy(maxIdx);
       var newEi = Math.sqrt(dx*dx + dy*dy);
@@ -402,8 +402,10 @@ function chooseMaxDistance() {
     } else {
       upperBound = distance - 1;
     }
+    var oldDistance = distance
     distance = lowerBound + (upperBound - lowerBound)/2;
     setIdealDistance(distance);
+    if (Math.abs(oldDistance-distance) <= 1) break; // no need to be very exact
   }  
   return distance;
   
