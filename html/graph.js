@@ -4,6 +4,9 @@ var minSize = 20;
 var maxSize = 50;
 var minDistance = 75;
 var maxDistance = 650;
+// we'll binary search for the correct max distance later
+var lowerMaxDistance = 300;
+var upperMaxDistance = 1000;
 var margin = maxSize;
 var rightSidebar = d3.select("#graph")
                    .append("div")
@@ -22,15 +25,23 @@ var layoutSelector = rightSidebar.append("div")
 layoutSelector.append("h2").text("Layouts");
 layoutSelector.append("button")
 .text("Spring Embed")
-.on("click", springEmbedLayout);
+.attr('disabled', true)
+.attr('class', 'layout spring-embed')
+.on("click", function() {
+  springEmbedLayout(); draw(1000);
+});
 layoutSelector.append("br");
 layoutSelector.append("button")
 .text("Random")
-.on("click", randomLayout);
+.on("click", function() {
+  randomLayout(); draw(1000);
+});
 layoutSelector.append("br");
 layoutSelector.append("button")
 .text("Reset")
-.on("click", circularLayout);
+.on("click", function() {
+  circularLayout(); draw(1000);
+});
 var timeSelector = rightSidebar.append("div")
                    .attr("id","time-selector");
 timeSelector.append("h2").text("Time Period");
@@ -72,15 +83,17 @@ var linkTip = d3.tip()
                 return [this.getBBox().height/2, 120];
               })
               .html(function (d) {
-                var formatter = d3.format("3.3f");
+                var formatter = d3.format("0.3f");
                 return '<span style="color:#e41a1c">' + graphData.nodes[d.source].name + '</span><br>'
                      + '<span style="color:#e41a1c">' + graphData.nodes[d.target].name + '</span><br>'
                      + '<strong>Distance:</strong> <span style="color:#e41a1c">' + formatter(d.distance) + '</span>';
               });
+
 svg.call(nodeTip);
 svg.call(linkTip);
 
 var graphData;
+var maxLinkDistance, minLinkDistance;
 var link = svg.selectAll(".link.data");
 var node = svg.selectAll(".node.data");
 var nodeLabel = svg.selectAll(".node-label.data");
@@ -106,41 +119,57 @@ d3.json(fileName, function(err, graph) {
   
   // build link data
   var links = [];
-  var minLinkDistance = Infinity;
-  var maxLinkDistance = -1;
+  minLinkDistance = Infinity;
+  maxLinkDistance = -1;
   var timeKey = getTimeKey();
   for (var i = 0; i < graph.nodes.length - 1; ++i) {
     for (var j = i + 1; j < graph.nodes.length; ++j) {
       links.push({source: i, target: j, distance: graphData.links[i][j][timeKey]});
-      graphData.links[i][j].l = graphData.links[j][i].l = graphData.links[i][j][timeKey];
-      if (graphData.links[i][j].l > maxLinkDistance) maxLinkDistance = graphData.links[i][j].l;
-      if (graphData.links[i][j].l < minLinkDistance) minLinkDistance = graphData.links[i][j].l;
+      graphData.links[i][j].distance = graphData.links[j][i].distance = graphData.links[i][j][timeKey];
+      if (graphData.links[i][j].distance > maxLinkDistance) maxLinkDistance = graphData.links[i][j].distance;
+      if (graphData.links[i][j].distance < minLinkDistance) minLinkDistance = graphData.links[i][j].distance;
     }
   }
+  setIdealDistance(650);
   // renormalize length
-  graphData.links.forEach(function(d) {
-    d.forEach(function(dd) {
-      dd.l = minDistance + (maxDistance - minDistance)*(dd.l-minLinkDistance)/(maxLinkDistance-minLinkDistance);
-    });
-  });
+  setTimeout(function() {
+    var distance = chooseMaxDistance();
+    d3.select('button.layout.spring-embed')
+    .attr('disabled', null);
+  }, 0);
   link = link.data(links)
          .enter().append("line")
-         .attr("class", "link data")
+         .attr("class", function(d, i) {           
+           return "link data " + graph.nodes[d.source].symbol + " " + graph.nodes[d.target].symbol;
+         })
          .on('mouseover', linkTip.show)
          .on('mouseout', linkTip.hide);
+  
   var minNodeSize = d3.min(graph.nodes, function(d) { return d.size; })
   var maxNodeSize = d3.max(graph.nodes, function(d) { return d.size; })
+  graphData.nodes.forEach(function(d) {
+    d.r = minSize + (maxSize-minSize)*Math.sqrt((d.size-minNodeSize)/(maxNodeSize-minNodeSize));
+  });
   node = node.data(graph.nodes)
          .enter().append("circle")
          .attr("class", "node data")
-         .attr("r", function(d) { return minSize + (maxSize-minSize)*Math.sqrt((d.size-minNodeSize)/(maxNodeSize-minNodeSize)); })
+         .attr("r", function(d) { return d.r; })
          .on('mouseover', function(d) { 
            var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
            nodeTip.show(d, target.node());
+           // svg.selectAll('line.' + d.symbol)
+           // .each(function(d) {
+           //   var linkTip = makeLinkTip();
+           //   linkTip.show.call(this, d, this);
+           // });           
          })
          .on('mouseout',  function(d) { 
            var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
            nodeTip.hide(d, target.node());
+           // svg.selectAll('line.' + d.symbol)
+           // .each(function(d) {
+           //   linkTip.hide.call(this, d, this);
+           // });           
          })
          .call(drag);
   nodeLabel = nodeLabel.data(graph.nodes)
@@ -264,7 +293,7 @@ function springEmbedLayout() {
       }
     }
     var deltaEi = maxEi;
-    while (deltaEi > 0.00001) {
+    while (deltaEi > 0.0001) {
       // iterate with Newton's method      
       // [ a b ]
       // [ c d ]
@@ -289,7 +318,7 @@ function springEmbedLayout() {
     deltaEs.shift();
     deltaEs.push(E - newE);
     E = newE;
-    done = deltaEs.every(function(d) { return d <= 0.0001; });    
+    done = deltaEs.every(function(d) { return d <= 0.001; });
   }
   // recenter
   var cX = 0; 
@@ -304,15 +333,14 @@ function springEmbedLayout() {
     d.x += width/2 - cX;
     d.y += height/2 - cY;
   });
-  draw(1000);
   return E;
 }
+
 function randomLayout() {
   node.each(function(d) {
     d.x = margin + Math.random()*(width - 2*margin);
     d.y = margin + Math.random()*(height - 2*margin);
   });
-  draw(1000);
 }
 
 function circularLayout() {
@@ -320,7 +348,6 @@ function circularLayout() {
     d.x = margin + (width-2*margin)/2*Math.cos(2*Math.PI*i/node[0].length) + (width-2*margin)/2;
     d.y = margin + (width-2*margin)/2*Math.sin(2*Math.PI*i/node[0].length) + (width-2*margin)/2;
   });
-  draw(1000);
 }
 
 
@@ -348,6 +375,8 @@ function getTimeKey() {
                                   .node().value)].key;
 }
 
+
+// this is wrong fix later
 function timeChange() {  
   var timeKey = getTimeKey();
   link.each(function(d) {
@@ -359,5 +388,60 @@ function timeChange() {
       dd.l = minDistance + (maxDistance - minDistance)*dd.l/100;
     });
   });
-  return springEmbedLayout();
+  springEmbedLayout();
+  draw(1000);
+}
+
+function chooseMaxDistance() {
+  var lowerBound = lowerMaxDistance;
+  var upperBound = upperMaxDistance;
+  var distance = lowerBound + (upperBound - lowerBound)/2;
+  while (lowerBound < upperBound) {
+    if (isInside()) {
+      lowerBound = distance;
+    } else {
+      upperBound = distance - 1;
+    }
+    distance = lowerBound + (upperBound - lowerBound)/2;
+    setIdealDistance(distance);
+  }  
+  return distance;
+  
+  function isInside() {
+    circularLayout();
+    springEmbedLayout();
+    return isInsideArea();
+  }  
+}
+
+function isInsideArea() {
+  return graphData.nodes.every(function(d) {
+           return d.x >= d.r && d.x <= width - d.r && d.y >= d.r && d.y <= height - d.r;
+         });
+}
+
+function setIdealDistance(maxDistance) {
+  graphData.links.forEach(function(d) {
+    d.forEach(function(dd) {
+      dd.l = minDistance + (maxDistance - minDistance)*(dd.distance-minLinkDistance)/(maxLinkDistance-minLinkDistance);
+    });
+  }); 
+}
+
+
+// maybe a tip for each link?
+function makeLinkTip() {
+  var linkTip = d3.tip()
+                .attr('class', 'tip')
+                .offset(function() {
+                  return [this.getBBox().height/2, 120];
+                })
+                .html(function (d) {
+                  var formatter = d3.format("0.3f");
+                  return '<span style="color:#e41a1c">' + graphData.nodes[d.source].name + '</span><br>'
+                       + '<span style="color:#e41a1c">' + graphData.nodes[d.target].name + '</span><br>'
+                       + '<strong>Distance:</strong> <span style="color:#e41a1c">' + formatter(d.distance) + '</span>';
+                });
+  svg.call(linkTip);
+  return linkTip;  
 }
