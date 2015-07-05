@@ -130,7 +130,7 @@ d3.json(fileName, function(err, graph) {
       if (graphData.links[i][j].distance < minLinkDistance) minLinkDistance = graphData.links[i][j].distance;
     }
   }
-  setIdealDistance(650);
+  setIdealDistance(maxDistance);
   // renormalize length
   setTimeout(function() {
     var distance = chooseMaxDistance();
@@ -159,8 +159,7 @@ d3.json(fileName, function(err, graph) {
            nodeTip.show(d, target.node());
            // svg.selectAll('line.' + d.symbol)
            // .each(function(d) {
-           //   var linkTip = makeLinkTip();
-           //   linkTip.show.call(this, d, this);
+           //   d.tip.show.call(this, d, this);
            // });           
          })
          .on('mouseout',  function(d) { 
@@ -168,7 +167,7 @@ d3.json(fileName, function(err, graph) {
            nodeTip.hide(d, target.node());
            // svg.selectAll('line.' + d.symbol)
            // .each(function(d) {
-           //   linkTip.hide.call(this, d, this);
+           //   d.tip.hide.call(this, d, this);
            // });           
          })
          .call(drag);
@@ -395,18 +394,19 @@ function timeChange() {
 function chooseMaxDistance() {
   var lowerBound = lowerMaxDistance;
   var upperBound = upperMaxDistance;
-  var distance = lowerBound + (upperBound - lowerBound)/2;
+  var distance = lowerBound + Math.floor((upperBound - lowerBound)/2);
+  // binary search to find the first distance that's invalid
   while (lowerBound < upperBound) {
-    if (isInside()) {
-      lowerBound = distance;
+    if (!isInside()) {
+      upperBound = distance;
     } else {
-      upperBound = distance - 1;
+      lowerBound = distance + 1;
     }
     var oldDistance = distance
-    distance = lowerBound + (upperBound - lowerBound)/2;
-    setIdealDistance(distance);
-    if (Math.abs(oldDistance-distance) <= 1) break; // no need to be very exact
+    distance = lowerBound + Math.floor((upperBound - lowerBound)/2);
+    setIdealDistance(distance - 1);  
   }  
+  maxDistance = distance - 1;
   return distance;
   
   function isInside() {
