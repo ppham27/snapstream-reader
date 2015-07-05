@@ -28,7 +28,7 @@ layoutSelector.append("button")
 .attr('disabled', true)
 .attr('class', 'layout spring-embed')
 .on("click", function() {
-  springEmbedLayout(); draw(1000);
+  springEmbedLayout({ offset: true }); draw(1000);
 });
 layoutSelector.append("br");
 layoutSelector.append("button")
@@ -208,7 +208,8 @@ function draw(duration) {
 
 
 // various layouts
-function springEmbedLayout() {
+function springEmbedLayout(options) {
+  options = options || {};
   var nodes = graphData.nodes;
   var links = graphData.links;
   var n = nodes.length;
@@ -337,14 +338,16 @@ function springEmbedLayout() {
     if (d.x + d.r > width && d.x + d.r - width > rightOverflow) rightOverflow = d.x + d.r - width;
     if (d.y + d.r > height && d.y + d.r - height > bottomOverflow) bottomOverflow = d.y + d.r - height;
   });
-  var leftOffset = rightOverflow === 0 && leftOverflow;
-  var topOffset = bottomOverflow === 0 && topOverflow;
-  var rightOffset = leftOverflow === 0 && rightOverflow;
-  var bottomOffset = topOverflow === 0 && bottomOverflow;
-  nodes.forEach(function(d) {
-    d.x += leftOffset - rightOffset;
-    d.y += topOffset - bottomOffset;
-  });
+  if (options.offset) {
+    var leftOffset = rightOverflow === 0 && leftOverflow;
+    var topOffset = bottomOverflow === 0 && topOverflow;
+    var rightOffset = leftOverflow === 0 && rightOverflow;
+    var bottomOffset = topOverflow === 0 && bottomOverflow;
+    nodes.forEach(function(d) {
+      d.x += leftOffset - rightOffset;
+      d.y += topOffset - bottomOffset;
+    });
+  }
   return E;
 }
 
