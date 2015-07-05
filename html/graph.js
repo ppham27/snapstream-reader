@@ -328,9 +328,22 @@ function springEmbedLayout() {
   }
   cX /= n; 
   cY /= n;
+  var leftOverflow = 0, topOverflow = 0, rightOverflow = 0, bottomOverflow = 0;
   nodes.forEach(function(d) {
     d.x += width/2 - cX;
     d.y += height/2 - cY;
+    if (d.x - d.r < 0 && d.r - d.x > leftOverflow) leftOverflow = d.r - d.x;
+    if (d.y - d.r < 0 && d.r - d.y > topOverflow) topOverflow = d.r - d.y;
+    if (d.x + d.r > width && d.x + d.r - width > rightOverflow) rightOverflow = d.x + d.r - width;
+    if (d.y + d.r > height && d.y + d.r - height > bottomOverflow) bottomOverflow = d.y + d.r - height;
+  });
+  var leftOffset = rightOverflow === 0 && leftOverflow;
+  var topOffset = bottomOverflow === 0 && topOverflow;
+  var rightOffset = leftOverflow === 0 && rightOverflow;
+  var bottomOffset = topOverflow === 0 && bottomOverflow;
+  nodes.forEach(function(d) {
+    d.x += leftOffset - rightOffset;
+    d.y += topOffset - bottomOffset;
   });
   return E;
 }
