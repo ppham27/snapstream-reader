@@ -74,7 +74,9 @@ var nodeTip = d3.tip()
               .attr('class', 'tip')
               .direction('e')
               .html(function (d) {
+                var formatter = d3.format("0.3f");
                 var size = d.size instanceof Object ? d.size[getTimeKey()] : d.size;
+                size = formatter(size);
                 return d.name + '<br>'
                      + '<strong>Size:</strong> <span style="color:#e41a1c">' + size + '</span>';;
               });
