@@ -95,7 +95,7 @@ namespace snap {
       json << "{\"nodes\":[";
       for (int i = 0; i < N; ++i) {
         boost::split(rowsSplit[i], rows[i], boost::is_any_of(","));
-        json << boost::format("{\"symbol\":\"%s\",\"name\":\"%s\",\"size\":%f}") % rowsSplit[i][0] % rowsSplit[i][1] % rowsSplit[i][2];
+        json << boost::format("{\"symbol\":\"%s\",\"name\":\"%s\",\"size\":{\"1\":%f}}") % rowsSplit[i][0] % rowsSplit[i][1] % rowsSplit[i][2];
         if (i < N - 1) {
           json << ',';
         } else {

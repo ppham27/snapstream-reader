@@ -48,6 +48,10 @@ body {
     cursor: move;
 }
 
+.node.hover {
+  stroke-width: 3px;  
+}
+
 .node-label {
     cursor: move;
 }

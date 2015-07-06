@@ -74,8 +74,9 @@ var nodeTip = d3.tip()
               .attr('class', 'tip')
               .direction('e')
               .html(function (d) {
+                var size = d.size instanceof Object ? d.size[getTimeKey()] : d.size;
                 return d.name + '<br>'
-                     + '<strong>Size:</strong> <span style="color:#e41a1c">' + d.size + '</span>';;
+                     + '<strong>Size:</strong> <span style="color:#e41a1c">' + size + '</span>';;
               });
 var linkTip = d3.tip()
               .attr('class', 'tip')
@@ -102,7 +103,7 @@ window.location.search.slice(1).split('&').forEach(function(keyValues) {
   var kvSplit = keyValues.split('=');  
   urlQuery[kvSplit[0]] = kvSplit[1];
 });
-var fileName = decodeURIComponent(urlQuery['filename'] || 'default.json');
+var fileName = decodeURIComponent(urlQuery['filename'] || 'default_time.json');
 d3.json(fileName, function(err, graph) {
   graphData = graph;
   // add times
@@ -117,26 +118,8 @@ d3.json(fileName, function(err, graph) {
   }
   if (graphData.times.length === 1) timeSelector.style("display", "none");
   
-  // build link data
-  var links = [];
-  minLinkDistance = Infinity;
-  maxLinkDistance = -1;
-  var timeKey = getTimeKey();
-  for (var i = 0; i < graph.nodes.length - 1; ++i) {
-    for (var j = i + 1; j < graph.nodes.length; ++j) {
-      links.push({source: i, target: j, distance: graphData.links[i][j][timeKey]});
-      graphData.links[i][j].distance = graphData.links[j][i].distance = graphData.links[i][j][timeKey];
-      if (graphData.links[i][j].distance > maxLinkDistance) maxLinkDistance = graphData.links[i][j].distance;
-      if (graphData.links[i][j].distance < minLinkDistance) minLinkDistance = graphData.links[i][j].distance;
-    }
-  }
-  setIdealDistance(maxDistance);
-  // renormalize length
-  setTimeout(function() {
-    var distance = chooseMaxDistance();
-    d3.select('button.layout.spring-embed')
-    .attr('disabled', null);
-  }, 0);
+  var links = initializeGraph(graph, true);
+  
   link = link.data(links)
          .enter().append("line")
          .attr("class", function(d, i) {           
@@ -144,12 +127,7 @@ d3.json(fileName, function(err, graph) {
          })
          .on('mouseover', linkTip.show)
          .on('mouseout', linkTip.hide);
-  
-  var minNodeSize = d3.min(graph.nodes, function(d) { return d.size; })
-  var maxNodeSize = d3.max(graph.nodes, function(d) { return d.size; })
-  graphData.nodes.forEach(function(d) {
-    d.r = minSize + (maxSize-minSize)*Math.sqrt((d.size-minNodeSize)/(maxNodeSize-minNodeSize));
-  });
+
   node = node.data(graph.nodes)
          .enter().append("circle")
          .attr("class", "node data")
@@ -157,6 +135,7 @@ d3.json(fileName, function(err, graph) {
          .on('mouseover', function(d) { 
            var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
            nodeTip.show(d, target.node());
+           this.classList.add('hover');
            // svg.selectAll('line.' + d.symbol)
            // .each(function(d) {
            //   d.tip.show.call(this, d, this);
@@ -165,6 +144,7 @@ d3.json(fileName, function(err, graph) {
          .on('mouseout',  function(d) { 
            var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
            nodeTip.hide(d, target.node());
+           this.classList.remove('hover');
            // svg.selectAll('line.' + d.symbol)
            // .each(function(d) {
            //   d.tip.hide.call(this, d, this);
@@ -179,10 +159,12 @@ d3.json(fileName, function(err, graph) {
               .text(function(d) { return d.symbol; })
               .on('mouseover', function(d) {
                 var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
+                target.node().classList.add('hover');
                 nodeTip.show(d, target.node());
               })
               .on("mouseout", function(d) {
                 var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
+                target.node().classList.remove('hover');
                 nodeTip.hide(d, target.node());
               })
               .call(drag);
@@ -200,7 +182,8 @@ function draw(duration) {
   .attr("y2", function(d) { return graphData.nodes[d.target].y; });
   node.transition().duration(duration)
   .attr("cx", function(d) { return d.x; })
-  .attr("cy", function(d) { return d.y; });
+  .attr("cy", function(d) { return d.y; })
+  .attr("r", function(d) { return d.r; });
   nodeLabel.transition().duration(duration)
   .attr("x", function(d) { return d.x; })
   .attr("y", function(d) { return d.y; });
@@ -391,23 +374,20 @@ function getTimeKey() {
 }
 
 
-// this is wrong fix later
 function timeChange() {  
-  var timeKey = getTimeKey();
-  link.each(function(d) {
-    d.distance = graphData.links[d.source][d.target][timeKey];
-    graphData.links[d.source][d.target].l = graphData.links[d.target][d.source].l = graphData.links[d.source][d.target][timeKey];
-  });
-  graphData.links.forEach(function(d) {
-    d.forEach(function(dd) {
-      dd.l = minDistance + (maxDistance - minDistance)*dd.l/100;
-    });
-  });
-  springEmbedLayout();
+  initializeGraph(graphData);
+  springEmbedLayout({ offset: true });
   draw(1000);
 }
 
 function chooseMaxDistance() {
+  // save old layout
+  var oldLayout = {};
+  node.each(function(d) {
+    oldLayout[d.symbol] = {};
+    oldLayout[d.symbol].x = d.x;
+    oldLayout[d.symbol].y = d.y;
+  });  
   var lowerBound = lowerMaxDistance;
   var upperBound = upperMaxDistance;
   var distance = lowerBound + Math.floor((upperBound - lowerBound)/2);
@@ -418,11 +398,17 @@ function chooseMaxDistance() {
     } else {
       lowerBound = distance + 1;
     }
-    var oldDistance = distance
+    var oldDistance = distance;
     distance = lowerBound + Math.floor((upperBound - lowerBound)/2);
-    setIdealDistance(distance - 1);  
-  }  
+    setIdealDistance(distance);
+  } 
+  setIdealDistance(distance - 1);
   maxDistance = distance - 1;
+  // restore old layout
+  node.each(function(d) {
+    d.x = oldLayout[d.symbol].x;
+    d.y = oldLayout[d.symbol].y;
+  });  
   return distance;
   
   function isInside() {
@@ -462,4 +448,39 @@ function makeLinkTip() {
                 });
   svg.call(linkTip);
   return linkTip;  
+}
+
+
+function initializeGraph(graph, makeLinks) {    
+  // build link data
+  var links = [];
+  minLinkDistance = Infinity;
+  maxLinkDistance = -1;
+  var timeKey = getTimeKey();
+  for (var i = 0; i < graph.nodes.length - 1; ++i) {
+    for (var j = i + 1; j < graph.nodes.length; ++j) {
+      if (makeLinks) links.push({source: i, target: j, distance: graphData.links[i][j][timeKey]});
+      graphData.links[i][j].distance = graphData.links[j][i].distance = graphData.links[i][j][timeKey];
+      if (graphData.links[i][j].distance > maxLinkDistance) maxLinkDistance = graphData.links[i][j].distance;
+      if (graphData.links[i][j].distance < minLinkDistance) minLinkDistance = graphData.links[i][j].distance;
+    }
+  }
+  
+  var minNodeSize = d3.min(graph.nodes, function(d) { return d.size instanceof Object ? d.size[timeKey] : d.size; })
+  var maxNodeSize = d3.max(graph.nodes, function(d) { return d.size instanceof Object ? d.size[timeKey] : d.size; })
+  graphData.nodes.forEach(function(d) {
+    var size = d.size instanceof Object ? d.size[timeKey] : d.size;
+    d.r = minSize + (maxSize-minSize)*Math.sqrt((size - minNodeSize)/(maxNodeSize-minNodeSize));
+  });
+
+  // normalize length
+  setIdealDistance(maxDistance);
+  setTimeout(function() {
+    d3.select('button.layout.spring-embed')
+    .attr('disabled', true);
+    var distance = chooseMaxDistance();
+    d3.select('button.layout.spring-embed')
+    .attr('disabled', null);
+  }, 0);
+  return makeLinks ? links : link.data();
 }
