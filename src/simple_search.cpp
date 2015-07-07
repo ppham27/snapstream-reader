@@ -17,6 +17,15 @@ const std::string prefix = "Data/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
+void print_column_headers() {
+  std::cout << "mt_prg = matching_programs_cnt" << '\n';
+  std::cout << "tot_mt = total_matches_cnt" << '\n';
+  std::cout << "sel_prg = selected_programs_cnt" << '\n';
+  std::cout << "tot_prg = total_programs_cnt" << '\n';
+  // std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
+  std::cout << "dt        \tmt_prg\ttot_mt\tsel_prg\ttot_prg" << std::endl;
+}
+
 int main() {
   clock_t start_time = std::clock();
   
@@ -79,7 +88,7 @@ int main() {
   std::vector<snap::Excerpt> excerpts;
   if (!random) {
     std::cout << "<pre>" << std::endl;
-    std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
+    print_column_headers();
   }
   for (auto it = file_list.begin();
        it != file_list.end();
@@ -139,7 +148,7 @@ int main() {
   }  
   if (random) {
     std::cout << "<pre>" << std::endl;
-    std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
+    print_column_headers();
     sort(search_results.begin(), search_results.end(),
          [](std::vector<std::string> a, std::vector<std::string> b) -> bool { return a.front() < b.front(); });
     for (auto it = search_results.begin(); it != search_results.end(); ++it) {

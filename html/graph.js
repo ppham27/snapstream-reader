@@ -1,6 +1,6 @@
 /*global graphData */
 var width = 720, height = 720;
-var minSize = 20;
+var minSize = 10;
 var maxSize = 50;
 var minDistance = 75;
 var maxDistance = 650;
@@ -51,11 +51,11 @@ var info = rightSidebar.append("div")
            .attr("id", "info");
 info.append("h2").text("Information");
 info.append("p")
-.text('This visualization shows the relationship between countries. Countries are considered to be related if they are frequently mentioned together on television. Mouseover nodes and links to see more information about the countries and how they are related. Nodes can be dragged. ');
+.text('This visualization shows the relationship between nodes. Nodes are considered to be related if they are frequently mentioned together on television. Mouseover nodes and links to see more information about the nodes and how they are related. Nodes can be dragged. ');
 info.append("p")
-.html('Using <span style="color:#e41a1c">Spring Embed</span> may help you see the relationship more clearly. The algorithm tries to place countries that are frequently mentioned together close together. The algorithm works by placing a short spring between closely related countries and a long spring between unrelated countries. Then, the total potential energy is minimized by applying Newton\'s method iteratively. One may need to click <span style="color:#e41a1c">Random</span> and <span style="color:#e41a1c">Spring Embed</span> a few times before a desirable layout is found. <span style="color:#e41a1c">Reset</span> puts everything back in a circle.');
+.html('Using <span style="color:#e41a1c">Spring Embed</span> may help you see the relationship more clearly. The algorithm tries to place nodes that are frequently mentioned together close together. The algorithm works by placing a short spring between closely related nodes and a long spring between unrelated nodes. Then, the total potential energy is minimized by applying Newton\'s method iteratively. One may need to click <span style="color:#e41a1c">Random</span> and <span style="color:#e41a1c">Spring Embed</span> a few times before a desirable layout is found. <span style="color:#e41a1c">Reset</span> puts everything back in a circle.');
 info.append("p")
-.html('By selecting a different time period, one can see how the relationships between countries change over time.');
+.html('By selecting a different time period, one can see how the relationships between nodes change over time.');
 info.append("h2").text("Upload File");
 var fileUploader = info.append("form").attr("method", "POST")
                    .attr("action",'cgi-bin/process_file')
@@ -106,6 +106,8 @@ window.location.search.slice(1).split('&').forEach(function(keyValues) {
   urlQuery[kvSplit[0]] = kvSplit[1];
 });
 var fileName = decodeURIComponent(urlQuery['filename'] || 'default_time.json');
+var title = decodeURIComponent(urlQuery['title'] || 'Graph');
+document.getElementById('graph-title').innerHTML = title;
 d3.json(fileName, function(err, graph) {
   graphData = graph;
   // add times
@@ -121,8 +123,8 @@ d3.json(fileName, function(err, graph) {
   if (graphData.times.length === 1) timeSelector.style("display", "none");
   
   var links = initializeGraph(graph, true);
-  
-  link = link.data(links)
+  // don't bother drawing those with max distance, which is 10?
+  link = link.data(links.filter(function(d) { return d.distance < maxLinkDistance; }))
          .enter().append("line")
          .attr("class", function(d, i) {           
            return "link data " + graph.nodes[d.source].symbol + " " + graph.nodes[d.target].symbol;
@@ -264,7 +266,8 @@ function springEmbedLayout(options) {
   var deltaEs = [];
   for (var i = 0; i < n; ++i) deltaEs.push(E);
   var done = false;
-  var counter = 0;
+  var stepSize = 1;
+  // var iterations = 0;
   while (!done) {
     var maxIdx = -1; 
     var maxEi = -1;
@@ -291,8 +294,8 @@ function springEmbedLayout(options) {
       // [ -c a]/(ad - bc)
       var deltaX = -(d*dEdx(maxIdx) - b*dEdy(maxIdx))/(a*d-b*c);
       var deltaY = -(-c*dEdx(maxIdx) + a*dEdy(maxIdx))/(a*d-b*c);
-      nodes[maxIdx].x += deltaX*0.5;
-      nodes[maxIdx].y += deltaY*0.5;
+      nodes[maxIdx].x += deltaX*stepSize;
+      nodes[maxIdx].y += deltaY*stepSize;
       var dx = dEdx(maxIdx); 
       var dy = dEdy(maxIdx);
       var newEi = Math.sqrt(dx*dx + dy*dy);
@@ -302,8 +305,15 @@ function springEmbedLayout(options) {
     var newE = energy();
     deltaEs.shift();
     deltaEs.push(E - newE);
-    E = newE;
-    done = deltaEs.every(function(d) { return d <= 0.001; });
+    E = newE;    
+    done = deltaEs.every(function(d) { return d <= 0.001; });    
+    // iterations += 1;     
+    var deltaEsSum = 0;
+    // check for cycle
+    for (var i = 0; i < n; ++i) {
+      deltaEsSum += deltaEs[i];
+      if (deltaEsSum === 0) stepSize -= 0.01;
+    }
   }
   // recenter
   var cX = 0; 

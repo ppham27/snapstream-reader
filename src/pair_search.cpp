@@ -19,7 +19,9 @@ const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
-void output_visualization(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results, std::string uid, std::string dt) {
+void output_visualization(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results, 
+                          int topFilter, 
+                          std::string uid, std::string dt) {
   // first turn the results to just program matches
   std::map<std::string, std::map<std::string, int>> program_matches;
   for (auto it = results.begin(); it != results.end(); ++it) {
@@ -31,7 +33,7 @@ void output_visualization(std::map<std::string, std::map<std::string, std::pair<
 
   std::map<std::string, std::map<std::string, double>> program_matches_double = distance::int_matrix_to_double_matrix(program_matches);
   
-  std::map<std::string, std::map<std::string, double>> filtered_program_matches = distance::filter_top(program_matches_double, 20);
+  std::map<std::string, std::map<std::string, double>> filtered_program_matches = distance::filter_top(program_matches_double, topFilter);
 
   std::map<std::string, double> sizes = distance::size_pow(filtered_program_matches, 1.0/3);
   
@@ -140,6 +142,7 @@ int main() {
 
   // turn inputs into C++ types
   int distance = stoi(arguments["distance"]);
+  int topFilter = stoi(arguments["top-filter"]);
   boost::gregorian::date current_date, from_date, to_date;
   try {
     current_date = snap::date::string_to_date(arguments["from-date"]);
@@ -287,7 +290,7 @@ int main() {
   output_files(results, random_id, snap::date::date_to_string(from_date), "no zeroes");
 
   // output for visualization
-  output_visualization(results, random_id, snap::date::date_to_string(from_date));
+  output_visualization(results, topFilter, random_id, snap::date::date_to_string(from_date));
  
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;

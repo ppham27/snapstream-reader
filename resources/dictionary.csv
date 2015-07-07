@@ -4,19 +4,19 @@ Algeria,{algeria},ALG
 Andorra,{andorra},AND
 Angola,{angola},AGO
 Antarctica,{antarctica},ATC
-Antigua and Barbuda,{antigua} + {barbuda},AAB
+Antigua and Barbuda,{antigua} + {barbuda},ATG
 Argentina,{argentina} + {argentine} + {argentinian},ARG
 Armenia,{armenia} + {armenian},ARM
-Aruba,{aruba},ARU
-Australia,{australia},AUL
+Aruba,{aruba},ARW
+Australia,{australia},AUS
 Austria,{austria},AUT
-Azerbaijan,{azerbaijan},AZB
-Bahamas,{bahamas},BHM
+Azerbaijan,{azerbaijan},AZE
+Bahamas,{bahamas},BHS
 Bahrain,{bahrain},BHR
-Bangladesh,{bangladesh},BAN
-Barbados,{barbados},BAR
+Bangladesh,{bangladesh},BGD
+Barbados,{barbados},BRB
 Belarus,{belarus},BLR
-Belgium,{belgium},BLG
+Belgium,{belgium},BEL
 Belize,{belize},BLZ
 Benin,{benin},BER
 Bhutan,{bhutan},BHU
@@ -30,9 +30,9 @@ Burkina Faso,{burkina faso},BKF
 Burma (Myanmar),{burma} + {myanmar},MYA
 Burundi,{burundi},BUD
 Cambodia,{cambodia},CMB
-Cameroon,{Cameroon},CMN
+Cameroon,{cameroon},CMN
 Canada,{canada},CAN
-Cape Verde,{Cape Verde},CPV
+Cape Verde,{cape verde},CPV
 Central African Republic,{central african republic},CAR
 Chad,{chad}@({sudan*}+{libya*}+{boko haram}+{africa*}+{islam*}+{niger*}+{cameroon}),CHD
 Chile,{chile} !@ {pepper},CHL

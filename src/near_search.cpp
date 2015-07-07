@@ -78,7 +78,13 @@ int main() {
   std::vector<std::string> corrupt_files;
   std::vector<snap::Excerpt> excerpts;
   std::cout << "<pre>" << std::endl;
-  std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt1\ttotal_matches_cnt2\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
+  std::cout << "mt_prg = matching_programs_cnt" << '\n';
+  std::cout << "tot_mt1 = total_matches_cnt1" << '\n';
+  std::cout << "tot_mt2 = total_matches_cnt1" << '\n';
+  std::cout << "sel_prg = selected_programs_cnt" << '\n';
+  std::cout << "tot_prg = total_programs_cnt" << '\n';
+  // std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt1\ttotal_matches_cnt2\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
+  std::cout << "dt        \tmt_prg\ttot_mt1\ttot_mt2\tsel_prg\ttot_prg" << std::endl;
   for (auto it = file_list.begin();
        it != file_list.end();
        ++it) {
