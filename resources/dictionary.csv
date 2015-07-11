@@ -18,25 +18,25 @@ Barbados,{barbados},BRB
 Belarus,{belarus},BLR
 Belgium,{belgium},BEL
 Belize,{belize},BLZ
-Benin,{benin},BER
-Bhutan,{bhutan},BHU
+Benin,{benin},BEN
+Bhutan,{bhutan},BTN
 Bolivia,{bolivia},BOL
-Bosnia and Herzegovina,{bosnia},BOS
-Botswana,{botswana},BOU
-Brazil,{brazil},BIO
-Brunei,{brunei},BRU
-Bulgaria,{bulgaria},BUL
-Burkina Faso,{burkina faso},BKF
-Burma (Myanmar),{burma} + {myanmar},MYA
-Burundi,{burundi},BUD
-Cambodia,{cambodia},CMB
-Cameroon,{cameroon},CMN
+Bosnia and Herzegovina,{bosnia},BIH
+Botswana,{botswana},BWA
+Brazil,{brazil},BRA
+Brunei,{brunei},BRN
+Bulgaria,{bulgaria},BGR
+Burkina Faso,{burkina faso},BFA
+Burma (Myanmar),{burma} + {myanmar},MMR
+Burundi,{burundi},BDI
+Cambodia,{cambodia},KHM
+Cameroon,{cameroon},CMR
 Canada,{canada},CAN
 Cape Verde,{cape verde},CPV
-Central African Republic,{central african republic},CAR
-Chad,{chad}@({sudan*}+{libya*}+{boko haram}+{africa*}+{islam*}+{niger*}+{cameroon}),CHD
+Central African Republic,{central african republic},CAF
+Chad,{chad}@({sudan*}+{libya*}+{boko haram}+{africa*}+{islam*}+{niger*}+{cameroon}),TCD
 Chile,{chile} !@ {pepper},CHL
-China,{china} !@ {fine},PRC
+China,{china} !@ {fine},CHN
 Colombia,{colombia} !@ {district},COL
 Comoros,{comoros},COM
 Costa Rica,{costa rica},CRA
