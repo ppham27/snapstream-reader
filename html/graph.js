@@ -468,7 +468,11 @@ function initializeGraph(graph, makeLinks) {
   var maxNodeSize = d3.max(graph.nodes, function(d) { return d.size instanceof Object ? d.size[timeKey] : d.size; })
   graphData.nodes.forEach(function(d) {
     var size = d.size instanceof Object ? d.size[timeKey] : d.size;
-    d.r = minSize + (maxSize-minSize)*Math.sqrt((size - minNodeSize)/(maxNodeSize-minNodeSize));
+    if (maxNodeSize !== minNodeSize) {
+      d.r = minSize + (maxSize-minSize)*Math.sqrt((size - minNodeSize)/(maxNodeSize-minNodeSize));
+    } else {
+      d.r = maxSize;
+    }
   });
 
   // normalize length
