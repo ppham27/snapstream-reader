@@ -261,7 +261,7 @@ function springEmbedLayout(options) {
     }
     return v;
   }
-  var TOL = 0.000001;
+  var TOL = 0.001;
   var E = energy(nodes);
   var grad = gradient();
   var gradNorm = norm(grad);
@@ -386,7 +386,7 @@ function chooseMaxDistance() {
   var lowerBound = lowerMaxDistance;
   var upperBound = upperMaxDistance;
   var distance = lowerBound + Math.floor((upperBound - lowerBound)/2);
-  // binary search to find the first distance that's invalid
+  // binary search to find the first distance that's invalid  
   while (lowerBound < upperBound) {
     if (!isInside()) {
       upperBound = distance;
@@ -422,7 +422,11 @@ function isInsideArea() {
 function setIdealDistance(maxDistance) {
   graphData.links.forEach(function(d) {
     d.forEach(function(dd) {
-      dd.l = minDistance + (maxDistance - minDistance)*(dd.distance-minLinkDistance)/(maxLinkDistance-minLinkDistance);
+      if (maxLinkDistance !== minLinkDistance) {        
+        dd.l = minDistance + (maxDistance - minDistance)*(dd.distance-minLinkDistance)/(maxLinkDistance-minLinkDistance);
+      } else {
+        dd.l = maxDistance;
+      }
     });
   }); 
 }
@@ -459,8 +463,7 @@ function initializeGraph(graph, makeLinks) {
       if (graphData.links[i][j].distance > maxLinkDistance) maxLinkDistance = graphData.links[i][j].distance;
       if (graphData.links[i][j].distance < minLinkDistance) minLinkDistance = graphData.links[i][j].distance;
     }
-  }
-  
+  }  
   var minNodeSize = d3.min(graph.nodes, function(d) { return d.size instanceof Object ? d.size[timeKey] : d.size; })
   var maxNodeSize = d3.max(graph.nodes, function(d) { return d.size instanceof Object ? d.size[timeKey] : d.size; })
   graphData.nodes.forEach(function(d) {
