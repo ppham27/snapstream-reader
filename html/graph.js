@@ -53,7 +53,7 @@ info.append("h2").text("Information");
 info.append("p")
 .text('This visualization shows the relationship between nodes. Nodes are considered to be related if they are frequently mentioned together on television. Mouseover nodes and links to see more information about the nodes and how they are related. Nodes can be dragged. ');
 info.append("p")
-.html('Using <span style="color:#e41a1c">Spring Embed</span> may help you see the relationship more clearly. The algorithm tries to place nodes that are frequently mentioned together close together. The algorithm works by placing a short spring between closely related nodes and a long spring between unrelated nodes. Then, the total potential energy is minimized by applying Newton\'s method iteratively. One may need to click <span style="color:#e41a1c">Random</span> and <span style="color:#e41a1c">Spring Embed</span> a few times before a desirable layout is found. <span style="color:#e41a1c">Reset</span> puts everything back in a circle.');
+.html('Using <span style="color:#e41a1c">Spring Embed</span> may help you see the relationship more clearly. The algorithm tries to place nodes that are frequently mentioned together close together. The algorithm works by placing a short spring between closely related nodes and a long spring between unrelated nodes. Then, the total potential energy is minimized by applying a steepest gradient descent method iteratively. One may need to click <span style="color:#e41a1c">Random</span> and <span style="color:#e41a1c">Spring Embed</span> a few times before a desirable layout is found. <span style="color:#e41a1c">Reset</span> puts everything back in a circle.');
 info.append("p")
 .html('By selecting a different time period, one can see how the relationships between nodes change over time.');
 info.append("h2").text("Upload File");
@@ -203,7 +203,7 @@ function springEmbedLayout(options) {
   function distance(a, b) {
     return Math.sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
   }
-  function energy() {
+  function energy(nodes) {
     var E = 0;
     for (var i = 0; i < n - 1; ++i) {
       for (var j = i+1; j < n; ++j) {
@@ -228,92 +228,75 @@ function springEmbedLayout(options) {
   function dEdy(idx) {
     return dEd(idx, function(d) { return d.y; });
   }  
-  function ddEdxdx(idx) {
-    var res = 0;
+  function gradient() {
+    var grad = [];
     for (var i = 0; i < n; ++i) {
-      if (i === idx) continue;
-      var yDiff = nodes[idx].y-nodes[i].y;
-      var dist = distance(nodes[idx], nodes[i]);
-      res += links[idx][i].k*(1 - links[idx][i].l*yDiff*yDiff/(dist*dist*dist));
+      grad.push({x: dEdx(i), y: dEdy(i)});
     }
-    return res;
+    return grad;
   }
-  function ddEdydy(idx) {
-    var res = 0;
+  function norm(v) {
+    var n = 0;
+    v.forEach(function(d) {
+      n += d.x*d.x + d.y*d.y;
+    });
+    return Math.sqrt(n);
+  }  
+  function addVector(v, w, alpha) {
+    var u = [];
+    for (var i  = 0; i < n; ++i) {
+      u.push({x: v[i].x + w[i].x*alpha, y: v[i].y + w[i].y*alpha});
+    }
+    return u;
+  }
+  function divideVector(v, alpha) {
+    for (var i  = 0; i < n; ++i) {
+      v[i].x /= alpha; v[i].y /= alpha;
+    }
+    return v;
+  }
+  function setVector(v, w) {
     for (var i = 0; i < n; ++i) {
-      if (i === idx) continue;
-      var xDiff = nodes[idx].x-nodes[i].x;
-      var dist = distance(nodes[idx], nodes[i]);
-      res += links[idx][i].k*(1 - links[idx][i].l*xDiff*xDiff/(dist*dist*dist));
+      v[i].x = w[i].x; v[i].y = w[i].y;
     }
-    return res;
+    return v;
   }
-  function ddEdxdy(idx) {
-    var res = 0;
-    for (var i = 0; i < n; ++i) {
-      if (i === idx) continue;
-      var xDiff = nodes[idx].x-nodes[i].x;
-      var yDiff = nodes[idx].y-nodes[i].y;
-      var dist = distance(nodes[idx], nodes[i]);
-      res += links[idx][i].k*(links[idx][i].l*xDiff*yDiff/(dist*dist*dist));
-    }
-    return res;
-  }
-  function ddEdydx(idx) {
-    return ddEdxdy(idx);
-  }
-  var E = energy();
-  var deltaEs = [];
-  for (var i = 0; i < n; ++i) deltaEs.push(E);
-  var done = false;
-  var stepSize = 1;
-  // var iterations = 0;
+  var TOL = 0.000001;
+  var E = energy(nodes);
+  var grad = gradient();
+  var gradNorm = norm(grad);
+  var done = gradNorm < TOL;
+  var iterations = 0;
   while (!done) {
-    var maxIdx = -1; 
-    var maxEi = -1;
-    for (var i = 0; i < n; ++i) {
-      var dx = dEdx(i); 
-      var dy = dEdy(i);
-      var newEi = Math.sqrt(dx*dx + dy*dy);
-      if (maxEi < newEi) { 
-        maxEi = newEi;
-        maxIdx = i;
-      }
+    divideVector(grad, gradNorm); // make a unit vector
+    var alpha1 = 0;
+    var alpha3 = 1;
+    var E3 = energy(addVector(nodes, grad, -alpha3));
+    while (E3 >= E) {
+      alpha3 /= 2;
+      E3 = energy(addVector(nodes, grad, -alpha3));
     }
-    var deltaEi = maxEi;
-    while (deltaEi > 0.0001) {
-      // iterate with Newton's method      
-      // [ a b ]
-      // [ c d ]
-      var a = ddEdxdx(maxIdx);
-      var b = ddEdxdy(maxIdx);
-      var c = ddEdydx(maxIdx);
-      var d = ddEdydy(maxIdx);
-      // inverted this becomes
-      // [ d -b]
-      // [ -c a]/(ad - bc)
-      var deltaX = -(d*dEdx(maxIdx) - b*dEdy(maxIdx))/(a*d-b*c);
-      var deltaY = -(-c*dEdx(maxIdx) + a*dEdy(maxIdx))/(a*d-b*c);
-      nodes[maxIdx].x += deltaX*stepSize;
-      nodes[maxIdx].y += deltaY*stepSize;
-      var dx = dEdx(maxIdx); 
-      var dy = dEdy(maxIdx);
-      var newEi = Math.sqrt(dx*dx + dy*dy);
-      deltaEi = maxEi - newEi;
-      maxEi = newEi;
-    }
-    var newE = energy();
-    deltaEs.shift();
-    deltaEs.push(E - newE);
-    E = newE;    
-    done = deltaEs.every(function(d) { return d <= 0.001; });    
-    // iterations += 1;     
-    var deltaEsSum = 0;
-    // check for cycle
-    for (var i = 0; i < n; ++i) {
-      deltaEsSum += deltaEs[i];
-      if (deltaEsSum === 0) stepSize -= 0.01;
-    }
+    var alpha2 = alpha3/2;
+    var E2 = energy(addVector(nodes, grad, -alpha2));
+    var h1 = (E2 - E)/alpha2;
+    var h2 = (E3 - E2)/(alpha3-alpha2);
+    var h3 = (h2-h1)/alpha3;
+    var alpha0 = (alpha2 - h1/h3)/2;
+    var E0 = energy(addVector(nodes, grad, -alpha0));
+    var newE, alpha;
+    if (E0 < E3) {
+      newE = E0; alpha = alpha0;
+    } else {
+      newE = E3; alpha = alpha3;
+    }        
+    // reset state
+    if (E - newE < TOL) done = true;
+    setVector(nodes, addVector(nodes, grad, -alpha));
+    E = newE;
+    grad = gradient();
+    gradNorm = norm(grad);
+    if (gradNorm < TOL) done = true;
+    iterations += 1;
   }
   // recenter
   var cX = 0; 
