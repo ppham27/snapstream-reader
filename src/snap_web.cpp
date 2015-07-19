@@ -14,6 +14,20 @@
 namespace snap {
   namespace web {
 
+    std::string encode_uri(const std::string &s) {
+      std::string uri(s);
+      boost::replace_all(uri, " ", "%20");
+      boost::replace_all(uri, "(", "%28");
+      boost::replace_all(uri, ")", "%29");
+      boost::replace_all(uri, "{", "%7B");
+      boost::replace_all(uri, "}", "%7D");
+      boost::replace_all(uri, "+", "%2B");
+      boost::replace_all(uri, "&", "%26");
+      boost::replace_all(uri, "!", "%21");
+      boost::replace_all(uri, "@", "%40");
+      return uri;
+    }
+
     std::string sanitize_string(std::string s) {
       boost::replace_all(s, "%0D%0A", "\n");
       boost::replace_all(s, "%21", "!");
@@ -65,8 +79,10 @@ namespace snap {
         std::string part = body.substr(cursor, nextBoundaryIdx - cursor);
         int partCursor = part.find("name=\"") + 6;
         std::string name = part.substr(partCursor, part.find('"', partCursor)-partCursor);
-        for (int i = 0; i < 3; ++i) partCursor = part.find('\n', partCursor) + 1;
-        std::string file = part.substr(partCursor, part.length() - partCursor - 2);
+        partCursor = part.find('\n', partCursor) + 1; // go to next line
+        partCursor = part.find('\n', partCursor) + 1; // skip empty line after header
+        std::string file = part.substr(partCursor, part.length() - partCursor);
+        boost::algorithm::trim(file);
         kv[name] = file;
         cursor = body.find(boundary, cursor) + boundary.length();
         if (body.find(boundary, cursor) == -1) break;

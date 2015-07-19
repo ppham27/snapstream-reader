@@ -51,6 +51,7 @@ namespace snap {
     void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results,
                       std::function<int(std::pair<int, int>)> getter,
                       std::ostream &outputStream, bool header = true, char sep = '\t');
+    std::string encode_uri(const std::string &s);
     std::string sanitize_string(std::string s);
     std::string create_link(std::string href, std::string text);
   }

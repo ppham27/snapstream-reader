@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 
+#include "boost/algorithm/string.hpp"
+
 #include "snap.h"
 
 const std::string output_path = "../tmp/";
@@ -23,7 +25,7 @@ int main() {
   } 
   delete[] input;
   std::string input_string = input_stream.str();
-
+  
   std::map<std::string, std::string> files = snap::web::parse_multiform_data(content_type, input_string);
   std::string json = snap::web::matrix_to_json(files["matrix_file"]);
   srand(time(NULL));
@@ -34,7 +36,8 @@ int main() {
   out_file.close();
     
   // too lazy to send a proper redirect request, so just insert some javascript instead  
-  snap::web::redirect("../visualize.html?filename=tmp%2F" + filename);
+  boost::replace_all(files["graph_title"], " ", "%20");
+  snap::web::redirect("../visualize.html?filename=tmp%2F" + filename + "&title=" + files["graph_title"]);
   snap::web::close_html();
 
   return 0;

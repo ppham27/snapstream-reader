@@ -58,17 +58,26 @@ info.append("p")
 .html('By selecting a different time period, one can see how the relationships between nodes change over time.');
 info.append("h2").text("Upload File");
 var fileUploader = info.append("form").attr("method", "POST")
+                   .attr("id", "upload-form")
                    .attr("action",'cgi-bin/process_file')
                    .attr("enctype",'multipart/form-data');
-fileUploader.append("span").text("Matrix:").attr("class", "file-label");
-fileUploader.append("input")
+var titleFieldSet = fileUploader.append('fieldset');
+titleFieldSet.append("label").text("Title:").attr("for", "graph_title");
+titleFieldSet.append("input")
+.attr("type", "text")
+.attr("name", "graph_title")
+.attr("id", "graph_title")
+.attr("placeholder", "Graph title")
+var maxtrixFileFieldSet = fileUploader.append('fieldset');
+maxtrixFileFieldSet.append("label").text("Matrix:").attr("for", "matrix_file");
+maxtrixFileFieldSet.append("input")
 .attr("type", "file")
 .attr("name", "matrix_file")
+.attr("id", "matrix_file")
 .attr("accept", "text/plain");
-fileUploader.append("br");
-fileUploader.append("input")
+fileUploader.append("button")
 .attr("type", "submit")
-.attr("value", "Submit");
+.text("Submit");
 
 var nodeTip = d3.tip()
               .attr('class', 'tip')

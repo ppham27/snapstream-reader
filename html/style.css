@@ -4,48 +4,48 @@ body {
 }
 
 #graph {
-    width: 1200px;
-    margin: 0 auto;
+  width: 1200px;
+  margin: 0 auto;
 }
 
 #graph h1 {
-    font-size: 48px;
-    margin-bottom: 0px;
+  font-size: 48px;
+  margin-bottom: 0px;
 }
 
 #graph h2 {
-    margin-bottom: 5px;
+  margin-bottom: 5px;
 }
 
 #rightSidebar {
-    float: right;
-    width: 37%;
+  float: right;
+  width: 37%;
 }
 
 #layout-selector button {
-    margin: 3px;
+  margin: 3px;
 }
 
 #time-selector span.time-label {
-    padding: 3px;
+  padding: 3px;
 }
 
 
 .link {
-    stroke: #ddd;
-    stroke-width: 1.5px;
+  stroke: #ddd;
+  stroke-width: 1.5px;
 }
 
 .link:hover {
-    stroke: #777;
-    stroke-width: 3px;
+  stroke: #777;
+  stroke-width: 3px;
 }
 
 .node {
-    stroke: #777;
-    stroke-width: 1.5px;
-    fill: #b3cde3;
-    cursor: move;
+  stroke: #777;
+  stroke-width: 1.5px;
+  fill: #b3cde3;
+  cursor: move;
 }
 
 .node.hover {
@@ -53,16 +53,16 @@ body {
 }
 
 .node-label {
-    cursor: move;
+  cursor: move;
 }
 
 .tip {
-    line-height: 1;
-    font-weight: bold;
-    padding: 12px;
-    background: rgba(0,0,0,0.8);
-    color: #fff;
-    border-radius: 10px;
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  border-radius: 10px;
 }
 
 #about {
@@ -80,6 +80,15 @@ body {
   color: DarkRed;
 }
 
-#info .file-label {
-  padding-right: 5px;
+#upload-form label {
+  margin-right: 10px;
+}
+
+#upload-form fieldset {
+  border: none;
+}
+
+#upload-form fieldset {
+  padding-top: 3px;
+  padding-bottom: 3px;
 }

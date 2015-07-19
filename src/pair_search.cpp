@@ -61,10 +61,10 @@ void output_visualization(std::map<std::string, std::map<std::string, std::pair<
   std::string visualization_json_path = output_path + json_file_name;
   std::ofstream visualization_json(visualization_json_path, std::ios::out);
   visualization_json << json;
-  visualization_json.close();  
-  
+  visualization_json.close(); 
+  std::string title = dt + "%20" + std::to_string(topFilter) + "%20" + snap::web::encode_uri(sizes.begin() -> first);
   std::cout << "<br>"
-            << "<a href=\"../visualize.html?filename=tmp%2F" + json_file_name + "\">" 
+            << "<a href=\"../visualize.html?filename=tmp%2F" + json_file_name + "&title=" + title + "\">" 
             << "Visualization"
             << "</a><br>"
             << std::endl;
