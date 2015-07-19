@@ -5,6 +5,7 @@
 #include <cstdio>
 #include <exception>
 #include <iostream>
+#include <fstream>
 #include <random> 
 #include <string>
 
@@ -14,6 +15,7 @@
 #include "snap.h"
 
 const std::string prefix = "Data/";
+const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
@@ -22,7 +24,6 @@ void print_column_headers() {
   std::cout << "tot_mt = total_matches_cnt" << '\n';
   std::cout << "sel_prg = selected_programs_cnt" << '\n';
   std::cout << "tot_prg = total_programs_cnt" << '\n';
-  // std::cout << "dt\tmatching_programs_cnt\ttotal_matches_cnt\tselected_programs_cnt\ttotal_programs_cnt" << std::endl;
   std::cout << "dt        \tmt_prg\ttot_mt\tsel_prg\ttot_prg" << std::endl;
 }
 
@@ -146,11 +147,11 @@ int main() {
       missing_files.push_back(*it);
     }
   }  
+  sort(search_results.begin(), search_results.end(),
+       [](std::vector<std::string> a, std::vector<std::string> b) -> bool { return a.front() < b.front(); });
   if (random) {
     std::cout << "<pre>" << std::endl;
     print_column_headers();
-    sort(search_results.begin(), search_results.end(),
-         [](std::vector<std::string> a, std::vector<std::string> b) -> bool { return a.front() < b.front(); });
     for (auto it = search_results.begin(); it != search_results.end(); ++it) {
       std::copy(it -> begin(), it -> end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));
       std::cout << it -> back() << std::endl;
@@ -162,6 +163,20 @@ int main() {
   std::cout << '\t' << selected_programs_sum;
   std::cout << '\t' << total_programs_sum << std::endl;
   std::cout << "</pre>" << std::endl;  
+
+  // output file
+  srand(time(NULL));
+  std::string random_id = std::to_string(rand());
+  std::string output_file_name = output_path + search_results.front().front() + "_" + random_id + ".csv";
+  std::ofstream output_file(output_file_name);
+  output_file << "dt,matching_programs_cnt,total_matches_cnt,selected_programs_cnt,total_programs_cnt" << std::endl;
+  for (auto it = search_results.begin(); it != search_results.end(); ++it) {
+    std::copy(it -> begin(), it -> end() - 1, std::ostream_iterator<std::string>(output_file, ","));
+    output_file << it -> back() << '\n';
+  }
+  output_file.close();
+  
+  std::cout << "<a href=\"" + output_file_name + "\">Output CSV</a><br/>" << std::endl;
   
   std::cout << "<div>";
   std::cout << "<br/>" << std::endl;
