@@ -120,7 +120,7 @@ VIE,{vietnam},5.03,6.95,10.00,3.21,4.49,10.00,10.00,10.00,10.00,10.00,10.00,10.0
 
 TEST(matrix_to_json, Default) {
   std::string matrix = "\nUSA,United States,85,-1,94,31\nGBR,Great Britain,40,94,-1,57\nRUS,Russia,70,31,57,-1\n\n\n";
-  std::string json = R"ZZZ({"nodes":[{"symbol":"USA","name":"United States","size":{"1":85}},{"symbol":"GBR","name":"Great Britain","size":{"1":40}},{"symbol":"RUS","name":"Russia","size":{"1":70}}],"times":[{"name":"1","key":"1"}],"links":[[{"1":-1,"k":-1},{"1":94,"k":1},{"1":31,"k":1}],[{"1":94,"k":1},{"1":-1,"k":-1},{"1":57,"k":1}],[{"1":31,"k":1},{"1":57,"k":1},{"1":-1,"k":-1}]]})ZZZ";
+  std::string json = R"ZZZ({"nodes":[{"symbol":"USA","name":"United States","size":85},{"symbol":"GBR","name":"Great Britain","size":40},{"symbol":"RUS","name":"Russia","size":70}],"links":[[{"distance":-1,"k":-1},{"distance":94,"k":1},{"distance":31,"k":1}],[{"distance":94,"k":1},{"distance":-1,"k":-1},{"distance":57,"k":1}],[{"distance":31,"k":1},{"distance":57,"k":1},{"distance":-1,"k":-1}]]})ZZZ";
   ASSERT_EQ(json, snap::web::matrix_to_json(matrix));    
 }
 
