@@ -16,7 +16,7 @@ var svg = d3.select("#graph")
           .attr("width", width)
           .attr("height", height);
 var drag = d3.behavior.drag()
-           .origin(function(d) { return d; })
+           .origin(function(d) { return nodeAttr[d.symbol]; })
            .on("dragstart", dragstarted)
            .on("drag", dragged)
            .on("dragend", dragended);
@@ -44,7 +44,7 @@ layoutSelector.append("button")
 });
 var timeSelector = rightSidebar.append("div")
                    .attr("id","time-selector");
-timeSelector.append("h2").text("Time Period");
+timeSelector.append("h2").text("Time");
 var timeSelectorForm = timeSelector.append("form")
                        .on("change", timeChange);
 var info = rightSidebar.append("div")
@@ -84,7 +84,7 @@ var nodeTip = d3.tip()
               .direction('e')
               .html(function (d) {
                 var formatter = d3.format("0.3f");
-                var size = d.size instanceof Object ? d.size[getTimeKey()] : d.size;
+                var size = d.size;
                 size = formatter(size);
                 return d.name + '<br>'
                      + '<strong>Size:</strong> <span style="color:#e41a1c">' + size + '</span>';;
@@ -96,91 +96,54 @@ var linkTip = d3.tip()
               })
               .html(function (d) {
                 var formatter = d3.format("0.3f");
-                return '<span style="color:#e41a1c">' + graphData.nodes[d.source].name + '</span><br>'
-                     + '<span style="color:#e41a1c">' + graphData.nodes[d.target].name + '</span><br>'
+                return '<span style="color:#e41a1c">' + nodeAttr[d.source].name + '</span><br>'
+                     + '<span style="color:#e41a1c">' + nodeAttr[d.target].name + '</span><br>'
                      + '<strong>Distance:</strong> <span style="color:#e41a1c">' + formatter(d.distance) + '</span>';
               });
 
 svg.call(nodeTip);
 svg.call(linkTip);
 
-var graphData;
+var allGraphData, selectedGraphData;
+var nodeAttr = {};
 var maxLinkDistance, minLinkDistance;
-var link = svg.selectAll(".link.data");
-var node = svg.selectAll(".node.data");
-var nodeLabel = svg.selectAll(".node-label.data");
+var link = svg.append('g').selectAll(".link.data");
+var node = svg.append('g').selectAll(".node.data");
+var nodeLabel = svg.append('g').selectAll(".node-label.data");
 var urlQuery = {};
 window.location.search.slice(1).split('&').forEach(function(keyValues) {
   var kvSplit = keyValues.split('=');  
   urlQuery[kvSplit[0]] = kvSplit[1];
 });
-var fileName = decodeURIComponent(urlQuery['filename'] || 'default_time.json');
+var fileName = decodeURIComponent(urlQuery['filename'] || 'multiple_time_varied.json');
 var title = decodeURIComponent(urlQuery['title'] || 'Graph');
 document.getElementById('graph-title').innerHTML = title;
 d3.json(fileName, function(err, graph) {
-  graphData = graph;
+  allGraphData = graph;
   // add times
-  for (var i = 0; i < graphData.times.length; ++i) {
-    var timeSelectorRadio = timeSelectorForm.append("input")
-                            .attr("type", "radio")
-                            .attr("name", "time")
-                            .attr("value", i);
-    if (i === 0) timeSelectorRadio.attr("checked", true);
-    timeSelectorForm.append("span").attr("class", "time-label").text(graphData.times[i].name);
-    if (i !== graphData.times.length - 1) timeSelectorForm.append("br");
+  if (Array.isArray(allGraphData.nodes) && Array.isArray(allGraphData.links)) {
+    // single time
+    selectedGraphData = allGraphData;
+    timeSelector.style('display', 'none');
+  } else {
+    // multiple times
+    var times = Object.keys(allGraphData);
+    times.sort();
+    times.forEach(function(time, idx) {
+      var timeSelectorRadio = timeSelectorForm.append("input")
+                              .attr("type", "radio")
+                              .attr("name", "time")
+                              .attr("value", time);
+      timeSelectorForm.append("span").attr("class", "time-label").text(time);
+      if (idx === 0) {
+        timeSelectorRadio.attr("checked", true);
+        selectedGraphData = allGraphData[time];
+      }
+      if (idx !== times.length - 1) timeSelectorForm.append("br");
+    });
   }
-  if (graphData.times.length === 1) timeSelector.style("display", "none");
   
-  var links = initializeGraph(graph, true);
-  // don't bother drawing those with max distance, which is 10?
-  link = link.data(links.filter(function(d) { return d.distance < maxLinkDistance; }))
-         .enter().append("line")
-         .attr("class", function(d, i) {           
-           return "link data " + graph.nodes[d.source].symbol + " " + graph.nodes[d.target].symbol;
-         })
-         .on('mouseover', linkTip.show)
-         .on('mouseout', linkTip.hide);
-
-  node = node.data(graph.nodes)
-         .enter().append("circle")
-         .attr("class", "node data")
-         .attr("r", function(d) { return d.r; })
-         .on('mouseover', function(d) { 
-           var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
-           nodeTip.show(d, target.node());
-           this.classList.add('hover');
-           // svg.selectAll('line.' + d.symbol)
-           // .each(function(d) {
-           //   d.tip.show.call(this, d, this);
-           // });           
-         })
-         .on('mouseout',  function(d) { 
-           var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
-           nodeTip.hide(d, target.node());
-           this.classList.remove('hover');
-           // svg.selectAll('line.' + d.symbol)
-           // .each(function(d) {
-           //   d.tip.hide.call(this, d, this);
-           // });           
-         })
-         .call(drag);
-  nodeLabel = nodeLabel.data(graph.nodes)
-              .enter().append("text")
-              .attr("class", "node-label data")
-              .attr("text-anchor", "middle")
-              .attr("dy", "5px")
-              .text(function(d) { return d.symbol; })
-              .on('mouseover', function(d) {
-                var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
-                target.node().classList.add('hover');
-                nodeTip.show(d, target.node());
-              })
-              .on("mouseout", function(d) {
-                var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
-                target.node().classList.remove('hover');
-                nodeTip.hide(d, target.node());
-              })
-              .call(drag);
+  initializeGraph(selectedGraphData, {create: true});  
   circularLayout();
   draw();
 });
@@ -189,25 +152,30 @@ d3.json(fileName, function(err, graph) {
 function draw(duration) {
   duration = typeof duration !== 'undefined' ? duration : 0;
   link.transition().duration(duration)
-  .attr("x1", function(d) { return graphData.nodes[d.source].x; })
-  .attr("y1", function(d) { return graphData.nodes[d.source].y; })
-  .attr("x2", function(d) { return graphData.nodes[d.target].x; })
-  .attr("y2", function(d) { return graphData.nodes[d.target].y; });
+  .attr("x1", function(d) { return nodeAttr[d.source].x; })
+  .attr("y1", function(d) { return nodeAttr[d.source].y; })
+  .attr("x2", function(d) { return nodeAttr[d.target].x; })
+  .attr("y2", function(d) { return nodeAttr[d.target].y; })
+  .style('opacity', 1);
   node.transition().duration(duration)
-  .attr("cx", function(d) { return d.x; })
-  .attr("cy", function(d) { return d.y; })
-  .attr("r", function(d) { return d.r; });
+  .attr("cx", function(d) { return nodeAttr[d.symbol].x; })
+  .attr("cy", function(d) { return nodeAttr[d.symbol].y; })
+  .attr("r", function(d) { return nodeAttr[d.symbol].r; })
+  .style('opacity', 1);
   nodeLabel.transition().duration(duration)
-  .attr("x", function(d) { return d.x; })
-  .attr("y", function(d) { return d.y; });
+  .attr("x", function(d) { return nodeAttr[d.symbol].x; })
+  .attr("y", function(d) { return nodeAttr[d.symbol].y; })
+  .style('opacity', 1);
 }
 
 
 // various layouts
 function springEmbedLayout(options) {
   options = options || {};
-  var nodes = graphData.nodes;
-  var links = graphData.links;
+  var nodes = selectedGraphData.nodes.map(function(d) {
+                return {x: nodeAttr[d.symbol].x, y: nodeAttr[d.symbol].y, r: nodeAttr[d.symbol].r};
+              });
+  var links = selectedGraphData.links;
   var n = nodes.length;
   function distance(a, b) {
     return Math.sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
@@ -335,20 +303,30 @@ function springEmbedLayout(options) {
       d.y += topOffset - bottomOffset;
     });
   }
+  
+  selectedGraphData.nodes.forEach(function(d, idx) {
+    var pos = nodeAttr[d.symbol];
+    pos.x = nodes[idx].x;
+    pos.y = nodes[idx].y;
+  });  
   return E;
 }
 
 function randomLayout() {
   node.each(function(d) {
-    d.x = margin + Math.random()*(width - 2*margin);
-    d.y = margin + Math.random()*(height - 2*margin);
+    if (!nodeAttr[d.symbol]) nodeAttr[d.symbol] = {};
+    var pos = nodeAttr[d.symbol];
+    pos.x = margin + Math.random()*(width - 2*margin);
+    pos.y = margin + Math.random()*(height - 2*margin);
   });
 }
 
 function circularLayout() {
   node.each(function(d, i) {
-    d.x = margin + (width-2*margin)/2*Math.cos(2*Math.PI*i/node[0].length) + (width-2*margin)/2;
-    d.y = margin + (width-2*margin)/2*Math.sin(2*Math.PI*i/node[0].length) + (width-2*margin)/2;
+    if (!nodeAttr[d.symbol]) nodeAttr[d.symbol] = {};
+    var pos = nodeAttr[d.symbol];
+    pos.x = margin + (width-2*margin)/2*Math.cos(2*Math.PI*i/node[0].length) + (width-2*margin)/2;
+    pos.y = margin + (width-2*margin)/2*Math.sin(2*Math.PI*i/node[0].length) + (width-2*margin)/2;
   });
 }
 
@@ -362,8 +340,9 @@ function dragstarted(d) {
 function dragged(d) {
   var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
   nodeTip.hide(d, target.node());
-  d.x = d3.event.x;
-  d.y = d3.event.y;
+  var pos = nodeAttr[d.symbol];
+  pos.x = d3.event.x;
+  pos.y = d3.event.y;
   draw();
 }
 function dragended(d) {
@@ -372,15 +351,15 @@ function dragended(d) {
 }
 
 function getTimeKey() {
-  return graphData.times[parseInt(timeSelectorForm.selectAll("input")
-                                  .filter(function() { return this.checked === true; })
-                                  .node().value)].key;
+  return timeSelectorForm.selectAll("input")
+         .filter(function() { return this.checked === true; })
+         .node().value;
 }
 
 
-function timeChange() {  
-  initializeGraph(graphData);
-  springEmbedLayout({ offset: true });
+function timeChange() {
+  selectedGraphData = allGraphData[getTimeKey()];
+  initializeGraph(selectedGraphData, {update: true});
   draw(1000);
 }
 
@@ -388,9 +367,10 @@ function chooseMaxDistance() {
   // save old layout
   var oldLayout = {};
   node.each(function(d) {
+    var pos = nodeAttr[d.symbol];
     oldLayout[d.symbol] = {};
-    oldLayout[d.symbol].x = d.x;
-    oldLayout[d.symbol].y = d.y;
+    oldLayout[d.symbol].x = pos.x;
+    oldLayout[d.symbol].y = pos.y;
   });  
   var lowerBound = lowerMaxDistance;
   var upperBound = upperMaxDistance;
@@ -410,8 +390,9 @@ function chooseMaxDistance() {
   maxDistance = distance - 1;
   // restore old layout
   node.each(function(d) {
-    d.x = oldLayout[d.symbol].x;
-    d.y = oldLayout[d.symbol].y;
+    var pos = nodeAttr[d.symbol];
+    pos.x = oldLayout[d.symbol].x;
+    pos.y = oldLayout[d.symbol].y;
   });  
   return distance;
   
@@ -423,13 +404,14 @@ function chooseMaxDistance() {
 }
 
 function isInsideArea() {
-  return graphData.nodes.every(function(d) {
-           return d.x >= d.r && d.x <= width - d.r && d.y >= d.r && d.y <= height - d.r;
+  return selectedGraphData.nodes.every(function(d) {
+           var attr = nodeAttr[d.symbol];
+           return attr.x >= attr.r && attr.x <= width - attr.r && attr.y >= attr.r && attr.y <= height - attr.r;
          });
 }
 
 function setIdealDistance(maxDistance) {
-  graphData.links.forEach(function(d) {
+  selectedGraphData.links.forEach(function(d) {
     d.forEach(function(dd) {
       if (maxLinkDistance !== minLinkDistance) {        
         dd.l = minDistance + (maxDistance - minDistance)*(dd.distance-minLinkDistance)/(maxLinkDistance-minLinkDistance);
@@ -441,49 +423,90 @@ function setIdealDistance(maxDistance) {
 }
 
 
-// maybe a tip for each link?
-function makeLinkTip() {
-  var linkTip = d3.tip()
-                .attr('class', 'tip')
-                .offset(function() {
-                  return [this.getBBox().height/2, 120];
-                })
-                .html(function (d) {
-                  var formatter = d3.format("0.3f");
-                  return '<span style="color:#e41a1c">' + graphData.nodes[d.source].name + '</span><br>'
-                       + '<span style="color:#e41a1c">' + graphData.nodes[d.target].name + '</span><br>'
-                       + '<strong>Distance:</strong> <span style="color:#e41a1c">' + formatter(d.distance) + '</span>';
-                });
-  svg.call(linkTip);
-  return linkTip;  
-}
-
-
-function initializeGraph(graph, makeLinks) {    
+function initializeGraph(graph, options) {    
+  options = options || {};
   // build link data
   var links = [];
   minLinkDistance = Infinity;
   maxLinkDistance = -1;
-  var timeKey = getTimeKey();
   for (var i = 0; i < graph.nodes.length - 1; ++i) {
     for (var j = i + 1; j < graph.nodes.length; ++j) {
-      if (makeLinks) links.push({source: i, target: j, distance: graphData.links[i][j][timeKey]});
-      graphData.links[i][j].distance = graphData.links[j][i].distance = graphData.links[i][j][timeKey];
-      if (graphData.links[i][j].distance > maxLinkDistance) maxLinkDistance = graphData.links[i][j].distance;
-      if (graphData.links[i][j].distance < minLinkDistance) minLinkDistance = graphData.links[i][j].distance;
+      if (options.create || options.update) {
+        links.push({source: graph.nodes[i].symbol, target: graph.nodes[j].symbol, distance: graph.links[i][j].distance});
+      }
+      if (graph.links[i][j].distance > maxLinkDistance) maxLinkDistance = graph.links[i][j].distance;
+      if (graph.links[i][j].distance < minLinkDistance) minLinkDistance = graph.links[i][j].distance;
     }
   }  
-  var minNodeSize = d3.min(graph.nodes, function(d) { return d.size instanceof Object ? d.size[timeKey] : d.size; })
-  var maxNodeSize = d3.max(graph.nodes, function(d) { return d.size instanceof Object ? d.size[timeKey] : d.size; })
-  graphData.nodes.forEach(function(d) {
-    var size = d.size instanceof Object ? d.size[timeKey] : d.size;
+  var minNodeSize = d3.min(graph.nodes, function(d) { return d.size; })
+  var maxNodeSize = d3.max(graph.nodes, function(d) { return d.size; })
+  graph.nodes.forEach(function(d) {
+    if (!nodeAttr[d.symbol]) nodeAttr[d.symbol] = {};
+    nodeAttr[d.symbol].name = d.name;
     if (maxNodeSize !== minNodeSize) {
-      d.r = minSize + (maxSize-minSize)*Math.sqrt((size - minNodeSize)/(maxNodeSize-minNodeSize));
+      nodeAttr[d.symbol].r = minSize + (maxSize-minSize)*Math.sqrt((d.size - minNodeSize)/(maxNodeSize-minNodeSize));
     } else {
-      d.r = maxSize;
+      nodeAttr[d.symbol].r = maxSize;
     }
   });
 
+  if (options.create || options.update) {
+    // don't bother drawing those with max distance, which is 10?
+    links = links.filter(function(d) { return d.distance < maxLinkDistance; })
+    link = link.data(links, function(d) { return d.source < d.target ? d.source + '-' + d.target : d.target + '-' + d.source; });
+    var newLink = link.enter().append("line")
+                  .attr("class", function(d, i) {           
+                    return "link data " + d.source + " " + d.target;
+                  })
+                  .on('mouseover', linkTip.show)
+                  .on('mouseout', linkTip.hide);
+    node = node.data(selectedGraphData.nodes, function(d) { return d.symbol; });
+    if (options.update) node.classed('created', false);
+    var newNode = node.enter().append("circle")
+                  .attr("class", "node data")
+                  .on('mouseover', function(d) { 
+                    var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
+                    nodeTip.show(d, target.node());
+                    this.classList.add('hover');
+                  })
+                  .on('mouseout',  function(d) { 
+                    var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
+                    nodeTip.hide(d, target.node());
+                    this.classList.remove('hover');
+                  });
+    newNode.call(drag);
+    nodeLabel = nodeLabel.data(selectedGraphData.nodes, function(d) { return d.symbol; });
+    var newNodeLabel = nodeLabel.enter().append("text")
+                       .attr("class", "node-label data")
+                       .attr("text-anchor", "middle")
+                       .attr("dy", "5px")
+                       .text(function(d) { return d.symbol; })
+                       .on('mouseover', function(d) {
+                         var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
+                         target.node().classList.add('hover');
+                         nodeTip.show(d, target.node());
+                       })
+                       .on("mouseout", function(d) {
+                         var target = node.filter(function(dd) { return dd.symbol === d.symbol; });
+                         target.node().classList.remove('hover');
+                         nodeTip.hide(d, target.node());
+                       })
+                       .call(drag);
+    if (options.update) {
+      newNode.classed('created', true);
+      newLink.style('opacity', 0);
+      newNode.style('opacity', 0);
+      newNode.each(function(d) {
+        var pos = nodeAttr[d.symbol];
+        if (!pos.x) pos.x = margin + Math.random()*(width - 2*margin);
+        if (!pos.y) pos.y = margin + Math.random()*(height - 2*margin);
+      });
+      newNodeLabel.style('opacity', 0);
+    }    
+    link.exit().transition().duration(1000).style('opacity', 0).remove();
+    node.exit().transition().duration(1000).style('opacity', 0).remove();
+    nodeLabel.exit().transition().duration(1000).style('opacity', 0).remove();    
+  }
   // normalize length
   setIdealDistance(maxDistance);
   setTimeout(function() {
@@ -493,5 +516,4 @@ function initializeGraph(graph, makeLinks) {
     d3.select('button.layout.spring-embed')
     .attr('disabled', null);
   }, 0);
-  return makeLinks ? links : link.data();
 }

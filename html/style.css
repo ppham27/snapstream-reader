@@ -46,7 +46,13 @@ body {
   stroke-width: 1.5px;
   fill: #b3cde3;
   cursor: move;
+  transition: fill 1s ease;
 }
+
+.node.created {
+  fill: #fbb4ae;
+}
+
 
 .node.hover {
   stroke-width: 3px;  
