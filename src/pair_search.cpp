@@ -8,6 +8,9 @@
 #include <set>
 #include <string>
 
+#include <thread>
+#include <mutex>
+
 #include "boost/algorithm/string.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
 
@@ -18,6 +21,14 @@ const std::string prefix = "Data/";
 const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
+
+// mutexes
+std::mutex results_mtx;
+std::mutex cout_mtx;
+
+// global cnt
+int total_programs_cnt = 0;
+int selected_programs_cnt = 0;
 
 void output_visualization(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results, 
                           int topFilter, 
@@ -127,6 +138,60 @@ void output_files(std::map<std::string, std::map<std::string, std::pair<int, int
   std::cout << snap::web::create_link(outputKeyFilePath, "Matrix row and column names " + description) << "<br/>" << std::endl;  
 }
 
+
+void search_dates(std::vector<std::string>::iterator files_begin,
+                  std::vector<std::string>::iterator files_end,
+                  int distance,
+                  std::vector<std::string> *patterns,
+                  std::vector<snap::Expression> *expressions,
+                  std::map<std::string, std::map<std::string, std::pair<int, int>>> *results,
+                  std::vector<std::string> *corrupt_files,
+                  std::vector<std::string> *missing_files) {
+  std::unique_lock<std::mutex> results_lck(results_mtx, std::defer_lock);
+  std::unique_lock<std::mutex> cout_lck(cout_mtx, std::defer_lock);
+  for (auto it = files_begin; it != files_end; ++it) {
+    boost::gregorian::date current_date = snap::date::string_to_date((*it).substr(prefix.length(), 10));
+    boost::gregorian::date::ymd_type ymd = current_date.year_month_day();
+    if (snap::io::file_exists(*it)) {
+      std::vector<snap::Program> programs;
+      try {
+        programs = snap::io::parse_programs(*it);
+      } catch (snap::io::CorruptFileException &e) {
+        programs.clear();
+        current_date += boost::gregorian::date_duration(1);
+        corrupt_files -> push_back(*it);
+        continue;
+      }      
+      cout_lck.lock();
+      std::cout << "<span>Processing " << ymd.month << " "
+                << ymd.day << ", " << ymd.year
+                << "...</span></br>" << std::endl;
+      total_programs_cnt += programs.size();
+      selected_programs_cnt += programs.size(); // might change if we start filtering by programs
+      cout_lck.unlock();
+      for (auto p = programs.begin(); p != programs.end(); ++p) {
+        std::map<std::string, std::vector<int>> raw_match_positions = snap::find(*patterns, p -> lower_text);
+        std::map<std::string, std::vector<int>> match_positions = evaluate_expressions(*expressions, raw_match_positions);
+        std::map<std::string, std::map<std::string, int>> cooccurences = snap::pair(match_positions, distance);
+        results_lck.lock();
+        for (auto it0 = cooccurences.begin(); it0 != cooccurences.end(); ++it0) {
+          for (auto it1 = (it0 -> second).begin(); it1 != (it0 -> second).end(); ++it1) {
+            if (it1 -> second > 0) {
+              ++(*results)[it0 -> first][it1 -> first].first;
+              (*results)[it0 -> first][it1 -> first].second += it1 -> second;
+            }
+          }
+        }
+        results_lck.unlock();
+      }
+    } else {
+      missing_files -> push_back(*it);
+    }
+    current_date += boost::gregorian::date_duration(1);
+  }
+  
+}
+
 int main() {
   clock_t start_time = std::clock();
   
@@ -143,9 +208,8 @@ int main() {
   // turn inputs into C++ types
   int distance = stoi(arguments["distance"]);
   int topFilter = stoi(arguments["top-filter"]);
-  boost::gregorian::date current_date, from_date, to_date;
+  boost::gregorian::date from_date, to_date;
   try {
-    current_date = snap::date::string_to_date(arguments["from-date"]);
     from_date = snap::date::string_to_date(arguments["from-date"]);
     to_date = snap::date::string_to_date(arguments["to-date"]);
   } catch (snap::date::InvalidDateException &e) {
@@ -189,7 +253,9 @@ int main() {
   }
   std::vector<std::string> patterns;
   patterns.insert(patterns.end(), pattern_set.begin(), pattern_set.end());
-  
+
+  int num_threads = std::thread::hardware_concurrency()/2;
+  if (num_threads == 0) num_threads = 4;  
   // print output for user to verify
   std::cout << "<p>" << std::endl;
   std::cout << "Search strings:" << "<br/>" << std::endl;
@@ -199,6 +265,7 @@ int main() {
   std::cout << "Distance: " << arguments["distance"] << "<br/>" << std::endl;
   std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
   std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
+  std::cout << "Threads: " << num_threads << "<br/>" << std::endl;
   std::cout << "</p>" << std::endl;
 
   // initiate result matrix
@@ -209,47 +276,23 @@ int main() {
       results[it0 -> raw_expression][it1 -> raw_expression] = std::make_pair(0, 0);
     }
   }
-  int total_programs_cnt = 0;
-  int selected_programs_cnt = 0;
-
+  
   // run through dates
   std::vector<std::string> missing_files;
   std::vector<std::string> corrupt_files;
-  for (auto it = file_list.begin(); it != file_list.end(); ++it) {
-    boost::gregorian::date::ymd_type ymd = current_date.year_month_day();
-    std::cout << "<span>Processing " << ymd.month << " "
-              << ymd.day << ", " << ymd.year
-              << "...</span></br>" << std::endl;
-    if (snap::io::file_exists(*it)) {
-      std::vector<snap::Program> programs;
-      try {
-        programs = snap::io::parse_programs(*it);
-      } catch (snap::io::CorruptFileException &e) {
-        programs.clear();
-        current_date += boost::gregorian::date_duration(1);
-        corrupt_files.push_back(*it);
-        continue;
-      }
-      total_programs_cnt += programs.size();
-      for (auto p = programs.begin(); p != programs.end(); ++p) {
-        ++selected_programs_cnt;
-        std::map<std::string, std::vector<int>> raw_match_positions = snap::find(patterns, p -> lower_text);
-        std::map<std::string, std::vector<int>> match_positions = evaluate_expressions(expressions, raw_match_positions);
-        std::map<std::string, std::map<std::string, int>> cooccurences = snap::pair(match_positions, distance);
-        for (auto it0 = cooccurences.begin(); it0 != cooccurences.end(); ++it0) {
-          for (auto it1 = (it0 -> second).begin(); it1 != (it0 -> second).end(); ++it1) {
-            if (it1 -> second > 0) {
-              ++results[it0 -> first][it1 -> first].first;
-              results[it0 -> first][it1 -> first].second += it1 -> second;
-            }
-          }
-        }
-      }
-    } else {
-      missing_files.push_back(*it);
-    }
-    current_date += boost::gregorian::date_duration(1);
+  std::vector<std::thread> threads(num_threads);
+  auto file_it = file_list.begin();
+  for (int t = 0; t < num_threads; ++t) {
+    int num_files = file_list.size()/num_threads;
+    if (t < (file_list.size() % num_threads)) ++num_files;
+    threads[t] = std::thread(search_dates,
+                             file_it, file_it + num_files,
+                             distance, &patterns, &expressions,
+                             &results, 
+                             &corrupt_files, &missing_files);  
+    file_it += num_files;    
   }
+  for (auto &t : threads) t.join();
   std::cout << "<div>";
   std::cout << "<br/>" << std::endl;
   snap::web::print_missing_files(missing_files);

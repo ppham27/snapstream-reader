@@ -12,7 +12,6 @@
 #include <thread>
 #include <mutex>
 
-
 #include "boost/algorithm/string.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
 
@@ -160,7 +159,7 @@ int main() {
 
   // display user input
   int num_threads = std::thread::hardware_concurrency()/2;
-  if (num_threads == 0) num_threads = 1;
+  if (num_threads == 0) num_threads = 4;
   std::cout << "<p>" << std::endl;    
   std::cout << "Search string: " << search_string << "<br/>" << std::endl;
   std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
