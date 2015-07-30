@@ -74,7 +74,7 @@ maxtrixFileFieldSet.append("input")
 .attr("type", "file")
 .attr("name", "matrix_file")
 .attr("id", "matrix_file")
-.attr("accept", "text/plain");
+.attr("accept", "text/csv, text/plain");
 fileUploader.append("button")
 .attr("type", "submit")
 .text("Submit");
