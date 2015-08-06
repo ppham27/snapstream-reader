@@ -54,6 +54,7 @@ namespace snap {
     std::string encode_uri(const std::string &s);
     std::string decode_uri(std::string s);
     std::string create_link(std::string href, std::string text);
+    std::string create_link(std::string href, std::string text, std::string id);
   }
   
   namespace io {

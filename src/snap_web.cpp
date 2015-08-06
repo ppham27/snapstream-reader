@@ -257,5 +257,9 @@ color: DarkRed;
     std::string create_link(std::string href, std::string text) {
       return "<a href=\"" + href + "\">" + text + "</a>";
     }
+    
+    std::string create_link(std::string href, std::string text, std::string id) {
+      return "<a id=\"" + id + "\" href=\"" + href + "\">" + text + "</a>";
+    }
   }
 }

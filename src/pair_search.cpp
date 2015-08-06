@@ -64,7 +64,7 @@ void output_visualization(std::map<std::string, std::map<std::string, std::pair<
   visualization_json.close(); 
   std::string title = dt + "%20" + std::to_string(topFilter) + "%20" + snap::web::encode_uri(sizes.begin() -> first);
   std::cout << "<br>"
-            << "<a href=\"../visualize.html?filename=tmp%2F" + json_file_name + "&title=" + title + "\">" 
+            << "<a id=\"visualization-link\" href=\"../visualize.html?filename=tmp%2F" + json_file_name + "&title=" + title + "\">" 
             << "Visualization"
             << "</a><br>"
             << std::endl;
@@ -123,7 +123,7 @@ void output_files(std::map<std::string, std::map<std::string, std::pair<int, int
   outputKeyFile.close();
 
   std::cout << snap::web::create_link(outputMatrixFilePath, "Matching programs matrix (numbers only) " + description) << "<br/>" << std::endl;
-  std::cout << snap::web::create_link(outputMatrixWithHeadersFilePath, "Matching programs matrix (with headers) " + description) << "<br/>" << std::endl;
+  std::cout << snap::web::create_link(outputMatrixWithHeadersFilePath, "Matching programs matrix (with headers) " + description, file_description + "matrix") << "<br/>" << std::endl;
   std::cout << snap::web::create_link(outputKeyFilePath, "Matrix row and column names " + description) << "<br/>" << std::endl;  
 }
 
