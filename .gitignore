@@ -24,3 +24,5 @@
 build*
 tmp*
 html/*.json
+node_modules
+jobs/*.html

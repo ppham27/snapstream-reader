@@ -52,7 +52,7 @@ Dominican Republic,{dominican republic},DMA
 Ecuador,{ecuador},ECU
 Egypt,{egypt},EGY
 El Salvador,{el salvador},SLV
-Equatorial Guinea,{Equatorial Guinea} !@ ({bissau} + {papua}),GNQ
+Equatorial Guinea,{equatorial guinea} !@ ({bissau} + {papua}),GNQ
 Eritrea,{eritrea},ERI
 Estonia,{estonia},EST
 Ethiopia,{ethiopia},ETH
@@ -110,14 +110,14 @@ Madagascar,{madagascar} !@ ({penguins of} + {movie}),MDG
 Malawi,{malawi},MWI
 Malaysia,{malaysia} !@ {airlines},MYS
 Maldives,{maldives},MDV
-Mali,{mali} !@ ({shoes} + {Nouri Al}),MLI
+Mali,{mali} !@ ({shoes} + {nouri al}),MLI
 Malta,{malta},MLT
 Martinique,{martinique},MTQ
 Mauritania,{mauritania},MRT
 Mauritius,{mauritius},MUS
 Mexico,{mexico},MEX
 Micronesia,{micronesia},FSM
-Monaco,{monaco} !@ {AS},MCO
+Monaco,{monaco} !@ {as},MCO
 Mongolia,{mongolia},MNG
 Morocco,{morocco},MAR
 Mozambique,{mozambique},MOZ
