@@ -49,8 +49,6 @@ var countriesString = countries.join('\n');
 var characterDistance = 300;
 var topFilter = 25;
 
-processResponse(fs.readFileSync('tmp.html', 'utf8'));
-
 var body = {"from-date": fromDateString,
             "to-date": toDateString,
             "search-strings": countriesString,
