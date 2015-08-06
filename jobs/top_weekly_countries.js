@@ -16,25 +16,25 @@ switch (process.argv.length) {
   // no arguments means last 7 days
   toDate = new Date();
   fromDate = new Date(toDate - 24*7*60*60*1000);
-  toDate = new Date(toDate - 24*60*60); // server takes inclusive range
+  toDate = new Date(toDate - 24*1*60*60*1000); // server takes inclusive range
   break;
   case 3:
   // 1 arguments specifies to date
   toDate = new Date(process.argv[2]);
   fromDate = new Date(toDate - 24*7*60*60*1000);
-  toDate = new Date(toDate - 24*60*60);
+  toDate = new Date(toDate - 24*1*60*60*1000);
   break;
   case 4:
   fromDate = new Date(process.argv[2]);
   toDate = new Date(process.argv[3]);
-  toDate = new Date(toDate - 24*60*60); 
+  toDate = new Date(toDate - 24*1*60*60*1000); 
   break;
   // 2 arguments specifies range
   default:
   console.error('Unknown arguments');
   process.exit(-1);
 }
-var upperBoundDate = new Date(toDate + 24*60*60);
+var upperBoundDate = new Date(toDate + 24*60*60*1000);
 var fromDateString = fromDate.toISOString().slice(0,10);
 var toDateString = toDate.toISOString().slice(0,10);
 var countries = fs.readFileSync('../resources/dictionary.csv', 'utf8');
@@ -73,7 +73,7 @@ var req = http.request(requestOptions, function(res) {
             });
             res.on('end', function() {
               processResponse(responseBody);              
-              fs.writeFileSync(upperBoundDate.toISOString.slice(0, 10) + '.html', responseBody);
+              fs.writeFileSync(upperBoundDate.toISOString().slice(0, 10) + '.html', responseBody);
             });
           });    
 
@@ -115,16 +115,16 @@ function processResponse(body) {
     }],
                function(err, res) {
                  var thStyle = 'border-bottom: 1px solid black; padding-left: 1em; padding-right: 1em; padding-top: 0.25em; padding-bottom: 0.25em';
-                 var htmlEmail = new String('<p>The top countries are <table style="border-collapse: collapse"><thead><tr>\
+                 var htmlEmail = new String('<p>The top countries are <table style="border-collapse: collapse"><thead><tr>\n\
 <th style="' + thStyle + '">Rank</th>\
 <th style="' + thStyle + '">Country</th>\
 <th style="' + thStyle + '">Search Pattern</th>\
 <th style="' + thStyle + '">Symbol</th>\
-<th style="' + thStyle + '">Occurences</th>\
+<th style="' + thStyle + '">Occurences</th>\n\
 </tr></thead><tbody>');
                  res[0].slice(0,25).forEach(function(country, idx) {
                    var style = 'text-align: center; padding-left: 1em; padding-right: 1em; padding-top: 0.25em; padding-bottom: 0.25em';
-                   htmlEmail += '<tr>\
+                   htmlEmail += '\n<tr>\
 <td style="' + style + '">' + (idx + 1) + '</td>\
 <td style="' + style + '">' + country.name + '</td>\
 <td style="' + style + '">' + country.searchPattern + '</td>\
