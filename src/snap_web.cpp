@@ -28,8 +28,10 @@ namespace snap {
       return uri;
     }
 
-    std::string sanitize_string(std::string s) {
+    std::string decode_uri(std::string s) {
       boost::replace_all(s, "%0D%0A", "\n");
+      boost::replace_all(s, "%0A", "\n");
+      boost::replace_all(s, "%20", " ");
       boost::replace_all(s, "%21", "!");
       boost::replace_all(s, "%22", "\"");
       boost::replace_all(s, "%26", "&");

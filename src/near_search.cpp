@@ -28,8 +28,8 @@ int main() {
 
   // process user input
   std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
-  std::string search_string01 = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string-1"]));
-  std::string search_string02 = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string-2"]));
+  std::string search_string01 = snap::web::decode_uri(boost::algorithm::trim_copy(arguments["search-string-1"]));
+  std::string search_string02 = snap::web::decode_uri(boost::algorithm::trim_copy(arguments["search-string-2"]));
   int distance = stoi(arguments["distance"]);
   boost::gregorian::date current_date, from_date, to_date;
   try {

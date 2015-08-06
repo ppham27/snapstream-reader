@@ -41,7 +41,7 @@ int main() {
 
   // process user input
   std::map<std::string, std::string> arguments = snap::web::parse_query_string(query_string);
-  std::string search_string = snap::web::sanitize_string(boost::algorithm::trim_copy(arguments["search-string"]));
+  std::string search_string = snap::web::decode_uri(boost::algorithm::trim_copy(arguments["search-string"]));
   boost::gregorian::date from_date, to_date;
   try {
     from_date = snap::date::string_to_date(arguments["from-date"]);

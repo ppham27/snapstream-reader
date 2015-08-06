@@ -156,7 +156,7 @@ int main() {
   
   // process search strings
   std::vector<std::string> search_strings;
-  arguments["search-strings"] = snap::web::sanitize_string(arguments["search-strings"]);
+  arguments["search-strings"] = snap::web::decode_uri(arguments["search-strings"]);
   boost::split(search_strings, arguments["search-strings"], boost::is_any_of("\n"));
   // remove empty strings  
   auto search_string_iterator = search_strings.begin();
