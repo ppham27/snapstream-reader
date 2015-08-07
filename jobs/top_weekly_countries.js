@@ -125,15 +125,15 @@ function processResponse(body) {
                  res[0].slice(0,25).forEach(function(country, idx) {
                    var style = 'text-align: center; padding-left: 1em; padding-right: 1em; padding-top: 0.25em; padding-bottom: 0.25em';
                    htmlEmail += '\n<tr>\
-<td style="' + style + '">' + (idx + 1) + '</td>\
-<td style="' + style + '">' + country.name + '</td>\
-<td style="' + style + '">' + country.searchPattern + '</td>\
-<td style="' + style + '">' + country.symbol + '</td>\
-<td style="' + style + '">' + country.count + '</td>\
+<td style="' + style + '">' + (idx + 1) + '</td>\n\
+<td style="' + style + '">' + country.name + '</td>\n\
+<td style="' + style + '">' + country.searchPattern + '</td>\n\
+<td style="' + style + '">' + country.symbol + '</td>\n\
+<td style="' + style + '">' + country.count + '</td>\n\
 </tr>'
                  });                 
                  htmlEmail += '</tbody></table></p>';                 
-                 htmlEmail += '<p>';
+                 htmlEmail += '\n<p>';
                  htmlEmail += 'See the visualization <a href="' + (relativeUrl + visualizationLink) + '">here</a>.';
                  htmlEmail += '</p>';
                  transporter.sendMail({

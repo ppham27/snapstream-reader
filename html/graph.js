@@ -116,7 +116,12 @@ window.location.search.slice(1).split('&').forEach(function(keyValues) {
   urlQuery[kvSplit[0]] = kvSplit[1];
 });
 var fileName = decodeURIComponent(urlQuery['filename'] || 'multiple_time_varied.json');
-var title = decodeURIComponent(urlQuery['title'] || 'Graph');
+var title = 'Graph';
+try {
+  title = decodeURIComponent(urlQuery['title'] || 'Graph');
+} catch(err) {
+  console.error(err);
+}
 document.getElementById('graph-title').innerHTML = title;
 d3.json(fileName, function(err, graph) {
   allGraphData = graph;
