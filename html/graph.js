@@ -151,8 +151,6 @@ d3.json(fileName, function(err, graph) {
     });
   }  
   initializeGraph(selectedGraphData, {create: true});
-  circularLayout();
-  draw();
 });
 
 // draw graph
@@ -515,6 +513,7 @@ function initializeGraph(graph, options) {
     node.exit().transition().duration(1000).style('opacity', 0).remove();
     nodeLabel.exit().transition().duration(1000).style('opacity', 0).remove();    
   }
+  if (options.create) { circularLayout(); draw(); } // initial layout
   // normalize length
   setIdealDistance(maxDistance);
   setTimeout(function() {
