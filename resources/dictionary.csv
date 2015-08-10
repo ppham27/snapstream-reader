@@ -72,7 +72,7 @@ Greenland,{greenland},GRL
 Grenada,{grenada} !@ {mississippi},GRD
 Guam,{guam},GUM
 Guatemala,{guatemala},GTM
-Guinea,{guinea} + ({guinea conakry} !@ ({bisseau} + {equatorial} + {papua new})),GIN
+Guinea,{guinea conakry} + ({guinea} !@ ({bisseau} + {equatorial} + {pig*} + {fowl*} + {a guinea} + {french guinea} + {new guinea})),GIN
 Guinea-Bissau,{guinea-bisseau},GNB
 Guyana,{guyana},GUY
 Haiti,{haiti},HTI
@@ -181,7 +181,7 @@ Togo,{togo},TGO
 Tonga,{tonga},TON
 Trinidad and Tobago,{trinidad} + {tobago},TTO
 Tunisia,{tunisia},TUN
-Turkey,{turkey} !& ( {breast} + {melt} + {thanksgiving} + {dinner} + {cooking} +{burger} + {roast} + {sandwich} + {a turkey} + {the turkey} + {talk turkey} + {cold turkey}),TUR
+Turkey,{turkish} + {in turkey} + {at turkey} + {to turkey} + {into turkey} + {from turkey} + {through turkey} + ({turkey} @ ({country} + {countries} + {lira} + {soccer} + {islam} + {muslim} + {saudi} + {arab} +  {history} + {ancient} + {istanbul} + {kurd*} + {iraq} + {minister} + {asia*} + {europe*} + {africa*})),TUR
 Turkmenistan,{turkmenistan},TKM
 Uganda,{uganda},UGA
 Ukraine,{ukraine},UKR

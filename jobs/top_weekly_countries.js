@@ -4,7 +4,7 @@ var querystring = require('querystring');
 var async = require('async');
 var cheerio = require('cheerio');
 var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport()
+var transporter = nodemailer.createTransport();
 
 var mailFrom = 'phamp@math.upenn.edu';
 var mailTo = ['phamp@math.upenn.edu', 'pemantle@math.upenn.edu', 'dmutz@asc.upenn.edu'].join(', ');
@@ -142,8 +142,8 @@ function processResponse(body) {
                    subject: 'Top Countries from ' + fromDateString + ' to ' + toDateString,
                    html: htmlEmail
                  }, function(err, info) {
-                      if (err) console.error(err); process.exit(-1);
-                      console.log(info);
+                      if (err) fs.writeFileSync('job_status_err.txt', err.toString());
+                      fs.writeFileSync('job_status_info.txt', info.toString());
                     })
                });
 }

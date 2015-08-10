@@ -28,18 +28,21 @@ layoutSelector.append("button")
 .attr('disabled', true)
 .attr('class', 'layout spring-embed')
 .on("click", function() {
+  window.location.hash = 'spring-embed';
   springEmbedLayout({ offset: true }); draw(1000);
 });
 layoutSelector.append("br");
 layoutSelector.append("button")
 .text("Random")
 .on("click", function() {
+  window.location.hash = 'random';
   randomLayout(); draw(1000);
 });
 layoutSelector.append("br");
 layoutSelector.append("button")
 .text("Reset")
 .on("click", function() {
+  window.history.pushState("", document.title, window.location.pathname);
   circularLayout(); draw(1000);
 });
 var timeSelector = rightSidebar.append("div")
@@ -146,9 +149,8 @@ d3.json(fileName, function(err, graph) {
       }
       if (idx !== times.length - 1) timeSelectorForm.append("br");
     });
-  }
-  
-  initializeGraph(selectedGraphData, {create: true});  
+  }  
+  initializeGraph(selectedGraphData, {create: true});
   circularLayout();
   draw();
 });
@@ -364,6 +366,7 @@ function getTimeKey() {
 
 function timeChange() {
   selectedGraphData = allGraphData[getTimeKey()];
+  window.history.pushState("", document.title, window.location.pathname);
   initializeGraph(selectedGraphData, {update: true});
   draw(1000);
 }
@@ -520,5 +523,15 @@ function initializeGraph(graph, options) {
     var distance = chooseMaxDistance();
     d3.select('button.layout.spring-embed')
     .attr('disabled', null);
+    switch(window.location.hash) {
+      case '#spring-embed':
+      springEmbedLayout({ offset: true }); draw(1000);
+      break;
+      case '#random':
+      randomLayout(); draw(1000);
+      break;
+      default:
+      // do nothing
+    }
   }, 0);
 }

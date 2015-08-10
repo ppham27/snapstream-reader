@@ -62,9 +62,9 @@ void output_visualization(std::map<std::string, std::map<std::string, std::pair<
   std::ofstream visualization_json(visualization_json_path, std::ios::out);
   visualization_json << json;
   visualization_json.close(); 
-  std::string title = dt + "%20" + std::to_string(topFilter) + "%20" + snap::web::encode_uri(sizes.begin() -> first);
+  std::string title = dt + "%20" + std::to_string(topFilter) + "%20" + snap::web::encode_uri((sizes.begin() -> first).substr(0, 25));
   std::cout << "<br>"
-            << "<a id=\"visualization-link\" href=\"../visualize.html?filename=tmp%2F" + json_file_name + "&title=" + title + "\">" 
+            << "<a id=\"visualization-link\" href=\"../visualize.html?filename=tmp%2F" + json_file_name + "&title=" + title + "#spring-embed\">" 
             << "Visualization"
             << "</a><br>"
             << std::endl;
