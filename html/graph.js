@@ -2,11 +2,11 @@
 var width = 720, height = 720;
 var minSize = 10;
 var maxSize = 50;
-var minDistance = 75;
-var maxDistance = 650;
+var minDistance = 100;
+var maxDistance = 900;
 // we'll binary search for the correct max distance later
 var lowerMaxDistance = 300;
-var upperMaxDistance = 1000;
+var upperMaxDistance = 1500;
 var margin = maxSize;
 var rightSidebar = d3.select("#graph")
                    .append("div")
@@ -128,6 +128,7 @@ try {
 document.getElementById('graph-title').innerHTML = title;
 d3.json(fileName, function(err, graph) {
   allGraphData = graph;
+  setSpringConstant(allGraphData);
   // add times
   if (Array.isArray(allGraphData.nodes) && Array.isArray(allGraphData.links)) {
     // single time
@@ -414,6 +415,25 @@ function isInsideArea() {
            var attr = nodeAttr[d.symbol];
            return attr.x >= attr.r && attr.x <= width - attr.r && attr.y >= attr.r && attr.y <= height - attr.r;
          });
+}
+
+function setSpringConstant(data) {
+  function setSpringConstantHelper(data) {
+    data.links.forEach(function(links, i) {
+      links.forEach(function(link, j) {
+        link.k = link.distance !== 0 ? 1/link.distance : 100;
+      });
+    });
+  }
+  if (Array.isArray(data.nodes) && Array.isArray(data.links)) {
+    // single time
+    setSpringConstantHelper(data);
+  } else {
+    // multiple times
+    Object.keys(data).forEach(function(key) {
+      setSpringConstantHelper(data[key]);
+    });
+  }
 }
 
 function setIdealDistance(maxDistance) {
