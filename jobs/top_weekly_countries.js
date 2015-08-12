@@ -165,6 +165,12 @@ function processResponse(body) {
                  });                 
                  htmlEmail += '</tbody></table></p>';                 
                  htmlEmail += '\n<p>';
+                 var visualizationFilePath = querystring.parse(url.parse(relativeUrl + visualizationLink).query).filename;
+                 if (fs.existsSync('../html/tmp/daily_country') && fs.existsSync('../html/' + visualizationFilePath)) {
+                   fs.createReadStream('../html/' + visualizationFilePath)
+                   .pipe(fs.createWriteStream('../html/tmp/daily_country' + visualizationFilePath.substr(3))); // rm tmp part of file path
+                   visualizationLink = visualizationLink.replace('filename=tmp%2F','filename=tmp%2Fdaily_country%2F');
+                 }
                  htmlEmail += 'See the visualization <a href="' + (relativeUrl + visualizationLink) + '">here</a>.';
                  htmlEmail += '</p>';
                  transporter.sendMail({
@@ -175,6 +181,6 @@ function processResponse(body) {
                  }, function(err, info) {
                       if (err) fs.writeFileSync('job_status_err.txt', JSON.stringify(err));
                       fs.writeFileSync('job_status_info.txt', JSON.stringify(info));
-                    })
+                    });
                });
 }
