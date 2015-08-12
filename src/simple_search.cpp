@@ -73,7 +73,7 @@ int main() {
   std::cout << "<p>" << std::endl;    
   std::cout << "Search string: " << search_string << "<br/>" << std::endl;
   std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
-  std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
+  std::cout << "To (inclusive): " << arguments["to-date"] << "<br/>" << std::endl;
   std::cout << "Number of Excerpts: " << arguments["num-excerpts"] << "<br/>" << std::endl;
   std::cout << "Excerpt Size: " << arguments["excerpt-size"] << "<br/>" << std::endl;
   std::cout << "</p>" << std::endl;  

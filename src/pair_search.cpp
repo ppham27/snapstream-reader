@@ -197,8 +197,8 @@ int main() {
     std::cout << *it << "<br/>" << std::endl;
   }
   std::cout << "Distance: " << arguments["distance"] << "<br/>" << std::endl;
-  std::cout << "From (inclusive): " << arguments["from-date"] << "<br/>" << std::endl;
-  std::cout << "To (exclusive): " << arguments["to-date"] << "<br/>" << std::endl;
+  std::cout << "From (inclusive): <span id=\"from-date\">" << arguments["from-date"] << "</span><br/>" << std::endl;
+  std::cout << "To (inclusive): <span id=\"to-date\">" << arguments["to-date"] << "</span><br/>" << std::endl;
   std::cout << "</p>" << std::endl;
 
   // initiate result matrix

@@ -1,5 +1,7 @@
+/*global countries */
 var http = require('http');
 var fs = require('fs');
+var url = require('url');
 var querystring = require('querystring');
 var async = require('async');
 var cheerio = require('cheerio');
@@ -7,10 +9,12 @@ var nodemailer = require('nodemailer');
 var transporter = nodemailer.createTransport();
 
 var mailFrom = 'phamp@math.upenn.edu';
-var mailTo = ['phamp@math.upenn.edu', 'pemantle@math.upenn.edu', 'dmutz@asc.upenn.edu'].join(', ');
+var mailTo = process.env.NODE_ENV === 'test' ? 'phamp@math.upenn.edu' : ['phamp@math.upenn.edu', 'pemantle@math.upenn.edu', 'dmutz@asc.upenn.edu'].join(', ');
 
 // determine date range, from is inclusive, to is exclusive
 var toDate, fromDate;
+var readFile = false;
+var file;
 switch (process.argv.length) {
   case 2:
   // no arguments means last 7 days
@@ -25,18 +29,21 @@ switch (process.argv.length) {
   toDate = new Date(toDate - 24*1*60*60*1000);
   break;
   case 4:
-  fromDate = new Date(process.argv[2]);
-  toDate = new Date(process.argv[3]);
-  toDate = new Date(toDate - 24*1*60*60*1000); 
-  break;
+  if (process.argv[2] === 'file') {
+    readFile = true;
+    file = process.argv[3];
+  } else {
+    fromDate = new Date(process.argv[2]);
+    toDate = new Date(process.argv[3]);
+    toDate = new Date(toDate - 24*1*60*60*1000); 
+  }
+  break;  
   // 2 arguments specifies range
   default:
   console.error('Unknown arguments');
   process.exit(-1);
 }
-var upperBoundDate = new Date(toDate + 24*60*60*1000);
-var fromDateString = fromDate.toISOString().slice(0,10);
-var toDateString = toDate.toISOString().slice(0,10);
+
 var countries = fs.readFileSync('../resources/dictionary.csv', 'utf8');
 var countriesDict = {};
 countries = countries.split('\n').map(function(country) { 
@@ -45,40 +52,53 @@ countries = countries.split('\n').map(function(country) {
               if (searchTerm) countriesDict[searchTerm] = {name: splitLine[0], symbol: splitLine[2]};
               return searchTerm;
             }).filter(function(country) { return !!country; });
-var countriesString = countries.join('\n');
-var characterDistance = 300;
-var topFilter = 25;
 
-var body = {"from-date": fromDateString,
-            "to-date": toDateString,
-            "search-strings": countriesString,
-            "distance": characterDistance,
-            "top-filter": topFilter};
-var postData = querystring.stringify(body);
-var requestOptions = {
-  hostname: 'johnny.sas.upenn.edu',
-  port: 80,
-  path: '/~pemantle/cgi-bin/pair_search',
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
-    'Content-Length': postData.length
-  }    
+if (readFile === true) {
+  var responseBody = fs.readFileSync(file, 'utf8');
+  var $ = cheerio.load(responseBody);  
+  fromDate = new Date($('#from-date').text());
+  toDate = new Date($('#to-date').text());
+  var upperBoundDate = new Date(toDate + 24*60*60*1000);
+  var fromDateString = fromDate.toISOString().slice(0,10);
+  var toDateString = toDate.toISOString().slice(0,10);
+  processResponse(responseBody);
+} else {
+  var upperBoundDate = new Date(toDate + 24*60*60*1000);
+  var fromDateString = fromDate.toISOString().slice(0,10);
+  var toDateString = toDate.toISOString().slice(0,10);
+  var characterDistance = 300;
+  var topFilter = 25;
+  var countriesString = countries.join('\n');
+  var body = {"from-date": fromDateString,
+              "to-date": toDateString,
+              "search-strings": countriesString,
+              "distance": characterDistance,
+              "top-filter": topFilter};
+  var postData = querystring.stringify(body);
+  var requestOptions = {
+    hostname: 'johnny.sas.upenn.edu',
+    port: 80,
+    path: '/~pemantle/cgi-bin/pair_search',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Length': postData.length
+    }    
+  }
+  var responseBody = new String();
+  var req = http.request(requestOptions, function(res) {
+              res.on('data', function(chunk) {
+                responseBody += chunk;
+              });
+              res.on('end', function() {
+                processResponse(responseBody);              
+                fs.writeFileSync(upperBoundDate.toISOString().slice(0, 10) + '.html', responseBody);
+              });
+            });    
+
+  req.write(postData);
+  req.end();
 }
-
-var responseBody = new String();
-var req = http.request(requestOptions, function(res) {
-            res.on('data', function(chunk) {
-              responseBody += chunk;
-            });
-            res.on('end', function() {
-              processResponse(responseBody);              
-              fs.writeFileSync(upperBoundDate.toISOString().slice(0, 10) + '.html', responseBody);
-            });
-          });    
-
-req.write(postData);
-req.end();
 
 function processResponse(body) {
   var relativeUrl = 'http://johnny.sas.upenn.edu/~pemantle/cgi-bin/';
