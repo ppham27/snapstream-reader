@@ -53,19 +53,20 @@ countries = countries.split('\n').map(function(country) {
               return searchTerm;
             }).filter(function(country) { return !!country; });
 
+var upperBoundDate, fromDateString, toDateString;
 if (readFile === true) {
   var responseBody = fs.readFileSync(file, 'utf8');
   var $ = cheerio.load(responseBody);  
   fromDate = new Date($('#from-date').text());
   toDate = new Date($('#to-date').text());
-  var upperBoundDate = new Date(toDate + 24*60*60*1000);
-  var fromDateString = fromDate.toISOString().slice(0,10);
-  var toDateString = toDate.toISOString().slice(0,10);
+  upperBoundDate = new Date(toDate + 24*60*60*1000);
+  fromDateString = fromDate.toISOString().slice(0,10);
+  toDateString = toDate.toISOString().slice(0,10);
   processResponse(responseBody);
 } else {
-  var upperBoundDate = new Date(toDate + 24*60*60*1000);
-  var fromDateString = fromDate.toISOString().slice(0,10);
-  var toDateString = toDate.toISOString().slice(0,10);
+  upperBoundDate = new Date(toDate + 24*60*60*1000);
+  fromDateString = fromDate.toISOString().slice(0,10);
+  toDateString = toDate.toISOString().slice(0,10);
   var characterDistance = 300;
   var topFilter = 25;
   var countriesString = countries.join('\n');
@@ -128,7 +129,17 @@ function processResponse(body) {
                                          symbol: countriesDict[searchPattern].symbol,
                                          count: count})
                    });
-                   countryCounts.sort(function(a, b) { return b.count - a.count; });
+                   countryCounts.sort(function(a, b) { 
+                     if (b.count - a.count !== 0) {
+                       return b.count - a.count; 
+                     } else if (a.searchPattern < b.searchPattern) {
+                       return -1;
+                     } else if (a.searchPattern > b.searchPattern) {
+                       return 1;
+                     } else {
+                       return 0;
+                     }
+                   });
                    done(null, countryCounts);
                  });             
                })
@@ -162,8 +173,8 @@ function processResponse(body) {
                    subject: 'Top Countries from ' + fromDateString + ' to ' + toDateString,
                    html: htmlEmail
                  }, function(err, info) {
-                      if (err) fs.writeFileSync('job_status_err.txt', err.toString());
-                      fs.writeFileSync('job_status_info.txt', info.toString());
+                      if (err) fs.writeFileSync('job_status_err.txt', JSON.stringify(err));
+                      fs.writeFileSync('job_status_info.txt', JSON.stringify(info));
                     })
                });
 }
