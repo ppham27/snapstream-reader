@@ -153,6 +153,21 @@ font-family: Helvetica;
 .error {
 color: DarkRed;
 }
+table {
+border-collapse: collapse;
+font-size: 75%;
+}
+table th {
+border-bottom: 1px solid black;
+}
+table th, table td {
+min-width: 75px;
+padding-left: 1em;
+padding-right: 1em;
+padding-top: 0.25em;
+padding-bottom: 0.25em;
+text-align: center;
+}
 </style>
 </head>
 <body>)ZZZ"<< std::endl;

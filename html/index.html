@@ -49,18 +49,30 @@
       <span>Random: <input type="checkbox" name="random"></span><br/>
       <input type="submit" value="Simple search">
     </form>
-    <h2>Near search</h2>
-    <h4>Search for a pair of expressions within a certain distance...</h4>
-    <form action="cgi-bin/near_search" method="POST">
-      <span>Search String 1: <input type="text" name="search-string-1"></span><br/>
-      <span>Search String 2: <input type="text" name="search-string-2"></span><br/>
+    
+    <h2>Multiple Search</h2>
+    <h4>Search for multiple expressions and receive time series data...</h4>
+    <form action="cgi-bin/multiple_search" method="POST">
+      <span>Search strings:</span><br/>
+      <textarea name="search-strings" rows="10" cols="50"></textarea><br/>
       <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date" value="YYYY-MM-DD"></span><br/>
-      <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/>
-      <span>Character distance: <input type="text" name="distance" value="300"></span><br/>      
+      <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/> 
       <span>Number of Excerpts: <input type="text" name="num-excerpts" value="100"></span><br/>
       <span>Excerpt Size: <input type="text" name="excerpt-size" value="400"></span><br/>
-      <input type="submit" value="Near search">
+      <input type="submit" value="Multiple search">
     </form>
+    <!-- <h2>Near search</h2> -->
+    <!-- <h4>Search for a pair of expressions within a certain distance...</h4> -->
+    <!-- <form action="cgi-bin/near_search" method="POST">
+    <span>Search String 1: <input type="text" name="search-string-1"></span><br/>
+    <span>Search String 2: <input type="text" name="search-string-2"></span><br/>
+    <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date" value="YYYY-MM-DD"></span><br/>
+    <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/>
+    <span>Character distance: <input type="text" name="distance" value="300"></span><br/>      
+    <span>Number of Excerpts: <input type="text" name="num-excerpts" value="100"></span><br/>
+    <span>Excerpt Size: <input type="text" name="excerpt-size" value="400"></span><br/>
+    <input type="submit" value="Near search">
+    </form> -->
 
     <h2>Matrix search</h2>
     <h4>Enter a list of expressions on new lines. This returns a matrix of pairwise matches...</h4>
