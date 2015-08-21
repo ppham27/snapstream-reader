@@ -75,6 +75,7 @@ namespace snap {
       }
     };
   }
+  
   namespace date {
     boost::gregorian::date string_to_date(std::string d);
     std::string date_to_string(boost::gregorian::date d);
@@ -90,6 +91,10 @@ namespace snap {
       }
     };
   }
+
+  namespace word {
+    std::vector<std::vector<std::string>> tokenize(std::string text);
+  }  
 }
 
 #endif

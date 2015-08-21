@@ -1,5 +1,5 @@
 include_directories(${CMAKE_SOURCE_DIR}/src)
-add_library(snap snap.cpp snap_io.cpp snap_date.cpp snap_web.cpp)
+add_library(snap snap.cpp snap_io.cpp snap_date.cpp snap_web.cpp snap_word.cpp)
 add_library(distance distance.cpp)
 add_library(Program Program.cpp)
 add_library(Excerpt Excerpt.cpp)

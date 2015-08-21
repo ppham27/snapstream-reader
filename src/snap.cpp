@@ -14,7 +14,6 @@
 
 namespace snap {
 
-
   std::vector<int> orv(const std::vector<int> &a, const std::vector<int> &b) {
     std::vector<int> c; 
     c.insert(c.end(), a.begin(), a.end());
