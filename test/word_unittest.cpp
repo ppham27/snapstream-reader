@@ -23,7 +23,7 @@ TEST(tokenize, default) {
   text = R"ZZZ((School bell ringing) Well, at least now there's plenty of room for your masculinity. Not that you'll need it. Shake it up! 
 Chyna: It should've been like any other day. Compose a four-part symphonic masterpiece, gently decline Fletcher's advances, and then walk Cameron home from school. 
 (Panting) I thought I knew who I was. I thought I knew who my friends were. But today was not like any other day. 
-(Groaning) Nothing was like it normally is. )ZZZ";
+(Groaning) Nothing was like it normally is. region)ZZZ";
   expected_phrases = std::vector<std::vector<std::string>>{std::vector<std::string>{"school", "bell", "ringing"},
                                                            std::vector<std::string>{"well"},
                                                            std::vector<std::string>{"least", "now", "there"},
@@ -43,7 +43,8 @@ Chyna: It should've been like any other day. Compose a four-part symphonic maste
                                                            std::vector<std::string>{"thought", "knew", "who", "friends", "were"},
                                                            std::vector<std::string>{"but", "today", "was", "not", "like", "any", "other", "day"},
                                                            std::vector<std::string>{"groaning"},
-                                                           std::vector<std::string>{"nothing", "was", "like", "normally"}};
+                                                           std::vector<std::string>{"nothing", "was", "like", "normally"},
+                                                           std::vector<std::string>{"region"}};
   actual_phrases = snap::word::tokenize(text);
   ASSERT_EQ(expected_phrases.size(), actual_phrases.size());
   for (int i = 0; i < expected_phrases.size(); ++i) {

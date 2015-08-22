@@ -167,6 +167,7 @@ namespace snap {
           currentWord.clear();
         }         
       }
+      if (currentWord.size() > 2) phrases.back().push_back(currentWord);
       if (phrases.back().empty()) phrases.pop_back();
       return phrases;
     }
