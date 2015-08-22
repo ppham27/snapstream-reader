@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
   std::map<std::string, int> word_count_b = get_word_count(file_list_b);
   std::map<std::string, std::pair<int, int>> hot_list = snap::word::compare_word_counts(word_count_a, word_count_b, min_count, percent_increase);
 
-  std::cout << "<table><thead><tr><th>Word</th><th>Occurences in interval A</th><th>Occurences in interval B</th>";
+  std::cout << "<table><thead><tr><th>Word</th><th>Occurrences in interval A</th><th>Occurrences in interval B</th>";
   std::cout << "</tr></thead><tbody>" << std::endl;
   for (std::pair<std::string, std::pair<int, int>> hot_word : hot_list) {
     std::cout << "<tr>" << std::endl;

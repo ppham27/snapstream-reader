@@ -96,6 +96,20 @@ TEST(compare_word_counts, default) {
   ASSERT_EQ(55000, hot_words["jobin"].second);
   ASSERT_EQ(0, hot_words["tim"].first);  
   ASSERT_EQ(100, hot_words["tim"].second);  
+  word_count_a = std::map<std::string, int>();
+  word_count_b = std::map<std::string, int>();
+  word_count_b["philip"] = 240;
+  word_count_a["philip"] = 100;
+  word_count_b["chris"] = 239;
+  word_count_a["chris"] = 100;
+  word_count_b["television"] = 241;
+  word_count_a["television"] = 100;
+  hot_words = snap::word::compare_word_counts(word_count_a,
+                                              word_count_b,
+                                              10, 2.4);
+  // ASSERT_TRUE(hot_words.count("philip"));
+  ASSERT_TRUE(hot_words.count("television"));
+  ASSERT_FALSE(hot_words.count("chris"));
 }
 
 int main(int argc, char **argv) {
