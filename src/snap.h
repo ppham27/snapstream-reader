@@ -5,6 +5,7 @@
 #include <map>
 #include <exception>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "boost/date_time/gregorian/gregorian.hpp"
@@ -93,7 +94,12 @@ namespace snap {
   }
 
   namespace word {
-    std::vector<std::vector<std::string>> tokenize(std::string text);
+    std::vector<std::vector<std::string>> tokenize(const std::string &text);
+    std::map<std::string, int> count_words(const std::vector<std::vector<std::string>> &phrases);
+    std::map<std::string, std::pair<int, int>> compare_word_counts(const std::map<std::string, int> &a, 
+                                                                   const std::map<std::string, int> &b,
+                                                                   int min_count,
+                                                                   double min_percent_increase);
   }  
 }
 

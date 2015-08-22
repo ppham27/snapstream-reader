@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Snapstream Searcher</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <h1>Hot List</h1>
+    <form action="cgi-bin/hot_list" method="POST">
+      <h2>Interval A</h2>
+      <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date-a" value="YYYY-MM-DD"></span><br/>
+      <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date-a" value="YYYY-MM-DD"></span><br/>
+      <h2>Interval B</h2>      
+      <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date-b" value="YYYY-MM-DD"></span><br/>
+      <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date-b" value="YYYY-MM-DD"></span><br/>
+      <h2>Options</h2> 
+      <span>Minimum Occurrences (in interval B): <input type="text" name="min-occurences" value="100"></span><br/>
+      <span>Minimum Multiplier (occurences in interval B/occurences in interval A): <input type="text" name="percent-increase" value="3.0"></span><br/>
+      <button type="submit">Generate hot list</button>
+    </form>
+
+    <script>
+     var toDateB = new Date();
+     var fromDateB = new Date(toDateB - 24*7*60*60*1000);
+     var toDateB = new Date(toDateB - 24*1*60*60*1000); // server takes inclusive range
+     var toDateA = new Date(fromDateB - 24*1*60*60*1000);
+     var fromDateA = new Date(fromDateB - 24*7*60*60*1000);
+     document.querySelector('input[name="from-date-a"]').value = fromDateA.toISOString().slice(0,10);
+     document.querySelector('input[name="to-date-a"]').value = toDateA.toISOString().slice(0,10);
+     document.querySelector('input[name="from-date-b"]').value = fromDateB.toISOString().slice(0,10);
+     document.querySelector('input[name="to-date-b"]').value = toDateB.toISOString().slice(0,10);
+    </script>
+  </body>
+</html>

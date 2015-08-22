@@ -1,4 +1,6 @@
 #include <array>
+#include <cmath>
+#include <cctype>
 
 #include "snap.h"
 
@@ -145,9 +147,54 @@ std::array<char_type, 128> char_types { OTHER, // NUL 0
 
 namespace snap {
   namespace word {
-    std::vector<std::vector<std::string>> tokenize(std::string text) {
+    std::vector<std::vector<std::string>> tokenize(const std::string &text) {
+      int N = text.length();
       std::vector<std::vector<std::string>> phrases;
+      phrases.emplace_back();
+      std::string currentWord;
+      for (int i = 0; i < N; ++i) {
+        char c = text[i];
+        if (char_types[c] == PUNCTUATION || char_types[c] == OTHER || char_types[c] == NUMBER) {
+          // word has ended          
+          if (currentWord.size() > 2) phrases.back().push_back(currentWord);          
+          currentWord.clear();
+          if (!phrases.back().empty()) phrases.emplace_back();
+        } else if (char_types[c] == UPPER_LETTER || char_types[c] == LOWER_LETTER) {
+          if (char_types[c] == UPPER_LETTER) c = tolower(c);
+          currentWord += c;
+        } else if (char_types[c] == SPACE || char_types[c] == HYPHEN) {
+          if (currentWord.size() > 2) phrases.back().push_back(currentWord);
+          currentWord.clear();
+        }         
+      }
+      if (phrases.back().empty()) phrases.pop_back();
       return phrases;
+    }
+
+    std::map<std::string, int> count_words(const std::vector<std::vector<std::string>> &phrases) {
+      std::map<std::string, int> word_counts;
+      for (std::vector<std::string> phrase : phrases) {
+        for (std::string word : phrase) ++word_counts[word];
+      }
+      return word_counts;
+    }
+
+    std::map<std::string, std::pair<int, int>> compare_word_counts(const std::map<std::string, int> &a, 
+                                                                   const std::map<std::string, int> &b,
+                                                                   int min_count,
+                                                                   double min_percent_increase) {
+      std::map<std::string, std::pair<int, int>> top_words;
+      for (std::pair<std::string, int> word : b) {
+        if (word.second >= min_count) {
+          if (a.count(word.first)) {
+            double percent_increase = ((double) word.second)/a.at(word.first);
+            if (percent_increase >= min_percent_increase) top_words[word.first] = std::make_pair(a.at(word.first), word.second);
+          } else {
+            top_words[word.first] = std::make_pair(0, word.second);
+          }
+        }
+      }
+      return top_words;
     }
   }
 }
