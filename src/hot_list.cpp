@@ -7,8 +7,8 @@ const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
-std::map<std::string, int> get_word_count(const std::vector<std::string> &file_list) {
-  std::map<std::string, int> word_count;
+std::map<std::string, std::pair<int, int>> get_word_count(const std::vector<std::string> &file_list) {
+  std::map<std::string, std::pair<int, int>> word_count;
   // run through dates
   std::vector<std::string> missing_files;
   std::vector<std::string> corrupt_files;
@@ -24,7 +24,10 @@ std::map<std::string, int> get_word_count(const std::vector<std::string> &file_l
                   << "...</span></br>" << std::endl;
         for (snap::Program program : programs) {
           std::map<std::string, int> program_word_count = snap::word::count_words(snap::word::tokenize(program.lower_text));
-          for (std::pair<std::string, int> count : program_word_count) word_count[count.first] += count.second;
+          for (std::pair<std::string, int> count : program_word_count) {
+            word_count[count.first].first += 1; // program count
+            word_count[count.first].second += count.second; // total word count
+          }
         }
       } catch (snap::io::CorruptFileException &e) {
         programs.clear();
@@ -71,17 +74,26 @@ int main(int argc, char *argv[]) {
   }
   std::vector<std::string> file_list_a = snap::io::generate_file_names(from_date_a, to_date_a, prefix, suffix);
   std::vector<std::string> file_list_b = snap::io::generate_file_names(from_date_b, to_date_b, prefix, suffix);
-  std::map<std::string, int> word_count_a = get_word_count(file_list_a);
-  std::map<std::string, int> word_count_b = get_word_count(file_list_b);
-  std::map<std::string, std::pair<int, int>> hot_list = snap::word::compare_word_counts(word_count_a, word_count_b, min_count, percent_increase);
+  std::map<std::string, std::pair<int, int>> word_count_a = get_word_count(file_list_a);
+  std::map<std::string, std::pair<int, int>> word_count_b = get_word_count(file_list_b);
+  // just use the program counts
+  std::map<std::string, int> word_count_a_programs;
+  for (std::pair<std::string, std::pair<int, int>> count : word_count_a) word_count_a_programs[count.first] = count.second.first;
+  std::map<std::string, int> word_count_b_programs;
+  for (std::pair<std::string, std::pair<int, int>> count : word_count_b) word_count_b_programs[count.first] = count.second.first;
+  std::map<std::string, std::pair<int, int>> hot_list = snap::word::compare_word_counts(word_count_a_programs, 
+                                                                                        word_count_b_programs, 
+                                                                                        min_count, percent_increase);
 
-  std::cout << "<table><thead><tr><th>Word</th><th>Occurrences in interval A</th><th>Occurrences in interval B</th>";
+  std::cout << "<table><thead><tr><th>Word</th><th>Occurrences in interval A (programs)</th><th>Occurrences in interval B (programs)</th><th>Occurrences in interval A (total)</th><th>Occurrences in interval B (total)</th>";
   std::cout << "</tr></thead><tbody>" << std::endl;
   for (std::pair<std::string, std::pair<int, int>> hot_word : hot_list) {
     std::cout << "<tr>" << std::endl;
     std::cout << "<td>" << hot_word.first << "</td>" << std::endl;
     std::cout << "<td>" << hot_word.second.first << "</td>" << std::endl;
     std::cout << "<td>" << hot_word.second.second << "</td>" << std::endl;
+    std::cout << "<td>" << word_count_a[hot_word.first].second << "</td>" << std::endl;
+    std::cout << "<td>" << word_count_b[hot_word.first].second << "</td>" << std::endl;
     std::cout << "</tr>" << std::endl;
   }    
   std::cout << "</tbody></table>" << std::endl;
