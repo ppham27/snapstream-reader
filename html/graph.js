@@ -113,18 +113,9 @@ var maxLinkDistance, minLinkDistance;
 var link = svg.append('g').selectAll(".link.data");
 var node = svg.append('g').selectAll(".node.data");
 var nodeLabel = svg.append('g').selectAll(".node-label.data");
-var urlQuery = {};
-window.location.search.slice(1).split('&').forEach(function(keyValues) {
-  var kvSplit = keyValues.split('=');  
-  urlQuery[kvSplit[0]] = kvSplit[1];
-});
-var fileName = decodeURIComponent(urlQuery['filename'] || 'multiple_time_varied.json');
-var title = 'Graph';
-try {
-  title = decodeURIComponent(urlQuery['title'] || 'Graph');
-} catch(err) {
-  console.error(err);
-}
+var urlQuery = parseQueryString(window.location.search.slice(1));
+var fileName = urlQuery['filename'] || 'multiple_time_varied.json';
+var title = urlQuery['title'] || 'Graph';
 document.getElementById('graph-title').innerHTML = title;
 d3.json(fileName, function(err, graph) {
   allGraphData = graph;
@@ -144,7 +135,7 @@ d3.json(fileName, function(err, graph) {
                               .attr("name", "time")
                               .attr("value", time);
       timeSelectorForm.append("span").attr("class", "time-label").text(time);
-      if (idx === 0) {
+      if (idx === times.length - 1) {
         timeSelectorRadio.attr("checked", true);
         selectedGraphData = allGraphData[time];
       }
@@ -365,7 +356,8 @@ function getTimeKey() {
 
 function timeChange() {
   selectedGraphData = allGraphData[getTimeKey()];
-  window.history.pushState("", document.title, window.location.pathname);
+  window.location.hash
+  // window.history.pushState("", document.title, window.location.pathname);
   initializeGraph(selectedGraphData, {update: true});
   draw(1000);
 }
@@ -382,6 +374,7 @@ function chooseMaxDistance() {
   var lowerBound = lowerMaxDistance;
   var upperBound = upperMaxDistance;
   var distance = lowerBound + Math.floor((upperBound - lowerBound)/2);
+  setIdealDistance(distance);
   // binary search to find the first distance that's invalid  
   while (lowerBound < upperBound) {
     if (!isInside()) {
@@ -535,22 +528,40 @@ function initializeGraph(graph, options) {
   }
   if (options.create) { circularLayout(); draw(); } // initial layout
   // normalize length
-  setIdealDistance(maxDistance);
+  d3.select('button.layout.spring-embed')
+  .attr('disabled', true);
+  var timeout = options.update ? 1000 : 0;
   setTimeout(function() {
-    d3.select('button.layout.spring-embed')
-    .attr('disabled', true);
     var distance = chooseMaxDistance();
     d3.select('button.layout.spring-embed')
     .attr('disabled', null);
-    switch(window.location.hash) {
-      case '#spring-embed':
-      springEmbedLayout({ offset: true }); draw(1000);
-      break;
-      case '#random':
-      randomLayout(); draw(1000);
-      break;
-      default:
-      // do nothing
+    if (options.create) {      
+      switch(window.location.hash) {
+        case '#spring-embed':
+        springEmbedLayout({ offset: true }); draw(1000);
+        break;
+        case '#random':
+        randomLayout(); draw(1000);
+        break;
+        default:
+        // do nothing
+      }
     }
-  }, 0);
+  }, timeout);
+}
+
+function parseQueryString(qs) {
+  var urlQuery = {};
+  qs.split('&').forEach(function(keyValues) {
+    var kvSplit = keyValues.split('=');  
+    var key, value;
+    try {      
+      key = decodeURIComponent(kvSplit[0]);
+      value = decodeURIComponent(kvSplit[1]);
+    } catch(err) {
+      console.error(err);
+    }
+    urlQuery[key] = value;    
+  });
+  return urlQuery;
 }
