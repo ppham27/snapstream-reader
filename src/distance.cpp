@@ -6,9 +6,6 @@
 #include <queue>
 #include <sstream>
 
-#include <iostream>
-
-
 namespace distance {
   std::map<std::string, std::map<std::string, double>> int_matrix_to_double_matrix(const std::map<std::string, std::map<std::string, int>> &M) {
     std::map<std::string, std::map<std::string, double>> newM; 
@@ -33,7 +30,8 @@ namespace distance {
     for (auto it = M.begin(); it != M.end(); ++it) {
       if (top_n_queue.size() < n) {
         top_n_queue.emplace(it -> first, M.at(it -> first).at(it -> first));
-      } else if (top_n_queue.top().second < M.at(it -> first).at(it -> first)) {
+      } else if (top_n_queue.top().second < M.at(it -> first).at(it -> first) ||
+                 (top_n_queue.top().second == M.at(it -> first).at(it -> first) && top_n_queue.top().first > it -> first)) {
         top_n_queue.pop();
         top_n_queue.emplace(it -> first, M.at(it -> first).at(it -> first));
       }
