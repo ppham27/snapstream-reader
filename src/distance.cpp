@@ -20,14 +20,16 @@ namespace distance {
   
   std::map<std::string, std::map<std::string, double>> filter_top(const std::map<std::string, std::map<std::string, double>> &M, 
                                                                   int n) {
-
     // use a priority queue, if N is the number of keys and we're filter for the top n
     // then we're O(N*logN) in time and O(n) in space since we only need to keep the top n keys    
     // found so far in the priority queue
-    auto comp = [](std::pair<std::string, double> a, std::pair<std::string, double> b) -> bool { return b.second < a.second; };
+    auto comp = [](std::pair<std::string, double> a, std::pair<std::string, double> b) -> bool {       
+      return (a.second > b.second) || (a.second == b.second && a.first < b.first); 
+    };
     std::priority_queue<std::pair<std::string, double>, std::vector<std::pair<std::string, double>>, decltype(comp)> top_n_queue(comp);
      
     for (auto it = M.begin(); it != M.end(); ++it) {
+
       if (top_n_queue.size() < n) {
         top_n_queue.emplace(it -> first, M.at(it -> first).at(it -> first));
       } else if (top_n_queue.top().second < M.at(it -> first).at(it -> first) ||

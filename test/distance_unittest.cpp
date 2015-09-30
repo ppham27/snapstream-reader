@@ -6,9 +6,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-#include <iostream>
-
-
 TEST(filter_top, Default) {
   std::map<std::string, std::map<std::string, int>> M;
   M["A"] = std::map<std::string, int>();
@@ -55,6 +52,24 @@ TEST(filter_top, Default) {
     }    
   }  
 }
+
+TEST(filter_top, Ties) {
+  std::map<std::string, std::map<std::string, double>> M;
+  M["{united states} + {united states of america} + {usa}"] = std::map<std::string, double>();
+  M["{united states} + {united states of america} + {usa}"]["{united states} + {united states of america} + {usa}"] = 326;
+  M["{spain}"] = std::map<std::string, double>();
+  M["{spain}"]["{spain}"] = 20;
+  M["{spain}"]["{united states} + {united states of america} + {usa}"] = 0;
+  M["{new zealand}"] = std::map<std::string, double>();
+  M["{new zealand}"]["{new zealand}"] = 20;
+  M["{new zealand}"]["{spain}"] = 0;
+  M["{new zealand}"]["{united states} + {united states of america} + {usa}"] = 0;
+  std::map<std::string, std::map<std::string, double>> N = distance::filter_top(M, 2);
+  ASSERT_EQ(0, N.count("{spain}"));
+  ASSERT_EQ(1, N.count("{new zealand}"));
+  ASSERT_EQ(1, N.count("{united states} + {united states of america} + {usa}"));  
+}
+
 
 TEST(correlate_sum, Default) {
     std::map<std::string, std::map<std::string, int>> M;
