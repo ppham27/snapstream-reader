@@ -2,7 +2,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-const int A = 1000003;
+const int A = 900015709;
 const int M = 1000000007;
 
 TEST(StringHasher, Default) {
@@ -17,7 +17,15 @@ So now faith, hope, and love abide, these three; but the greatest of these is lo
   snap::StringHasher hasher(text, M, A);
   ASSERT_EQ(A, hasher.A);
   ASSERT_EQ(M, hasher.M);
-  ASSERT_EQ(text, hasher.text);
+  ASSERT_EQ(text, hasher.text);  
+  ASSERT_EQ(651994891, hasher.hash(-4, 2)); // If 
+  ASSERT_EQ(116, hasher.hash(18, 18)); // t
+  ASSERT_EQ(901743122, hasher.hash(18, 19)); // to
+  ASSERT_EQ(979240235, hasher.hash(18, 24)); // tongues
+  ASSERT_EQ(hasher.hash(18, 24), hasher.hash(746, 752)); // tongues
+  ASSERT_EQ(426864576, hasher.hash(1261, 99999)); // love.
+  ASSERT_EQ(10, hasher.hash(681, 681)); // \n
+  ASSERT_EQ(838624455, hasher.hash(681, 686)); // \nLove 
 }
 
 int main(int argc, char **argv) {
