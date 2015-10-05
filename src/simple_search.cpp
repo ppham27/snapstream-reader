@@ -8,23 +8,31 @@
 #include <fstream>
 #include <random> 
 #include <string>
+#include <unordered_map>
 
 #include "boost/algorithm/string.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
 
 #include "snap.h"
+#include "StringHasher.h"
 
 const std::string prefix = "Data/";
 const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
+// hashing parameters
+const int A = 900015709;
+const int M = 1000000007;
+const int HASH_WIDTH = 50;
+
 void print_column_headers() {
+  std::cout << "mt_cxt = matching_contexts_cnt" << '\n';
   std::cout << "mt_prg = matching_programs_cnt" << '\n';
   std::cout << "tot_mt = total_matches_cnt" << '\n';
   std::cout << "sel_prg = selected_programs_cnt" << '\n';
   std::cout << "tot_prg = total_programs_cnt" << '\n';
-  std::cout << "dt        \tmt_prg\ttot_mt\tsel_prg\ttot_prg" << std::endl;
+  std::cout << "dt        \tmt_cxt\tmt_prg\ttot_mt\tsel_prg\ttot_prg" << std::endl;
 }
 
 int main() {
@@ -79,6 +87,7 @@ int main() {
   std::cout << "</p>" << std::endl;  
 
   // begin to iteratively process files
+  int matching_contexts_sum = 0;
   int matching_programs_sum = 0;
   int total_matches_sum = 0;
   int selected_programs_sum = 0;
@@ -104,36 +113,52 @@ int main() {
         corrupt_files.push_back(*it);
         continue;
       }
+      int matching_contexts = 0; // context is distinct hash AND distinct program
       int matching_programs = 0;
-      int total_matches = 0;
+      int total_matches = 0;      
       if (random) {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::shuffle(programs.begin(), programs.end(), std::default_random_engine(seed));
       }
+      std::unordered_map<int, int> match_hashes;
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         std::map<std::string, std::vector<int>> raw_match_positions = snap::find(expressions.back().patterns, p -> lower_text);
         std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
-        if (match_positions[search_string].size() > 0) {
+        snap::StringHasher hasher(p -> text, M, A);
+        if (match_positions[search_string].size() > 0) {          
           ++matching_programs;
           total_matches += match_positions[search_string].size();
+          bool context_added = false;
           for (auto it = match_positions[search_string].begin(); it != match_positions[search_string].end(); ++it) {
-            excerpts.emplace_back(*p, *it-excerpt_size, *it+excerpt_size);
-            for (auto pattern = expressions.back().patterns.begin(); pattern != expressions.back().patterns.end(); ++pattern) {
-              excerpts.back().highlight_word(*pattern);
-            }
-            if (random && excerpts.size() <= num_excerpts) {
-              snap::web::print_excerpt(excerpts.back());
+            int match_hash = hasher.hash(*it - HASH_WIDTH, *it + HASH_WIDTH);
+            int hash_cnt = match_hashes[match_hash]++;
+            if (hash_cnt == 0) {               
+              // only add if new hash is encountered
+              if (!context_added) { // only add once per program 
+                context_added = true;
+                ++matching_contexts;
+              }              
+              // only add excerpts with new hashes
+              excerpts.emplace_back(*p, *it-excerpt_size, *it+excerpt_size);
+              for (auto pattern = expressions.back().patterns.begin(); pattern != expressions.back().patterns.end(); ++pattern) {
+                excerpts.back().highlight_word(*pattern);
+              }
+              if (random && excerpts.size() <= num_excerpts) {
+                snap::web::print_excerpt(excerpts.back());
+              }
             }
           }
         }
         match_positions.clear();
       }
+      matching_contexts_sum += matching_contexts;
       matching_programs_sum += matching_programs;
       total_matches_sum += total_matches;
       selected_programs_sum += programs.size();
       total_programs_sum += programs.size();
       search_results.push_back(std::vector<std::string>());
       search_results.back().push_back(snap::date::date_to_string(current_date));
+      search_results.back().push_back(std::to_string(matching_contexts));
       search_results.back().push_back(std::to_string(matching_programs));
       search_results.back().push_back(std::to_string(total_matches));      
       search_results.back().push_back(std::to_string(programs.size()));
@@ -158,6 +183,7 @@ int main() {
     }
   }
   std::cout << "Grand Total:";
+  std::cout << '\t' << matching_contexts_sum;
   std::cout << '\t' << matching_programs_sum;
   std::cout << '\t' << total_matches_sum;
   std::cout << '\t' << selected_programs_sum;
@@ -169,7 +195,7 @@ int main() {
   std::string random_id = std::to_string(rand());
   std::string output_file_name = output_path + search_results.front().front() + "_" + random_id + ".csv";
   std::ofstream output_file(output_file_name);
-  output_file << "dt,matching_programs_cnt,total_matches_cnt,selected_programs_cnt,total_programs_cnt" << std::endl;
+  output_file << "dt,matching_contexts_cnt,matching_programs_cnt,total_matches_cnt,selected_programs_cnt,total_programs_cnt" << std::endl;
   for (auto it = search_results.begin(); it != search_results.end(); ++it) {
     std::copy(it -> begin(), it -> end() - 1, std::ostream_iterator<std::string>(output_file, ","));
     output_file << it -> back() << '\n';
