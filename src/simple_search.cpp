@@ -87,6 +87,7 @@ int main() {
   std::cout << "</p>" << std::endl;  
 
   // begin to iteratively process files
+  std::unordered_map<int, int> total_match_hashes;
   int matching_contexts_sum = 0;
   int matching_programs_sum = 0;
   int total_matches_sum = 0;
@@ -128,30 +129,37 @@ int main() {
         if (match_positions[search_string].size() > 0) {          
           ++matching_programs;
           total_matches += match_positions[search_string].size();
+          bool total_context_added = false;
           bool context_added = false;
           for (auto it = match_positions[search_string].begin(); it != match_positions[search_string].end(); ++it) {
             int match_hash = hasher.hash(*it - HASH_WIDTH, *it + HASH_WIDTH);
             int hash_cnt = match_hashes[match_hash]++;
+            int total_hash_cnt = total_match_hashes[match_hash]++;
             if (hash_cnt == 0) {               
               // only add if new hash is encountered
               if (!context_added) { // only add once per program 
                 context_added = true;
                 ++matching_contexts;
               }              
-              // only add excerpts with new hashes
-              excerpts.emplace_back(*p, *it-excerpt_size, *it+excerpt_size);
-              for (auto pattern = expressions.back().patterns.begin(); pattern != expressions.back().patterns.end(); ++pattern) {
-                excerpts.back().highlight_word(*pattern);
-              }
-              if (random && excerpts.size() <= num_excerpts) {
-                snap::web::print_excerpt(excerpts.back());
+              // only add excerpts with new completely new hashes
+              if (total_hash_cnt == 0) {
+                if (!total_context_added) {
+                  total_context_added = true;
+                  ++matching_contexts_sum;
+                }
+                excerpts.emplace_back(*p, *it-excerpt_size, *it+excerpt_size);
+                for (auto pattern = expressions.back().patterns.begin(); pattern != expressions.back().patterns.end(); ++pattern) {
+                  excerpts.back().highlight_word(*pattern);
+                }
+                if (random && excerpts.size() <= num_excerpts) {
+                  snap::web::print_excerpt(excerpts.back());
+                }
               }
             }
           }
         }
         match_positions.clear();
       }
-      matching_contexts_sum += matching_contexts;
       matching_programs_sum += matching_programs;
       total_matches_sum += total_matches;
       selected_programs_sum += programs.size();
