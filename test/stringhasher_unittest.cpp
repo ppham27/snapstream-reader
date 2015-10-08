@@ -18,7 +18,6 @@ So now faith, hope, and love abide, these three; but the greatest of these is lo
   snap::StringHasher hasher(text, M, A);
   ASSERT_EQ(A, hasher.A);
   ASSERT_EQ(M, hasher.M);
-  ASSERT_EQ(text, hasher.text);  
   ASSERT_EQ(651994891, hasher.hash(-4, 2)); // If 
   ASSERT_EQ(116, hasher.hash(18, 18)); // t
   ASSERT_EQ(901743122, hasher.hash(18, 19)); // to
@@ -43,7 +42,6 @@ So now faith, hope, and love abide, these three; but the greatest of these is lo
   snap::StringHasher hasher(text, M, A);
   ASSERT_EQ(A, hasher.A);
   ASSERT_EQ(M, hasher.M);
-  ASSERT_EQ(text, hasher.text);  
   ASSERT_EQ(148, hasher.hash(-4, 2)); // If 
   ASSERT_EQ(116, hasher.hash(18, 18)); // t
   ASSERT_EQ(81, hasher.hash(18, 19)); // to

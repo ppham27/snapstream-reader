@@ -22,9 +22,9 @@ const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
 // hashing parameters
-const int A = 15;
-const int M = 104729;
-const int HASH_WIDTH = 50;
+const int A = 3;
+const int M = 65071;
+const int HASH_WIDTH = 25;
 
 void print_column_headers() {
   std::cout << "mt_cxt = matching_contexts_cnt" << '\n';
@@ -101,6 +101,7 @@ int main() {
     std::cout << "<pre>" << std::endl;
     print_column_headers();
   }
+  snap::StringHasher hasher("", M, A);
   for (auto it = file_list.begin();
        it != file_list.end();
        ++it) {
@@ -125,7 +126,7 @@ int main() {
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         std::map<std::string, std::vector<int>> raw_match_positions = snap::find(expressions.back().patterns, p -> lower_text);
         std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
-        snap::StringHasher hasher(p -> text, M, A);
+        hasher.load_text(p -> text);
         if (match_positions[search_string].size() > 0) {          
           ++matching_programs;
           total_matches += match_positions[search_string].size();

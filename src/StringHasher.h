@@ -11,19 +11,18 @@
 
 namespace snap {
   class StringHasher {
-  public:
-    const std::string text;
-    const int M;
-    const int A;
+  public:    
+    const unsigned int M;
+    const unsigned int A;
     StringHasher(const std::string &text,
-                 int M, int A);
+                 unsigned int M, unsigned int A);
     int hash(int i, int j);     /* get hash between range i and j inclusive */
-    
+    void load_text(const std::string &text);
   private:
-    std::vector<int> H;    
-    int N;
-    std::vector<int> modular_inverses;
-    int mod_exp(int A, int B, int M);
+    std::vector<unsigned int> H;    
+    int N;    
+    std::vector<unsigned int> modular_inverses;
+    int mod_exp(unsigned int A, unsigned int B, unsigned int M);
   };
 }
 
