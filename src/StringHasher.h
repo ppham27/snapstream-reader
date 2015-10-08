@@ -22,6 +22,7 @@ namespace snap {
   private:
     std::vector<int> H;    
     int N;
+    std::vector<int> modular_inverses;
     int mod_exp(int A, int B, int M);
   };
 }

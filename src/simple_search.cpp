@@ -22,8 +22,8 @@ const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
 // hashing parameters
-const int A = 900015709;
-const int M = 1000000007;
+const int A = 15;
+const int M = 104729;
 const int HASH_WIDTH = 50;
 
 void print_column_headers() {

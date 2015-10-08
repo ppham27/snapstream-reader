@@ -2,6 +2,8 @@
 
 #include "StringHasher.h"
 
+const int MAX_M = 1000000;
+
 snap::StringHasher::StringHasher(const std::string &text,
                                  int M, int A) : text(text), M(M), A(A) { 
   if (text.size() > 0) {
@@ -15,6 +17,15 @@ snap::StringHasher::StringHasher(const std::string &text,
       ALL *= A;
       ALL %= M;
       H.push_back(newHash);
+    }
+    if (M <= MAX_M) {           // precompute modular inverses
+      modular_inverses = std::vector<int>(M - 1);
+      ALL = A;
+      for (int i = M - 2; i >= 0; --i) {
+        modular_inverses[i] = ALL;
+        ALL *= A;
+        ALL %= M;
+      }      
     }
   }
   N = text.size();
@@ -30,7 +41,12 @@ int snap::StringHasher::hash(int i, int j) {
   // we need to multiply through by A^(-i)
   // by Fermat's little theorem, A^(M-1) = 1
   // ==> A^(i)*A^(M-1-i) = 1 ==> A^(-i) = A^(M-1-i)
-  subHash *= mod_exp(A, M - 1 - i, M);
+  i %= M - 1;
+  if (M <= MAX_M) {
+    subHash *= modular_inverses[i];
+  } else {
+    subHash *= mod_exp(A, M - 1 - i, M);
+  }
   subHash %= M;
   return (int) subHash;
 }
