@@ -1,11 +1,18 @@
 #include <iostream>
 
 #include "snap.h"
+#include "StringHasher.h"
 
 const std::string prefix = "Data/";
 const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
+
+// hashing parameters
+const int A = 3;
+const int M = 65071;
+const int HASH_WIDTH = 25;
+snap::StringHasher hasher("", M, A);
 
 std::map<std::string, std::pair<int, int>> get_word_count(const std::vector<std::string> &file_list) {
   std::map<std::string, std::pair<int, int>> word_count;

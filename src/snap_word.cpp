@@ -147,35 +147,37 @@ std::array<char_type, 128> char_types { OTHER, // NUL 0
 
 namespace snap {
   namespace word {
-    std::vector<std::vector<std::string>> tokenize(const std::string &text) {
+    std::vector<std::vector<std::pair<std::string, int>>> tokenize(const std::string &text) {
       int N = text.length();
-      std::vector<std::vector<std::string>> phrases;
+      std::vector<std::vector<std::pair<std::string, int>>> phrases;
       phrases.emplace_back();
       std::string currentWord;
+      int wordStart = -1;
       for (int i = 0; i < N; ++i) {
         char c = text[i];
         if (char_types[c] == PUNCTUATION || char_types[c] == OTHER || char_types[c] == NUMBER) {
           // word has ended          
-          if (currentWord.size() > 2) phrases.back().push_back(currentWord);          
+          if (currentWord.size() > 2) phrases.back().emplace_back(currentWord, wordStart);          
           currentWord.clear();
           if (!phrases.back().empty()) phrases.emplace_back();
         } else if (char_types[c] == UPPER_LETTER || char_types[c] == LOWER_LETTER) {
           if (char_types[c] == UPPER_LETTER) c = tolower(c);
+          if (currentWord.empty()) wordStart = i;
           currentWord += c;
         } else if (char_types[c] == SPACE || char_types[c] == HYPHEN) {
-          if (currentWord.size() > 2) phrases.back().push_back(currentWord);
+          if (currentWord.size() > 2) phrases.back().emplace_back(currentWord, wordStart);
           currentWord.clear();
         }         
       }
-      if (currentWord.size() > 2) phrases.back().push_back(currentWord);
+      if (currentWord.size() > 2) phrases.back().emplace_back(currentWord, wordStart);
       if (phrases.back().empty()) phrases.pop_back();
       return phrases;
     }
 
-    std::map<std::string, int> count_words(const std::vector<std::vector<std::string>> &phrases) {
+    std::map<std::string, int> count_words(const std::vector<std::vector<std::pair<std::string, int>>> &phrases) {
       std::map<std::string, int> word_counts;
-      for (std::vector<std::string> phrase : phrases) {
-        for (std::string word : phrase) ++word_counts[word];
+      for (std::vector<std::pair<std::string,int>> phrase : phrases) {
+        for (std::pair<std::string, int> word : phrase) ++word_counts[word.first];
       }
       return word_counts;
     }
