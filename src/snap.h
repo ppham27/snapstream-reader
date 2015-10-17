@@ -94,8 +94,8 @@ namespace snap {
   }
 
   namespace word {
-    std::vector<std::vector<std::string>> tokenize(const std::string &text);
-    std::map<std::string, int> count_words(const std::vector<std::vector<std::string>> &phrases);
+    std::vector<std::vector<std::pair<std::string, int>>> tokenize(const std::string &text);
+    std::map<std::string, int> count_words(const std::vector<std::vector<std::pair<std::string, int>>> &phrases);
     std::map<std::string, std::pair<int, int>> compare_word_counts(const std::map<std::string, int> &a, 
                                                                    const std::map<std::string, int> &b,
                                                                    int min_count,
