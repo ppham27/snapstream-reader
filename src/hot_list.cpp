@@ -1,6 +1,7 @@
 #include <iostream>
 #include <tuple>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "snap.h"
 #include "StringHasher.h"
@@ -34,14 +35,18 @@ std::map<std::string, std::tuple<int, int, int>> get_word_count(const std::vecto
                   << "...</span></br>" << std::endl;
         for (snap::Program program : programs) {
           hasher.load_text(program.text);
-          std::unordered_map<std::string, int> program_word_count;          
+          std::unordered_set<std::string> program_added; // check if we have added the word to the program yet
+          std::unordered_map<std::string, int> program_word_count;
           std::vector<std::vector<std::pair<std::string, int>>> phrases = snap::word::tokenize(program.lower_text);          
           for (std::vector<std::pair<std::string, int>> phrase : phrases) {
             for (std::pair<std::string, int> word : phrase) {
               int word_hash = hasher.hash(word.second - HASH_WIDTH, word.second + HASH_WIDTH);
               int program_cnt = program_word_count[word.first]++;
               int hash_cnt = word_hashes[word.first][word_hash]++;
-              if (program_cnt == 0 && hash_cnt == 0) std::get<0>(word_count[word.first])++;
+              if (hash_cnt == 0 && program_added.count(word.first) == 0) { // new hash and new program
+                std::get<0>(word_count[word.first])++;
+                program_added.insert(word.first);
+              }
               if (program_cnt == 0) std::get<1>(word_count[word.first])++;
               std::get<2>(word_count[word.first])++;
             }

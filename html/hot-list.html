@@ -24,7 +24,7 @@
     <script>
      var toDateB = new Date();
      if(toDateB.getTimezoneOffset() > 0){
-       toDateB.setUTCHours(toDateB.getUTCHours() - 18);
+       toDateB.setUTCHours(toDateB.getUTCHours() - 12);
      }
      var fromDateB = new Date(toDateB - 24*7*60*60*1000);
      var toDateB = new Date(toDateB - 24*1*60*60*1000); // server takes inclusive range
