@@ -33,7 +33,7 @@ std::map<std::string, std::tuple<int, int, int>> get_word_count(const std::vecto
                   << ymd.day << ", " << ymd.year
                   << "...</span></br>" << std::endl;
         for (snap::Program program : programs) {
-          hasher.load_text(program.lower_text);
+          hasher.load_text(program.text);
           std::unordered_map<std::string, int> program_word_count;          
           std::vector<std::vector<std::pair<std::string, int>>> phrases = snap::word::tokenize(program.lower_text);          
           for (std::vector<std::pair<std::string, int>> phrase : phrases) {
