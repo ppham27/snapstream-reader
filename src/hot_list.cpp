@@ -1,4 +1,6 @@
 #include <iostream>
+#include <tuple>
+#include <unordered_map>
 
 #include "snap.h"
 #include "StringHasher.h"
@@ -14,8 +16,9 @@ const int M = 65071;
 const int HASH_WIDTH = 25;
 snap::StringHasher hasher("", M, A);
 
-std::map<std::string, std::pair<int, int>> get_word_count(const std::vector<std::string> &file_list) {
-  std::map<std::string, std::pair<int, int>> word_count;
+std::map<std::string, std::tuple<int, int, int>> get_word_count(const std::vector<std::string> &file_list) {
+  std::map<std::string, std::tuple<int, int, int>> word_count;
+  std::unordered_map<std::string, std::unordered_map<int, int>> word_hashes;
   // run through dates
   std::vector<std::string> missing_files;
   std::vector<std::string> corrupt_files;
@@ -30,10 +33,18 @@ std::map<std::string, std::pair<int, int>> get_word_count(const std::vector<std:
                   << ymd.day << ", " << ymd.year
                   << "...</span></br>" << std::endl;
         for (snap::Program program : programs) {
-          std::map<std::string, int> program_word_count = snap::word::count_words(snap::word::tokenize(program.lower_text));
-          for (std::pair<std::string, int> count : program_word_count) {
-            word_count[count.first].first += 1; // program count
-            word_count[count.first].second += count.second; // total word count
+          hasher.load_text(program.lower_text);
+          std::unordered_map<std::string, int> program_word_count;          
+          std::vector<std::vector<std::pair<std::string, int>>> phrases = snap::word::tokenize(program.lower_text);          
+          for (std::vector<std::pair<std::string, int>> phrase : phrases) {
+            for (std::pair<std::string, int> word : phrase) {
+              int word_hash = hasher.hash(word.second - HASH_WIDTH, word.second + HASH_WIDTH);
+              int program_cnt = program_word_count[word.first]++;
+              int hash_cnt = word_hashes[word.first][word.second]++;
+              if (program_cnt == 0 && hash_cnt == 0) std::get<0>(word_count[word.first])++;
+              if (program_cnt == 0) std::get<1>(word_count[word.first])++;
+              std::get<2>(word_count[word.first])++;
+            }
           }
         }
       } catch (snap::io::CorruptFileException &e) {
@@ -81,26 +92,28 @@ int main(int argc, char *argv[]) {
   }
   std::vector<std::string> file_list_a = snap::io::generate_file_names(from_date_a, to_date_a, prefix, suffix);
   std::vector<std::string> file_list_b = snap::io::generate_file_names(from_date_b, to_date_b, prefix, suffix);
-  std::map<std::string, std::pair<int, int>> word_count_a = get_word_count(file_list_a);
-  std::map<std::string, std::pair<int, int>> word_count_b = get_word_count(file_list_b);
+  std::map<std::string, std::tuple<int, int, int>> word_count_a = get_word_count(file_list_a);
+  std::map<std::string, std::tuple<int, int, int>> word_count_b = get_word_count(file_list_b);
   // just use the program counts
   std::map<std::string, int> word_count_a_programs;
-  for (std::pair<std::string, std::pair<int, int>> count : word_count_a) word_count_a_programs[count.first] = count.second.first;
+  for (std::pair<std::string, std::tuple<int, int, int>> count : word_count_a) word_count_a_programs[count.first] = std::get<0>(count.second);
   std::map<std::string, int> word_count_b_programs;
-  for (std::pair<std::string, std::pair<int, int>> count : word_count_b) word_count_b_programs[count.first] = count.second.first;
+  for (std::pair<std::string, std::tuple<int, int, int>> count : word_count_b) word_count_b_programs[count.first] = std::get<0>(count.second);
   std::map<std::string, std::pair<int, int>> hot_list = snap::word::compare_word_counts(word_count_a_programs, 
                                                                                         word_count_b_programs, 
                                                                                         min_count, percent_increase);
 
-  std::cout << "<table><thead><tr><th>Word</th><th>Occurrences in interval A (programs)</th><th>Occurrences in interval B (programs)</th><th>Occurrences in interval A (total)</th><th>Occurrences in interval B (total)</th>";
+  std::cout << "<table><thead><tr><th>Word</th><th>Occurrences in interval A (contexts)</th><th>Occurrences in interval B (contexts)</th><th>Occurrences in interval A (programs)</th><th>Occurrences in interval B (programs)</th><th>Occurrences in interval A (total)</th><th>Occurrences in interval B (total)</th>";
   std::cout << "</tr></thead><tbody>" << std::endl;
   for (std::pair<std::string, std::pair<int, int>> hot_word : hot_list) {
     std::cout << "<tr>" << std::endl;
     std::cout << "<td>" << hot_word.first << "</td>" << std::endl;
     std::cout << "<td>" << hot_word.second.first << "</td>" << std::endl;
     std::cout << "<td>" << hot_word.second.second << "</td>" << std::endl;
-    std::cout << "<td>" << word_count_a[hot_word.first].second << "</td>" << std::endl;
-    std::cout << "<td>" << word_count_b[hot_word.first].second << "</td>" << std::endl;
+    std::cout << "<td>" << std::get<1>(word_count_a[hot_word.first]) << "</td>" << std::endl;
+    std::cout << "<td>" << std::get<1>(word_count_b[hot_word.first]) << "</td>" << std::endl;
+    std::cout << "<td>" << std::get<2>(word_count_a[hot_word.first]) << "</td>" << std::endl;
+    std::cout << "<td>" << std::get<2>(word_count_b[hot_word.first]) << "</td>" << std::endl;
     std::cout << "</tr>" << std::endl;
   }    
   std::cout << "</tbody></table>" << std::endl;
