@@ -40,7 +40,7 @@ std::map<std::string, std::tuple<int, int, int>> get_word_count(const std::vecto
             for (std::pair<std::string, int> word : phrase) {
               int word_hash = hasher.hash(word.second - HASH_WIDTH, word.second + HASH_WIDTH);
               int program_cnt = program_word_count[word.first]++;
-              int hash_cnt = word_hashes[word.first][word.second]++;
+              int hash_cnt = word_hashes[word.first][word_hash]++;
               if (program_cnt == 0 && hash_cnt == 0) std::get<0>(word_count[word.first])++;
               if (program_cnt == 0) std::get<1>(word_count[word.first])++;
               std::get<2>(word_count[word.first])++;
@@ -95,12 +95,12 @@ int main(int argc, char *argv[]) {
   std::map<std::string, std::tuple<int, int, int>> word_count_a = get_word_count(file_list_a);
   std::map<std::string, std::tuple<int, int, int>> word_count_b = get_word_count(file_list_b);
   // just use the program counts
-  std::map<std::string, int> word_count_a_programs;
-  for (std::pair<std::string, std::tuple<int, int, int>> count : word_count_a) word_count_a_programs[count.first] = std::get<0>(count.second);
-  std::map<std::string, int> word_count_b_programs;
-  for (std::pair<std::string, std::tuple<int, int, int>> count : word_count_b) word_count_b_programs[count.first] = std::get<0>(count.second);
-  std::map<std::string, std::pair<int, int>> hot_list = snap::word::compare_word_counts(word_count_a_programs, 
-                                                                                        word_count_b_programs, 
+  std::map<std::string, int> word_count_a_contexts;
+  for (std::pair<std::string, std::tuple<int, int, int>> count : word_count_a) word_count_a_contexts[count.first] = std::get<0>(count.second);
+  std::map<std::string, int> word_count_b_contexts;
+  for (std::pair<std::string, std::tuple<int, int, int>> count : word_count_b) word_count_b_contexts[count.first] = std::get<0>(count.second);
+  std::map<std::string, std::pair<int, int>> hot_list = snap::word::compare_word_counts(word_count_a_contexts, 
+                                                                                        word_count_b_contexts, 
                                                                                         min_count, percent_increase);
 
   std::cout << "<table><thead><tr><th>Word</th><th>Occurrences in interval A (contexts)</th><th>Occurrences in interval B (contexts)</th><th>Occurrences in interval A (programs)</th><th>Occurrences in interval B (programs)</th><th>Occurrences in interval A (total)</th><th>Occurrences in interval B (total)</th>";
