@@ -16,13 +16,16 @@
       <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date-b" value="YYYY-MM-DD"></span><br/>
       <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date-b" value="YYYY-MM-DD"></span><br/>
       <h2>Options</h2> 
-      <span>Minimum Programs (in interval B): <input type="text" name="min-occurences" value="30"></span><br/>
+      <span>Minimum Contexts in interval B (a context is a distinct program and hash): <input type="text" name="min-occurences" value="30"></span><br/>
       <span>Minimum Multiplier (occurrences in interval B/occurrences in interval A): <input type="text" name="percent-increase" value="3.0"></span><br/>
       <button type="submit">Generate hot list</button>
     </form>
 
     <script>
      var toDateB = new Date();
+     if(toDateB.getTimezoneOffset() > 0){
+       toDateB.setUTCHours(toDateB.getUTCHours() - 18);
+     }
      var fromDateB = new Date(toDateB - 24*7*60*60*1000);
      var toDateB = new Date(toDateB - 24*1*60*60*1000); // server takes inclusive range
      var toDateA = new Date(fromDateB - 24*1*60*60*1000);
