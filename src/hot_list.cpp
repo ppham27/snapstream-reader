@@ -1,5 +1,7 @@
+#include <chrono> 
 #include <iostream>
 #include <tuple>
+#include <fstream>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -108,9 +110,23 @@ int main(int argc, char *argv[]) {
                                                                                         word_count_b_contexts, 
                                                                                         min_count, percent_increase);
 
-  std::cout << "<table><thead><tr><th>Word</th><th>Occurrences in interval A (contexts)</th><th>Occurrences in interval B (contexts)</th><th>Occurrences in interval A (programs)</th><th>Occurrences in interval B (programs)</th><th>Occurrences in interval A (total)</th><th>Occurrences in interval B (total)</th>";
+  // output file
+  srand(time(NULL));
+  std::string random_id = std::to_string(rand());
+  std::string output_file_name = output_path + snap::date::date_to_string(from_date_a) + "_hot_list_" + random_id + ".csv";
+  std::ofstream output_file(output_file_name);
+  output_file << "Word,Occurrences in interval A (contexts),Occurrences in interval B (contexts),Occurrences in interval A (programs),Occurrences in interval B (programs),Occurrences in interval A (total),Occurrences in interval B (total)" << std::endl;
+
+  std::cout << "<table><thead><tr><th>Word</th><th>Occurrences in interval A (contexts)</th><th>Occurrences in interval B (contexts)</th><th>Occurrences in interval A (programs)</th><th>Occurrences in interval B (programs)</th><th>Occurrences in interval A (total)</th><th>Occurrences in interval B (total)</th>";  
   std::cout << "</tr></thead><tbody>" << std::endl;
   for (std::pair<std::string, std::pair<int, int>> hot_word : hot_list) {
+    output_file << hot_word.first << ',' 
+                << hot_word.second.first << ','
+                << hot_word.second.second << ','
+                << std::get<1>(word_count_a[hot_word.first]) << ','
+                << std::get<1>(word_count_b[hot_word.first]) << ','
+                << std::get<2>(word_count_a[hot_word.first]) << ','
+                << std::get<2>(word_count_b[hot_word.first]) << std::endl;
     std::cout << "<tr>" << std::endl;
     std::cout << "<td>" << hot_word.first << "</td>" << std::endl;
     std::cout << "<td>" << hot_word.second.first << "</td>" << std::endl;
@@ -121,7 +137,9 @@ int main(int argc, char *argv[]) {
     std::cout << "<td>" << std::get<2>(word_count_b[hot_word.first]) << "</td>" << std::endl;
     std::cout << "</tr>" << std::endl;
   }    
+  output_file.close();
   std::cout << "</tbody></table>" << std::endl;
+  std::cout << "<br/><a id =\"hot-list-file\" href=\"" + output_file_name + "\">Output CSV</a><br/>" << std::endl;
     
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
