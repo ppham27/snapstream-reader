@@ -7,8 +7,6 @@
 #include "boost/algorithm/string.hpp"
 #include "Program.h"
 
-#include <iostream>
-
 const std::regex time_regex = std::regex("\\[[0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM)\\]");
 
 snap::Program::Program(const std::string &program_text) {
@@ -26,7 +24,7 @@ snap::Program::Program(const std::string &program_text) {
 }
 
 std::string snap::Program::strip_timestamps(const std::string &text) {
-  std::string stripped_text; stripped_text.reserve(text.size());
+  std::string stripped_text; stripped_text.reserve(text.length());
   int current = 0;
   int left = text.find("[", current);
   while (left != -1) {
@@ -36,9 +34,9 @@ std::string snap::Program::strip_timestamps(const std::string &text) {
     if (11 <= width && width <= 12
         && std::regex_match(text.substr(left, width+1), time_regex)) {
       // found a timestamp, they are preceded by 2 new lines and proceeded by 2 new lines
-      if (left >= 2) left -= 2;
+      while (left > 0 && (text[left-1] == '\n' || text[left-1] == '\r')) --left;
       stripped_text += text.substr(current, left - current); // add all texts before the timestamp
-      if (right < text.size() - 2) right += 2;
+      while (right < text.length() - 1 && (text[right+1] == '\n' || text[right+1] == '\r')) ++right;
     } else {
       // not a timestamp so add everything
       stripped_text += text.substr(current, right - current + 1);
