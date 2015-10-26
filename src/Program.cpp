@@ -3,9 +3,13 @@
 #include <string>
 #include <sstream>
 #include <ctime>
+#include <regex>
 #include "boost/algorithm/string.hpp"
 #include "Program.h"
 
+#include <iostream>
+
+const std::regex time_regex = std::regex("\\[[0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM)\\]");
 
 snap::Program::Program(const std::string &program_text) {
   int header_break = program_text.find("========");
@@ -15,17 +19,35 @@ snap::Program::Program(const std::string &program_text) {
   this -> raw_text = program_text.substr(header_break + 1,
                                          program_text.length() - header_break);
   boost::algorithm::trim(this -> raw_text);
-  (this -> text).resize((this -> raw_text).size());
-  // strip timestamps
-  std::regex_replace((this -> text).begin(), 
-                     (this -> raw_text).begin(), (this -> raw_text).end(),
-                     this -> time_regex, "");
-  int replaced_characters = 0;
-  for (auto it = (this -> text).rbegin(); it != (this -> text).rend() && *it == '\0'; ++it) ++replaced_characters;
-  (this -> text).resize((this -> text).size() - replaced_characters);
+  this -> text = strip_timestamps(this -> raw_text);  
   this -> lower_text = std::string(this -> text);
   std::transform(this -> lower_text.begin(), this -> lower_text.end(),
                  this -> lower_text.begin(), ::tolower);
+}
+
+std::string snap::Program::strip_timestamps(const std::string &text) {
+  std::string stripped_text; stripped_text.reserve(text.size());
+  int current = 0;
+  int left = text.find("[", current);
+  while (left != -1) {
+    int right = text.find("]", current);
+    if (right == -1) break;
+    int width = right - left;
+    if (11 <= width && width <= 12
+        && std::regex_match(text.substr(left, width+1), time_regex)) {
+      // found a timestamp, they are preceded by 2 new lines and proceeded by 2 new lines
+      if (left >= 2) left -= 2;
+      stripped_text += text.substr(current, left - current); // add all texts before the timestamp
+      if (right < text.size() - 2) right += 2;
+    } else {
+      // not a timestamp so add everything
+      stripped_text += text.substr(current, right - current + 1);
+    }
+    current = right + 1;
+    left = text.find("[", current);
+  }
+  stripped_text += text.substr(current); // add the rest of the text
+  return stripped_text;
 }
 
 void snap::Program::read_header(const std::string &header) {

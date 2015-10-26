@@ -2,7 +2,6 @@
 #define PROGRAM_H
 
 #include <string>
-#include <regex>
 
 namespace snap {
   class Program {
@@ -19,9 +18,9 @@ namespace snap {
     bool operator!=(const snap::Program &other) const;
     Program(const std::string &program_text);    
   private:
-    std::regex time_regex = std::regex("\n\n\\[[0-9]{1,2}:[0-9]{2}:[0-9]{2} (AM|PM)\\]\n\n");
     void read_header(const std::string &header);
     std::string read_date(const std::string &date);
+    std::string strip_timestamps(const std::string &text);
   };  
 }
 
