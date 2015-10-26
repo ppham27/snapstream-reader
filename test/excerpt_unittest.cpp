@@ -47,14 +47,14 @@ Hero before it became passe and awful like Facebook. Maybe we'll have something 
     virtual void TearDown() { prog_vector.clear(); }
   };
   TEST_F(ExcerptTest, Constructor) {
-    snap::Excerpt e(prog_vector[0], 145, 190);
-    ASSERT_EQ(e.program_title, "ABC World News Now");
-    ASSERT_EQ(e.date, "2014-07-23");
-    ASSERT_EQ(e.text, "rned their wings. And you can, too. Together ");    
+    snap::Excerpt e(prog_vector[0], 129, 174);
+    ASSERT_EQ("ABC World News Now", e.program_title);
+    ASSERT_EQ("2014-07-23", e.date);
+    ASSERT_EQ("rned their wings. And you can, too. Together ", e.text);    
   }
 
   TEST_F(ExcerptTest, highlight_word) {
-    snap::Excerpt e(prog_vector[0], 145, 190);
+    snap::Excerpt e(prog_vector[0], 129, 174);
     e.highlight_word("wings");
     ASSERT_EQ("rned their <span style=\"color:red\">wings</span>. And you can, too. Together ",
               e.text);
@@ -68,7 +68,7 @@ Hero before it became passe and awful like Facebook. Maybe we'll have something 
     ASSERT_EQ("rned their wings. And you can, too. Together ", e.get_raw_text());
 
     // reset
-    e = snap::Excerpt(prog_vector[0], 140, 200);
+    e = snap::Excerpt(prog_vector[0], 124, 184);
     ASSERT_EQ("ve earned their wings. And you can, too. Together we can sol", e.text);
     // deal with asterix properly
     e.highlight_word("win");
@@ -83,7 +83,7 @@ Hero before it became passe and awful like Facebook. Maybe we'll have something 
     ASSERT_EQ("<span style=\"color:red\">ve</span> earned their <span style=\"color:red\">win</span>gs. And you can, too. To<span style=\"color:red\">gether</span> we can <span style=\"color:red\">sol</span>", e.text);
 
     // reset
-    e = snap::Excerpt(prog_vector[0], 140, 200);
+    e = snap::Excerpt(prog_vector[0], 124, 184);
     ASSERT_EQ("ve earned their wings. And you can, too. Together we can sol", e.text);
     e.highlight_word("*get*");
     ASSERT_EQ("ve earned their wings. And you can, too. To<span style=\"color:red\">get</span>her we can sol", e.text);

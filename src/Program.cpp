@@ -12,9 +12,17 @@ snap::Program::Program(const std::string &program_text) {
   std::string header = program_text.substr(0, header_break);
   read_header(header);
   header_break = program_text.find("\n", header_break);
-  this -> text = program_text.substr(header_break + 1,
-                                     program_text.length() - header_break);
-  boost::algorithm::trim(this -> text);
+  this -> raw_text = program_text.substr(header_break + 1,
+                                         program_text.length() - header_break);
+  boost::algorithm::trim(this -> raw_text);
+  (this -> text).resize((this -> raw_text).size());
+  // strip timestamps
+  std::regex_replace((this -> text).begin(), 
+                     (this -> raw_text).begin(), (this -> raw_text).end(),
+                     this -> time_regex, "");
+  int replaced_characters = 0;
+  for (auto it = (this -> text).rbegin(); it != (this -> text).rend() && *it == '\0'; ++it) ++replaced_characters;
+  (this -> text).resize((this -> text).size() - replaced_characters);
   this -> lower_text = std::string(this -> text);
   std::transform(this -> lower_text.begin(), this -> lower_text.end(),
                  this -> lower_text.begin(), ::tolower);
