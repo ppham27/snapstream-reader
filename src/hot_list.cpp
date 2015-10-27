@@ -97,6 +97,30 @@ int main(int argc, char *argv[]) {
     std::cout << "<span class=\"error\">" << e.what() << "</span>" << std::endl;
     exit(-1);
   }
+  
+  std::cout << "<div>" << std::endl;
+  std::cout << "<span>From date (interval A): </span>" 
+            << "<span id=\"from-date-a\">" 
+            << snap::date::date_to_string(from_date_a)
+            << "</span><br/>"
+            << std::endl;
+  std::cout << "<span>To date (interval A): </span>" 
+            << "<span id=\"to-date-a\">" 
+            << snap::date::date_to_string(to_date_a)
+            << "</span><br/>"
+            << std::endl;
+  std::cout << "<span>From date (interval B): </span>" 
+            << "<span id=\"from-date-b\">" 
+            << snap::date::date_to_string(from_date_b)
+            << "</span><br/>"
+            << std::endl;
+  std::cout << "<span>To date (interval B): </span>" 
+            << "<span id=\"to-date-b\">" 
+            << snap::date::date_to_string(to_date_b)
+            << "</span><br/>"
+            << std::endl;
+  std::cout << "</div>" << std::endl;
+
   std::vector<std::string> file_list_a = snap::io::generate_file_names(from_date_a, to_date_a, prefix, suffix);
   std::vector<std::string> file_list_b = snap::io::generate_file_names(from_date_b, to_date_b, prefix, suffix);
   std::map<std::string, std::tuple<int, int, int>> word_count_a = get_word_count(file_list_a);
