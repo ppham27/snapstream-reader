@@ -24,7 +24,8 @@ const int max_input_size = 1000000;
 // hashing parameters
 const int A = 3;
 const int M = 65071;
-const int HASH_WIDTH = 25;
+const int LEFT_HASH_WIDTH = 15;
+const int RIGHT_HASH_WIDTH = 25;
 
 void print_column_headers() {
   std::cout << "mt_cxt = matching_contexts_cnt" << '\n';
@@ -87,7 +88,8 @@ int main() {
   std::cout << "</p>" << std::endl;  
 
   // begin to iteratively process files
-  std::unordered_map<int, int> total_match_hashes;
+  std::unordered_map<int, int> left_total_match_hashes;
+  std::unordered_map<int, int> right_total_match_hashes;
   int matching_contexts_sum = 0;
   int matching_programs_sum = 0;
   int total_matches_sum = 0;
@@ -122,7 +124,8 @@ int main() {
         unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::shuffle(programs.begin(), programs.end(), std::default_random_engine(seed));
       }
-      std::unordered_map<int, int> match_hashes;
+      std::unordered_map<int, int> left_match_hashes;
+      std::unordered_map<int, int> right_match_hashes;
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         std::map<std::string, std::vector<int>> raw_match_positions = snap::find(expressions.back().patterns, p -> lower_text);
         std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
@@ -133,17 +136,20 @@ int main() {
           bool total_context_added = false;
           bool context_added = false;
           for (auto it = match_positions[search_string].begin(); it != match_positions[search_string].end(); ++it) {
-            int match_hash = hasher.hash(*it - HASH_WIDTH, *it + HASH_WIDTH);
-            int hash_cnt = match_hashes[match_hash]++;
-            int total_hash_cnt = total_match_hashes[match_hash]++;
-            if (hash_cnt == 0) {               
+            int left_match_hash = hasher.hash(*it - LEFT_HASH_WIDTH, *it);
+            int right_match_hash = hasher.hash(*it, *it + RIGHT_HASH_WIDTH);
+            int left_hash_cnt = left_match_hashes[left_match_hash]++;
+            int right_hash_cnt = right_match_hashes[right_match_hash]++;
+            int left_total_hash_cnt = left_total_match_hashes[left_match_hash]++;
+            int right_total_hash_cnt = right_total_match_hashes[right_match_hash]++;
+            if (left_hash_cnt == 0 && right_hash_cnt == 0) {               
               // only add if new hash is encountered
               if (!context_added) { // only add once per program 
                 context_added = true;
                 ++matching_contexts;
               }              
               // only add excerpts with new completely new hashes
-              if (total_hash_cnt == 0) {
+              if (left_total_hash_cnt == 0 && right_total_hash_cnt == 0) {
                 if (!total_context_added) {
                   total_context_added = true;
                   ++matching_contexts_sum;

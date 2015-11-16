@@ -15,6 +15,7 @@ var transporter = nodemailer.createTransport();
 //      user: '',
 //      pass: ''
 //    }}));
+var intervalLength = 28;        //in days
 var mailFrom = 'phamp@math.upenn.edu';
 var mailTo = process.env.NODE_ENV === 'test' ? 'phamp@math.upenn.edu' : ['phamp@math.upenn.edu', 'pemantle@math.upenn.edu', 'dmutz@asc.upenn.edu'].join(', ');
 
@@ -25,16 +26,16 @@ switch (process.argv.length) {
   case 2:
   // no arguments, last two weeks
   toDateB = new Date();         //start with exclusive
-  fromDateB = new Date(toDateB - 24*7*60*60*1000);
+  fromDateB = new Date(toDateB - 24*intervalLength*60*60*1000);
   toDateA = new Date(fromDateB - 24*1*60*60*1000);
-  fromDateA = new Date(fromDateB - 24*7*60*60*1000);
+  fromDateA = new Date(fromDateB - 24*intervalLength*60*60*1000);
   toDateB = new Date(toDateB - 24*1*60*60*1000); // convert back to inclusive
   break;
   case 3:
   toDateB = new Date(process.argv[2]); //exlusive date
-  fromDateB = new Date(toDateB - 24*7*60*60*1000);
+  fromDateB = new Date(toDateB - 24*intervalLength*60*60*1000);
   toDateA = new Date(fromDateB - 24*1*60*60*1000);
-  fromDateA = new Date(fromDateB - 24*7*60*60*1000);
+  fromDateA = new Date(fromDateB - 24*intervalLength*60*60*1000);
   toDateB = new Date(toDateB - 24*1*60*60*1000); // convert back to inclusive
   break;
   case 4:
