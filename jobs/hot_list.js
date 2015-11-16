@@ -75,7 +75,7 @@ if (readFile === true) {
     "to-date-a": toDateA.toISOString().slice(0,10),
     "from-date-b": fromDateB.toISOString().slice(0,10),
     "to-date-b": toDateB.toISOString().slice(0,10),
-    "min-occurences": 40,         //hard code for now
+    "min-occurences": 100,         //hard code for now
     "percent-increase": 4.0
   }
   var postData = querystring.stringify(body);

@@ -16,12 +16,14 @@ const int max_input_size = 1000000;
 // hashing parameters
 const int A = 3;
 const int M = 65071;
-const int HASH_WIDTH = 25;
+const int LEFT_HASH_WIDTH = 15;
+const int RIGHT_HASH_WIDTH = 25;
 snap::StringHasher hasher("", M, A);
 
 std::map<std::string, std::tuple<int, int, int>> get_word_count(const std::vector<std::string> &file_list) {
   std::map<std::string, std::tuple<int, int, int>> word_count;
-  std::unordered_map<std::string, std::unordered_map<int, int>> word_hashes;
+  std::unordered_map<std::string, std::unordered_map<int, int>> left_word_hashes;
+  std::unordered_map<std::string, std::unordered_map<int, int>> right_word_hashes;
   // run through dates
   std::vector<std::string> missing_files;
   std::vector<std::string> corrupt_files;
@@ -42,10 +44,12 @@ std::map<std::string, std::tuple<int, int, int>> get_word_count(const std::vecto
           std::vector<std::vector<std::pair<std::string, int>>> phrases = snap::word::tokenize(program.lower_text);          
           for (std::vector<std::pair<std::string, int>> phrase : phrases) {
             for (std::pair<std::string, int> word : phrase) {
-              int word_hash = hasher.hash(word.second - HASH_WIDTH, word.second + HASH_WIDTH);
+              int left_word_hash = hasher.hash(word.second - LEFT_HASH_WIDTH, word.second);
+              int right_word_hash = hasher.hash(word.second, word.second + RIGHT_HASH_WIDTH);
               int program_cnt = program_word_count[word.first]++;
-              int hash_cnt = word_hashes[word.first][word_hash]++;
-              if (hash_cnt == 0 && program_added.count(word.first) == 0) { // new hash and new program
+              int left_hash_cnt = left_word_hashes[word.first][left_word_hash]++;
+              int right_hash_cnt = right_word_hashes[word.first][right_word_hash]++;
+              if (left_hash_cnt == 0 && right_hash_cnt == 0 && program_added.count(word.first) == 0) { // new hash and new program
                 std::get<0>(word_count[word.first])++;
                 program_added.insert(word.first);
               }
