@@ -38,6 +38,8 @@ void print_column_headers() {
 
 int main() {
   clock_t start_time = std::clock();
+  srand(time(NULL));
+  std::string random_id = std::to_string(rand());
   
   snap::web::print_header();
 
@@ -86,6 +88,11 @@ int main() {
   std::cout << "Number of Excerpts: " << arguments["num-excerpts"] << "<br/>" << std::endl;
   std::cout << "Excerpt Size: " << arguments["excerpt-size"] << "<br/>" << std::endl;
   std::cout << "</p>" << std::endl;  
+
+  // set up excerpt file
+  std::string output_excerpt_file_name = output_path + snap::date::date_to_string(from_date) + "_excerpts_" + random_id + ".csv";
+  std::ofstream output_excerpt_file(output_excerpt_file_name);
+  output_excerpt_file << "\"dt\",\"program\",\"excerpt\"" << std::endl;
 
   // begin to iteratively process files
   std::unordered_map<int, int> left_total_match_hashes;
@@ -154,7 +161,11 @@ int main() {
                   total_context_added = true;
                   ++matching_contexts_sum;
                 }
-                excerpts.emplace_back(*p, *it-excerpt_size, *it+excerpt_size);
+                excerpts.emplace_back(*p, *it-excerpt_size, *it+excerpt_size);                 
+                output_excerpt_file << '"' << excerpts.back().date << "\",\""
+                                    << excerpts.back().program_title << "\",\""
+                                    << boost::replace_all_copy(excerpts.back().text, "\"", "\"\"") << '"' 
+                                    << std::endl;
                 for (auto pattern = expressions.back().patterns.begin(); pattern != expressions.back().patterns.end(); ++pattern) {
                   excerpts.back().highlight_word(*pattern);
                 }
@@ -206,8 +217,6 @@ int main() {
   std::cout << "</pre>" << std::endl;  
 
   // output file
-  srand(time(NULL));
-  std::string random_id = std::to_string(rand());
   std::string output_file_name = output_path + search_results.front().front() + "_" + random_id + ".csv";
   std::ofstream output_file(output_file_name);
   output_file << "dt,matching_contexts_cnt,matching_programs_cnt,total_matches_cnt,selected_programs_cnt,total_programs_cnt" << std::endl;
@@ -216,8 +225,10 @@ int main() {
     output_file << it -> back() << '\n';
   }
   output_file.close();
+  output_excerpt_file.close();
   
   std::cout << "<a href=\"" + output_file_name + "\">Output CSV</a><br/>" << std::endl;
+  std::cout << "<a href=\"" + output_excerpt_file_name + "\">Excerpt CSV</a><br/>" << std::endl;
   
   std::cout << "<div>";
   std::cout << "<br/>" << std::endl;
