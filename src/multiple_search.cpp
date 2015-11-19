@@ -7,17 +7,26 @@
 #include <iterator>
 #include <set>
 #include <string>
+#include <tuple>
+#include <unordered_map>
 
 
 #include "boost/algorithm/string.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
 
 #include "snap.h"
+#include "StringHasher.h"
 
 const std::string prefix = "Data/";
 const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
+
+// hashing parameters
+const int A = 3;
+const int M = 65071;
+const int LEFT_HASH_WIDTH = 15;
+const int RIGHT_HASH_WIDTH = 25;
 
 int main() {
   clock_t start_time = std::clock();
@@ -105,10 +114,13 @@ int main() {
   // print table header
   std::cout << "<table><thead><tr><th>dt</th>";
   for (auto it = search_strings.begin(); it != search_strings.end(); ++it) {
-    std::cout << "<th>" << (*it) + " matching_programs_cnt" << "</th>";
+    std::cout << "<th>" << (*it) + " Contexts" << "</th>";
   }
   std::cout << "<th>selected_programs_cnt</th></tr></thead><tbody>" << std::endl;
-
+  snap::StringHasher hasher("", M, A);
+  std::unordered_map<std::string, std::unordered_map<int, int>> total_left_word_hashes;
+  std::unordered_map<std::string, std::unordered_map<int, int>> total_right_word_hashes;
+  std::map<std::string, std::tuple<int, int, int>> match_counts;
   for (auto it = file_list.begin();
        it != file_list.end();
        ++it) {
@@ -123,32 +135,57 @@ int main() {
         continue;
       }
       search_results.push_back(std::vector<std::string>{snap::date::date_to_string(current_date)});
+      std::unordered_map<std::string, std::unordered_map<int, int>> daily_left_word_hashes;
+      std::unordered_map<std::string, std::unordered_map<int, int>> daily_right_word_hashes;
       std::cout << "<tr><td>" << snap::date::date_to_string(current_date) << "</td>";      
       total_programs_cnt += programs.size();
       int daily_selected_programs_cnt = 0;
-      std::map<std::string, std::pair<int, int>> match_counts;
+      std::map<std::string, std::tuple<int, int, int>> daily_match_counts;
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         ++selected_programs_cnt;
         ++daily_selected_programs_cnt;
+        hasher.load_text(p -> text);
         std::map<std::string, std::vector<int>> raw_match_positions = snap::find(patterns, p -> lower_text);
         std::map<std::string, std::vector<int>> match_positions = evaluate_expressions(expressions, raw_match_positions);
         for (auto ss = search_strings.begin(); ss != search_strings.end(); ++ss) {
           if (match_positions[*ss].size() > 0) {
-            ++match_counts[*ss].first;
-            match_counts[*ss].second += match_positions[*ss].size();
+            bool total_context_added = false;
+            bool context_added = false;
+            ++std::get<1>(daily_match_counts[*ss]);
+            ++std::get<1>(match_counts[*ss]);
+            std::get<2>(daily_match_counts[*ss]) += match_positions[*ss].size();
+            std::get<2>(match_counts[*ss]) += match_positions[*ss].size();            
             for (auto it = match_positions[*ss].begin(); it != match_positions[*ss].end(); ++it) {
-              excerpts.emplace_back(*p, *it-excerpt_size, *it+excerpt_size);
-              std::vector<std::string> search_string_patterns = expressions[ss - search_strings.begin()].patterns;
-              for (auto pattern = search_string_patterns.begin(); pattern != search_string_patterns.end(); ++pattern) {
-                excerpts.back().highlight_word(*pattern);
-              }
+              int left_word_hash = hasher.hash(*it - LEFT_HASH_WIDTH, *it);
+              int right_word_hash = hasher.hash(*it, *it + RIGHT_HASH_WIDTH);
+              int daily_left_hash_cnt = daily_left_word_hashes[*ss][left_word_hash]++;
+              int daily_right_hash_cnt = daily_right_word_hashes[*ss][right_word_hash]++;
+              int total_left_hash_cnt = total_left_word_hashes[*ss][left_word_hash]++;
+              int total_right_hash_cnt = total_right_word_hashes[*ss][right_word_hash]++;
+              if (daily_left_hash_cnt == 0 && daily_right_hash_cnt == 0) {
+                if (!context_added) {
+                  ++std::get<0>(daily_match_counts[*ss]);
+                  context_added = true;
+                }
+                if (total_left_hash_cnt == 0 && total_right_hash_cnt == 0) {
+                  if (!total_context_added) {
+                    ++std::get<0>(match_counts[*ss]);
+                    total_context_added = true;
+                  }
+                  excerpts.emplace_back(*p, *it - excerpt_size, *it + excerpt_size);
+                  std::vector<std::string> search_string_patterns = expressions[ss - search_strings.begin()].patterns;
+                  for (auto pattern = search_string_patterns.begin(); pattern != search_string_patterns.end(); ++pattern) {
+                    excerpts.back().highlight_word(*pattern);
+                  }
+                }
+              }                            
             }
           }
         }
       }
       for (auto ss = search_strings.begin(); ss != search_strings.end(); ++ss) {
-        search_results.back().push_back(std::to_string(match_counts[*ss].first));
-        std::cout << "<td>" << match_counts[*ss].first << "</td>";
+        search_results.back().push_back(std::to_string(std::get<0>(daily_match_counts[*ss])));
+        std::cout << "<td>" << std::get<0>(daily_match_counts[*ss]) << "</td>";
       }
       search_results.back().push_back(std::to_string(daily_selected_programs_cnt));
       std::cout << "<td>" << daily_selected_programs_cnt << "</td>";
@@ -158,6 +195,19 @@ int main() {
       missing_files.push_back(*it);
     }
   }
+  // print out total line
+  std::cout << "<tr>" << std::endl;
+  search_results.emplace_back();
+  std::cout << "<td><strong>Grand Total:</strong></td>" << std::endl;
+  search_results.back().push_back("Grand Total:");
+  for (std::string ss : search_strings) {
+    std::cout << "<td>" << std::get<0>(match_counts[ss]) << "</td>" << std::endl;
+    search_results.back().push_back(std::to_string(std::get<0>(match_counts[ss])));
+  }
+  std::cout << "<td>" << total_programs_cnt << "</td>" << std::endl;
+  search_results.back().push_back(std::to_string(total_programs_cnt));
+  std::cout << "</tr>" << std::endl;
+
   std::cout << "</tbody></table>" << std::endl;
   std::cout << "<div>";
   std::cout << "<br/>" << std::endl;
@@ -171,7 +221,7 @@ int main() {
   // output file
   srand(time(NULL));
   std::string random_id = std::to_string(rand());  
-  std::string output_file_path = output_path + search_results.front().front() + "_" + random_id + ".csv";
+  std::string output_file_path = output_path + search_results.front().front() + "_contexts_" + random_id + ".csv";
   std::ofstream output_file(output_file_path);
   output_file << "dt,";
   std::copy(search_strings.begin(), search_strings.end(), std::ostream_iterator<std::string>(output_file, ","));
@@ -183,7 +233,7 @@ int main() {
   }  
   output_file.close();
   std::cout << "<p>";
-  std::cout << snap::web::create_link(output_file_path, "Output File"); 
+  std::cout << snap::web::create_link(output_file_path, "Output Contexts File"); 
   std::cout << "</p>" << std::endl;  
   
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
