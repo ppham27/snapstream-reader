@@ -224,6 +224,7 @@ namespace snap {
         cooccurences[it0 -> first][it1 -> first] = 0;
       }
     }
+    // store all the positions of all the matches
     std::vector<std::pair<int, std::string>> positions;
     for (auto it0 = match_positions.begin(); it0 != match_positions.end(); ++it0) {
       for (auto it1 = (it0 -> second).begin(); it1 != (it0 -> second).end(); ++it1) {

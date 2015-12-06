@@ -6,6 +6,28 @@
 
 const int MAX_M = 1000000;
 
+snap::StringHasher::StringHasher(unsigned int M, unsigned int A) : M(M), A(A) { 
+  load_text("");
+  if (M <= MAX_M) {           // precompute modular inverses
+    modular_inverses.resize(M - 1);
+    if (M > sqrt(UINT_MAX)) {
+      long long ALL = A;
+      for (int i = M - 2; i >= 0; --i) {
+        modular_inverses[i] = ALL;
+        ALL *= A;
+        ALL %= M;
+      }      
+    } else {
+      unsigned int ALL = A;
+      for (int i = M - 2; i >= 0; --i) {
+        modular_inverses[i] = ALL;
+        ALL *= A;
+        ALL %= M;
+      }      
+    }
+  }
+}
+
 snap::StringHasher::StringHasher(const std::string &text,
                                  unsigned int M, unsigned int A) : M(M), A(A) { 
   load_text(text);

@@ -14,6 +14,7 @@ namespace snap {
   public:    
     const unsigned int M;
     const unsigned int A;
+    StringHasher(unsigned int M, unsigned int A);
     StringHasher(const std::string &text,
                  unsigned int M, unsigned int A);
     int hash(int i, int j);     /* get hash between range i and j inclusive */

@@ -23,6 +23,7 @@ add_test(ExpressionTest test/bin/expression_unittest)
 add_test(EvaluatorTest test/bin/evaluator_unittest)
 add_test(DistanceTest test/bin/distance_unittest)
 add_test(StringHasherTest test/bin/stringhasher_unittest)
+add_test(CoOccurrenceMatrixTest test/bin/cooccurrencematrix_unittest)
 
 file(COPY ${CMAKE_SOURCE_DIR}/html/index.html DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/html/style.css DESTINATION ${CMAKE_BINARY_DIR})
