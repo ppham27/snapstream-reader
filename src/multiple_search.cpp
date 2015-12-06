@@ -144,9 +144,9 @@ int main() {
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         ++selected_programs_cnt;
         ++daily_selected_programs_cnt;
-        hasher.load_text(p -> text);
+        hasher.load_text(p -> lower_text);
         std::map<std::string, std::vector<int>> raw_match_positions = snap::find(patterns, p -> lower_text);
-        std::map<std::string, std::vector<int>> match_positions = evaluate_expressions(expressions, raw_match_positions);
+        std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
         for (auto ss = search_strings.begin(); ss != search_strings.end(); ++ss) {
           if (match_positions[*ss].size() > 0) {
             bool total_context_added = false;

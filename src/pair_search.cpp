@@ -234,7 +234,7 @@ int main() {
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         ++selected_programs_cnt;
         std::map<std::string, std::vector<int>> raw_match_positions = snap::find(patterns, p -> lower_text);
-        std::map<std::string, std::vector<int>> match_positions = evaluate_expressions(expressions, raw_match_positions);
+        std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
         std::map<std::string, std::map<std::string, int>> cooccurences = snap::pair(match_positions, distance);
         for (auto it0 = cooccurences.begin(); it0 != cooccurences.end(); ++it0) {
           for (auto it1 = (it0 -> second).begin(); it1 != (it0 -> second).end(); ++it1) {
@@ -265,7 +265,7 @@ int main() {
   for (auto it0 = results.begin(); it0 != results.end(); ++it0) {
     for (auto it1 = (it0 -> second).begin(); it1 != (it0 -> second).end(); ++it1) {
       std::cout << it0 -> first << '\t' << it1 -> first << '\t' 
-                << (it1 -> second).first << '\t' << (it1 -> second).second << std::endl;      
+                << (it1 -> second).first << '\t' << (it1 -> second).second << std::endl;
     }
   }
 

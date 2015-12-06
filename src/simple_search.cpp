@@ -136,7 +136,7 @@ int main() {
       for (auto p = programs.begin(); p != programs.end(); ++p) {
         std::map<std::string, std::vector<int>> raw_match_positions = snap::find(expressions.back().patterns, p -> lower_text);
         std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
-        hasher.load_text(p -> text);
+        hasher.load_text(p -> lower_text);
         if (match_positions[search_string].size() > 0) {          
           ++matching_programs;
           total_matches += match_positions[search_string].size();
