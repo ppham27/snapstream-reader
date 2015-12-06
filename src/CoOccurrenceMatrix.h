@@ -27,6 +27,8 @@ namespace snap {
       std::unordered_map<long long, int>, 
       std::unordered_map<long long, int>, 
       std::unordered_map<long long, int>>>> pair_hash_cnt;    
+    // contexts, programs, pairs
+    std::map<std::string, std::map<std::string, std::tuple<int, int, int>>> results;
     long long pair_hash(int l, int r);
   public:
     CoOccurrenceMatrix(const std::vector<snap::Expression> &expressions,
