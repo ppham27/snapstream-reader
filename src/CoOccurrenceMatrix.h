@@ -34,9 +34,7 @@ namespace snap {
     CoOccurrenceMatrix(const std::vector<snap::Expression> &expressions,
                        int M, int A, int left_hash_width, int right_hash_width);
     void add_program(const std::string &text, int distance);
-    std::map<std::string, std::tuple<int, int, int>>& at(std::string a);
-    void test();
-    
+    std::map<std::string, std::tuple<int, int, int>>& at(std::string a);    
   };
 }
 

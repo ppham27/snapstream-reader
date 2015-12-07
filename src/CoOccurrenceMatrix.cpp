@@ -6,11 +6,6 @@
 
 #include "snap.h"
 
-#include <iostream>
-
-#include <iterator>
-#include <climits>
-
 snap::CoOccurrenceMatrix::CoOccurrenceMatrix(const std::vector<snap::Expression> &expressions,
                                              int M, int A,
                                              int left_hash_width, int right_hash_width) : expressions(expressions),
@@ -97,22 +92,20 @@ void snap::CoOccurrenceMatrix::add_program(const std::string &text, int distance
         int right_hash = hasher.hash(it0 -> first, it0 -> first + right_hash_width);
         int left_hash_cnt = left_hash_cnts[it0 -> second][left_hash]++;
         int right_hash_cnt = right_hash_cnts[it0 -> second][right_hash]++;
-        if (left_hash_cnt == 0 && right_hash_cnt == 0 && context_added_pairs.count(it0 -> second)) {
+        if (left_hash_cnt == 0 && right_hash_cnt == 0 && context_added_pairs.count(it0 -> second) == 0) {
           ++std::get<0>(cooccurrences[it0 -> second][it1 -> second]);
           context_added_pairs.insert(it0 -> second);
         }
       } else if ((it0 -> second) != (it1 -> second)) {
         std::string expressionA, expressionB;
-        std::string paired_string_hash;
         if ((it0 -> second) < (it1 -> second)) {
           expressionA = it0 -> second; 
           expressionB = it1 -> second;
-          paired_string_hash = expressionA + "|" + expressionB;
         } else {                // (it0 -> second) > (it1 -> second)
           expressionA = it1 -> second; 
           expressionB = it0 -> second;
-          paired_string_hash = expressionB + "|" + expressionA;
         } 
+        std::string paired_string_hash(expressionA + "|" + expressionB);
         // total count
         ++std::get<2>(cooccurrences[expressionA][expressionB]);
         // program match count
@@ -145,23 +138,5 @@ void snap::CoOccurrenceMatrix::add_program(const std::string &text, int distance
         }        
       }
     }
-  }
-}
-
-void snap::CoOccurrenceMatrix::test() {
-  long long hash = pair_hash(INT_MAX,INT_MAX);
-  long long tmp = hash;
-  std::vector<int> h;
-  while (tmp > 0) { 
-    h.push_back(tmp & 1);
-    tmp >>= 1;
-  }
-  std::reverse(h.begin(), h.end());
-  std::copy(h.begin(), h.end(), std::ostream_iterator<int>(std::cout));
-  std::cout << std::endl;
-  std::copy(patterns.begin(), patterns.end(), std::ostream_iterator<std::string>(std::cout,"|"));
-  std::cout << std::endl;
-  for (snap::Expression e : expressions) {
-    std::cout << e.raw_expression << std::endl;
   }
 }

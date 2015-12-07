@@ -33,6 +33,7 @@ ctest
 ./test/bin/evaluator_unittest
 ./test/bin/distance_unittest
 ./test/bin/stringhasher_unittest
+./test/bin/cooccurrencematrix_unittest
 
 # installing
 rm $HOME/html/test.html
