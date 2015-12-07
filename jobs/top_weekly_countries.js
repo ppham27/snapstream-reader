@@ -151,7 +151,7 @@ function processResponse(body) {
 <th style="' + thStyle + '">Country</th>\
 <th style="' + thStyle + '">Search Pattern</th>\
 <th style="' + thStyle + '">Symbol</th>\
-<th style="' + thStyle + '">Occurences</th>\n\
+<th style="' + thStyle + '">Occurring Contexts</th>\n\
 </tr></thead><tbody>');
                  res[0].slice(0,25).forEach(function(country, idx) {
                    var style = 'text-align: center; padding-left: 1em; padding-right: 1em; padding-top: 0.25em; padding-bottom: 0.25em';

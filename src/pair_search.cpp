@@ -57,7 +57,6 @@ void output_visualization(std::map<std::string, std::map<std::string, std::tuple
     csv = distance::size_distance_to_csv(sizes, distances);
   }
 
-  // std::cout << "<pre>" << csv << "</pre>" << std::endl;
   std::string visualization_file_path = output_path + dt + "_visualization_" + uid + ".csv";
   std::ofstream visualization_file(visualization_file_path, std::ios::out);
   visualization_file << csv;
