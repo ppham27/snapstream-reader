@@ -211,12 +211,12 @@ text-align: center;
       std::cout << "</div>" << std::endl;  
     }
 
-    void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results,
-                      std::function<int(std::pair<int, int>)> getter,
+    void print_matrix(std::map<std::string, std::map<std::string, std::tuple<int, int, int>>> &results,
+                      std::function<int(std::tuple<int, int, int>)> getter,
                       std::ostream &outputStream, bool header, char sep) {
       std::vector<std::string> keys;
       for (auto it = results.begin(); it != results.end(); ++it) { keys.push_back(it -> first); }
-
+      
       // print matching programs
       if (header) {
         outputStream << sep;

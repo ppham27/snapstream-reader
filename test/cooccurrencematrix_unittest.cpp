@@ -53,9 +53,9 @@ FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 0000000000 china 1111111111111111111111 22222222222222 russia 333333333333333333333
 )ZZZ";
   matrix.add_program(program, distance); 
-  ASSERT_EQ(1,std::get<0>(matrix.at("{china}")["{china}"]));
-  ASSERT_EQ(1,std::get<1>(matrix.at("{china}")["{china}"]));
-  ASSERT_EQ(3,std::get<2>(matrix.at("{china}")["{china}"]));
+  ASSERT_EQ(1,std::get<0>(matrix.at("{china}")["{china}"])); // contexts
+  ASSERT_EQ(1,std::get<1>(matrix.at("{china}")["{china}"])); // programs
+  ASSERT_EQ(3,std::get<2>(matrix.at("{china}")["{china}"])); // total
   ASSERT_EQ(1,std::get<0>(matrix.at("{china}")["{russia}"]));
   ASSERT_EQ(1,std::get<1>(matrix.at("{china}")["{russia}"]));
   ASSERT_EQ(3,std::get<2>(matrix.at("{china}")["{russia}"]));

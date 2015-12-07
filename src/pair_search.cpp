@@ -7,39 +7,47 @@
 #include <iostream>
 #include <set>
 #include <string>
+#include <tuple>
 
 #include "boost/algorithm/string.hpp"
 #include "boost/date_time/gregorian/gregorian.hpp"
 
 #include "snap.h"
 #include "distance.h"
+#include "CoOccurrenceMatrix.h"
 
 const std::string prefix = "Data/";
 const std::string output_path = "../tmp/";
 const std::string suffix = "-Combined.txt";
 const int max_input_size = 1000000;
 
-void output_visualization(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results, 
+// hashing parameters
+const int A = 3;
+const int M = 65071;
+const int LEFT_HASH_WIDTH = 15;
+const int RIGHT_HASH_WIDTH = 25;
+
+void output_visualization(std::map<std::string, std::map<std::string, std::tuple<int, int, int>>> &results, 
                           int topFilter, 
                           std::string uid, std::string dt) {
-  // first turn the results to just program matches
-  std::map<std::string, std::map<std::string, int>> program_matches;
+  // first turn the results to just context matches
+  std::map<std::string, std::map<std::string, int>> context_matches;
   for (auto it = results.begin(); it != results.end(); ++it) {
-    program_matches[it->first] = std::map<std::string, int>();
+    context_matches[it->first] = std::map<std::string, int>();
     for (auto jt = (it -> second).begin(); jt != (it -> second).end(); ++jt) {
-      program_matches[it->first][jt -> first] = (jt -> second).first;
+      context_matches[it->first][jt -> first] = std::get<0>(jt -> second);
     }
   }
 
-  std::map<std::string, std::map<std::string, double>> program_matches_double = distance::int_matrix_to_double_matrix(program_matches);
+  std::map<std::string, std::map<std::string, double>> context_matches_double = distance::int_matrix_to_double_matrix(context_matches);
   
-  std::map<std::string, std::map<std::string, double>> filtered_program_matches = distance::filter_top(program_matches_double, topFilter);
+  std::map<std::string, std::map<std::string, double>> filtered_context_matches = distance::filter_top(context_matches_double, topFilter);
 
-  std::map<std::string, double> sizes = distance::size_pow(filtered_program_matches, 1.0/3);
+  std::map<std::string, double> sizes = distance::size_pow(filtered_context_matches, 1.0/3);
   
-  filtered_program_matches = distance::correlate_sum(filtered_program_matches);
+  filtered_context_matches = distance::correlate_sum(filtered_context_matches);
 
-  std::map<std::string, std::map<std::string, double>> distances = distance::distance_inv(filtered_program_matches, 0.1);
+  std::map<std::string, std::map<std::string, double>> distances = distance::distance_inv(filtered_context_matches, 0.1);
   
   std::string csv;
   if (snap::io::file_exists("dictionary.csv")) {
@@ -70,24 +78,22 @@ void output_visualization(std::map<std::string, std::map<std::string, std::pair<
             << std::endl;
 }
 
-void remove_zero_keys(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results) {
+void remove_zero_keys(std::map<std::string, std::map<std::string, std::tuple<int, int, int>>> &results) {
   std::vector<std::string> zero_keys;
   for (auto it0 = results.begin(); it0 != results.end(); ++it0) {
     bool all_zero = true;
     for (auto it1 = results.begin(); it1 != results.end(); ++it1) {
       std::string key0 = it0 -> first;
       std::string key1 = it1 -> first;
-      if (key0 <= key1 && results[key0][key1].first != 0) {
+      if (key0 <= key1 && std::get<0>(results[key0][key1]) != 0) {
         all_zero = false;
         break;
-      } else if(results[key1][key0].first != 0) {
+      } else if(std::get<0>(results[key1][key0]) != 0) {
         all_zero = false;
         break;
       }
     }
-    if (all_zero) {
-      zero_keys.push_back(it0 -> first);
-    }
+    if (all_zero) zero_keys.push_back(it0 -> first);
   }
   for (std::string zero_key : zero_keys) {
     for (auto it = results.rbegin(); (it -> first) > zero_key; ++it) {
@@ -97,7 +103,7 @@ void remove_zero_keys(std::map<std::string, std::map<std::string, std::pair<int,
   }
 }
 
-void output_files(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results, 
+void output_files(std::map<std::string, std::map<std::string, std::tuple<int, int, int>>> &results, 
                   std::string uid, std::string prefix, std::string description) {
   boost::algorithm::trim(description);
   std::string file_description = "";
@@ -108,13 +114,13 @@ void output_files(std::map<std::string, std::map<std::string, std::pair<int, int
   std::string outputMatrixFilePath = output_path + prefix + "_matrix_" + file_description + uid + ".csv";
   std::ofstream outputMatrixFile(outputMatrixFilePath, std::ios::out);
   snap::web::print_matrix(results, 
-                          [](std::pair<int, int> x) -> int { return x.first; },
+                          [](std::tuple<int, int, int> x) -> int { return std::get<0>(x); },
                           outputMatrixFile, false, ',');
   outputMatrixFile.close();
   std::string outputMatrixWithHeadersFilePath = output_path + prefix + "_matrix_with_headers_" + file_description + uid + ".csv";
   std::ofstream outputMatrixWithHeadersFile(outputMatrixWithHeadersFilePath, std::ios::out);
   snap::web::print_matrix(results, 
-                          [](std::pair<int, int> x) -> int { return x.first; },
+                          [](std::tuple<int, int, int> x) -> int { return std::get<0>(x); },
                           outputMatrixWithHeadersFile, true, ',');
   outputMatrixWithHeadersFile.close();
   std::string outputKeyFilePath = output_path + prefix + "_keys_" + file_description + uid + ".csv";
@@ -122,8 +128,8 @@ void output_files(std::map<std::string, std::map<std::string, std::pair<int, int
   for (auto it = results.begin(); it != results.end(); ++it) outputKeyFile << it -> first << '\n';
   outputKeyFile.close();
 
-  std::cout << snap::web::create_link(outputMatrixFilePath, "Matching programs matrix (numbers only) " + description) << "<br/>" << std::endl;
-  std::cout << snap::web::create_link(outputMatrixWithHeadersFilePath, "Matching programs matrix (with headers) " + description, file_description + "matrix") << "<br/>" << std::endl;
+  std::cout << snap::web::create_link(outputMatrixFilePath, "Matching contexts matrix (numbers only) " + description) << "<br/>" << std::endl;
+  std::cout << snap::web::create_link(outputMatrixWithHeadersFilePath, "Matching contexts matrix (with headers) " + description, file_description + "matrix") << "<br/>" << std::endl;
   std::cout << snap::web::create_link(outputKeyFilePath, "Matrix row and column names " + description) << "<br/>" << std::endl;  
 }
 
@@ -175,7 +181,6 @@ int main() {
   std::sort(search_strings.begin(), search_strings.end());
   
   std::vector<snap::Expression> expressions;
-  std::set<std::string> pattern_set;
   for (auto it = search_strings.begin(); it != search_strings.end(); ++it) {
     try {
       expressions.emplace_back(*it);
@@ -185,10 +190,7 @@ int main() {
       delete[] error_msg;
       exit(-1);
     }
-    pattern_set.insert(expressions.back().patterns.begin(), expressions.back().patterns.end());
   }
-  std::vector<std::string> patterns;
-  patterns.insert(patterns.end(), pattern_set.begin(), pattern_set.end());
   
   // print output for user to verify
   std::cout << "<p>" << std::endl;
@@ -202,16 +204,10 @@ int main() {
   std::cout << "</p>" << std::endl;
 
   // initiate result matrix
-  std::map<std::string, std::map<std::string, std::pair<int, int>>> results;
-  for (auto it0 = expressions.begin(); it0 != expressions.end(); ++it0) {
-    results[it0 -> raw_expression] = std::map<std::string, std::pair<int, int>>();
-    for (auto it1(it0); it1 != expressions.end(); ++it1) {
-      results[it0 -> raw_expression][it1 -> raw_expression] = std::make_pair(0, 0);
-    }
-  }
+  snap::CoOccurrenceMatrix matrix(expressions, M, A, LEFT_HASH_WIDTH, RIGHT_HASH_WIDTH);
   int total_programs_cnt = 0;
   int selected_programs_cnt = 0;
-
+  
   // run through dates
   std::vector<std::string> missing_files;
   std::vector<std::string> corrupt_files;
@@ -231,19 +227,9 @@ int main() {
         continue;
       }
       total_programs_cnt += programs.size();
-      for (auto p = programs.begin(); p != programs.end(); ++p) {
+      for (snap::Program p : programs) {
         ++selected_programs_cnt;
-        std::map<std::string, std::vector<int>> raw_match_positions = snap::find(patterns, p -> lower_text);
-        std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
-        std::map<std::string, std::map<std::string, int>> cooccurences = snap::pair(match_positions, distance);
-        for (auto it0 = cooccurences.begin(); it0 != cooccurences.end(); ++it0) {
-          for (auto it1 = (it0 -> second).begin(); it1 != (it0 -> second).end(); ++it1) {
-            if (it1 -> second > 0) {
-              ++results[it0 -> first][it1 -> first].first;
-              results[it0 -> first][it1 -> first].second += it1 -> second;
-            }
-          }
-        }
+        matrix.add_program(p.lower_text, distance);    
       }
     } else {
       missing_files.push_back(*it);
@@ -257,26 +243,41 @@ int main() {
   snap::web::print_corrupt_files(corrupt_files);
   std::cout << "</div>" << std::endl;
 
+  // copy results
+  std::map<std::string, std::map<std::string, std::tuple<int, int, int>>> results;
+  for (auto it0 = expressions.begin(); it0 != expressions.end(); ++it0) {
+    results[it0 -> raw_expression] = std::map<std::string, std::tuple<int, int, int>>();
+    for (auto it1(it0); it1 != expressions.end(); ++it1) {
+      results[it0 -> raw_expression][it1 -> raw_expression] = matrix.at(it0 -> raw_expression)[it1 -> raw_expression];
+    }
+  }
+  
   // print results
   std::cout << "<pre>" << std::endl;
   std::cout << "Selected Programs Count: " << selected_programs_cnt << std::endl;
   std::cout << "Total Programs Count: " << total_programs_cnt << std::endl;
-  std::cout << "search_string_1\tsearch_string_2\tmatching_programs_cnt\ttotal_matches_cnt" << std::endl;
+  std::cout << "search_string_1\tsearch_string_2\tmatching_contexts_cnt\tmatching_programs_cnt\ttotal_matches_cnt" << std::endl;
   for (auto it0 = results.begin(); it0 != results.end(); ++it0) {
     for (auto it1 = (it0 -> second).begin(); it1 != (it0 -> second).end(); ++it1) {
       std::cout << it0 -> first << '\t' << it1 -> first << '\t' 
-                << (it1 -> second).first << '\t' << (it1 -> second).second << std::endl;
+                << std::get<0>(it1 -> second) << '\t' 
+                << std::get<1>(it1 -> second) << '\t' 
+                << std::get<2>(it1 -> second) << std::endl;
     }
   }
+  std::cout << "\nMatching Contexts\n" << std::endl;
+  snap::web::print_matrix(results, 
+                          [](std::tuple<int, int, int> x) -> int { return std::get<0>(x); },
+                          std::cout, true, '\t');
 
   std::cout << "\nMatching Programs\n" << std::endl;
   snap::web::print_matrix(results, 
-                          [](std::pair<int, int> x) -> int { return x.first; },
+                          [](std::tuple<int, int, int> x) -> int { return std::get<1>(x); },
                           std::cout, true, '\t');
 
   std::cout << "\nTotal Matches\n" << std::endl;
   snap::web::print_matrix(results, 
-                          [](std::pair<int, int> x) -> int { return x.second; },
+                          [](std::tuple<int, int, int> x) -> int { return std::get<2>(x); },
                           std::cout, true, '\t');
   std::cout << "</pre>" << std::endl;
 

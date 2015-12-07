@@ -5,6 +5,7 @@
 #include <map>
 #include <exception>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -49,8 +50,8 @@ namespace snap {
     void print_excerpt(const snap::Excerpt &e);
     void print_missing_files(const std::vector<std::string> &missing_files);
     void print_corrupt_files(const std::vector<std::string> &corrupt_files);
-    void print_matrix(std::map<std::string, std::map<std::string, std::pair<int, int>>> &results,
-                      std::function<int(std::pair<int, int>)> getter,
+    void print_matrix(std::map<std::string, std::map<std::string, std::tuple<int, int, int>>> &results,
+                      std::function<int(std::tuple<int, int, int>)> getter,
                       std::ostream &outputStream, bool header = true, char sep = '\t');
     std::string encode_uri(const std::string &s);
     std::string decode_uri(std::string s);
