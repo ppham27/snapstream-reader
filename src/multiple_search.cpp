@@ -28,6 +28,25 @@ const int M = 65071;
 const int LEFT_HASH_WIDTH = 15;
 const int RIGHT_HASH_WIDTH = 25;
 
+void output_matrix_file(const std::vector<std::vector<std::string>> &search_results, 
+                 const std::vector<std::string> &search_strings,
+                 std::string id, std::string name) {
+  std::string output_file_path = output_path + search_results.front().front() + "_" + name + "_" + id + ".csv";
+  std::ofstream output_file(output_file_path);
+  output_file << "dt,";
+  std::copy(search_strings.begin(), search_strings.end(), std::ostream_iterator<std::string>(output_file, ","));
+  output_file << "selected_programs_cnt";
+  for (std::vector<std::string> daily_result : search_results) {
+    output_file << '\n';
+    std::copy(daily_result.begin(), daily_result.end() - 1, std::ostream_iterator<std::string>(output_file, ","));
+    output_file << daily_result.back();
+  }
+  output_file.close();
+  std::cout << "<p>";
+  std::cout << snap::web::create_link(output_file_path, "Output " + name + " File", name + "_matrix");
+  std::cout << "</p>" << std::endl;
+}
+
 int main() {
   clock_t start_time = std::clock();
   snap::web::print_header();
@@ -105,6 +124,8 @@ int main() {
 
   // variables to store results of loop
   std::vector<std::vector<std::string>> search_results;
+  std::vector<std::vector<std::string>> search_results_programs;
+  std::vector<std::vector<std::string>> search_results_total_matches;
   int total_programs_cnt = 0;
   int selected_programs_cnt = 0;
   std::vector<std::string> corrupt_files;
@@ -126,7 +147,7 @@ int main() {
        ++it) {
     boost::gregorian::date current_date = snap::date::string_to_date((*it).substr(prefix.length(), 10));
     if (snap::io::file_exists(*it)) {
-      std::vector<snap::Program> programs;      
+      std::vector<snap::Program> programs;
       try {
         programs = snap::io::parse_programs(*it);
       } catch (snap::io::CorruptFileException &e) {
@@ -135,6 +156,8 @@ int main() {
         continue;
       }
       search_results.push_back(std::vector<std::string>{snap::date::date_to_string(current_date)});
+      search_results_programs.push_back(std::vector<std::string>{snap::date::date_to_string(current_date)});
+      search_results_total_matches.push_back(std::vector<std::string>{snap::date::date_to_string(current_date)});
       std::unordered_map<std::string, std::unordered_map<int, int>> daily_left_word_hashes;
       std::unordered_map<std::string, std::unordered_map<int, int>> daily_right_word_hashes;
       std::cout << "<tr><td>" << snap::date::date_to_string(current_date) << "</td>";      
@@ -178,16 +201,20 @@ int main() {
                     excerpts.back().highlight_word(*pattern);
                   }
                 }
-              }                            
+              } 
             }
           }
         }
       }
       for (auto ss = search_strings.begin(); ss != search_strings.end(); ++ss) {
         search_results.back().push_back(std::to_string(std::get<0>(daily_match_counts[*ss])));
+        search_results_programs.back().push_back(std::to_string(std::get<1>(daily_match_counts[*ss])));
+        search_results_total_matches.back().push_back(std::to_string(std::get<2>(daily_match_counts[*ss])));
         std::cout << "<td>" << std::get<0>(daily_match_counts[*ss]) << "</td>";
       }
       search_results.back().push_back(std::to_string(daily_selected_programs_cnt));
+      search_results_programs.back().push_back(std::to_string(daily_selected_programs_cnt));
+      search_results_total_matches.back().push_back(std::to_string(daily_selected_programs_cnt));
       std::cout << "<td>" << daily_selected_programs_cnt << "</td>";
       std::cout << "</tr>" << std::endl;      
       programs.clear();
@@ -198,11 +225,17 @@ int main() {
   // print out total line
   std::cout << "<tr>" << std::endl;
   search_results.emplace_back();
+  search_results_programs.emplace_back();
+  search_results_total_matches.emplace_back();
   std::cout << "<td><strong>Grand Total:</strong></td>" << std::endl;
   search_results.back().push_back("Grand Total:");
+  search_results_programs.back().push_back("Grand Total:");
+  search_results_total_matches.back().push_back("Grand Total:");
   for (std::string ss : search_strings) {
     std::cout << "<td>" << std::get<0>(match_counts[ss]) << "</td>" << std::endl;
     search_results.back().push_back(std::to_string(std::get<0>(match_counts[ss])));
+    search_results_programs.back().push_back(std::to_string(std::get<1>(match_counts[ss])));
+    search_results_total_matches.back().push_back(std::to_string(std::get<2>(match_counts[ss])));
   }
   std::cout << "<td>" << total_programs_cnt << "</td>" << std::endl;
   search_results.back().push_back(std::to_string(total_programs_cnt));
@@ -221,23 +254,30 @@ int main() {
   // output file
   srand(time(NULL));
   std::string random_id = std::to_string(rand());  
-  std::string output_file_path = output_path + search_results.front().front() + "_contexts_" + random_id + ".csv";
+  output_matrix_file(search_results, search_strings, random_id, "contexts");
+  output_matrix_file(search_results_programs, search_strings, random_id, "programs");
+  output_matrix_file(search_results_total_matches, search_strings, random_id, "total_matches"); 
+  // all data in long form
+  std::string output_file_name = search_results.front().front() + "_all_" + random_id + ".csv";
+  std::string output_file_path = output_path + output_file_name;
   std::ofstream output_file(output_file_path);
-  output_file << "dt,";
-  std::copy(search_strings.begin(), search_strings.end(), std::ostream_iterator<std::string>(output_file, ","));
-  output_file << "selected_programs_cnt";  
-  for (std::vector<std::string> daily_result : search_results) {
-    output_file << '\n';
-    std::copy(daily_result.begin(), daily_result.end() - 1, std::ostream_iterator<std::string>(output_file, ","));
-    output_file << daily_result.back();
-  }  
+  output_file << "Date,Term,Contexts,Programs,Total Matches";
+  for (int i = 0; i < search_results.size() - 1; ++i) { // skip total line
+    for (int j = 0; j < search_strings.size(); ++j) {
+      output_file << '\n';
+      output_file << search_results[i].front() << ',' << search_strings[j] << ','
+                  << search_results[i][j + 1] << ',' // j + 1 skips date column
+                  << search_results_programs[i][j + 1] << ','
+                  << search_results_total_matches[i][j + 1];
+    }
+  }
   output_file.close();
   std::cout << "<p>";
-  std::cout << snap::web::create_link(output_file_path, "Output Contexts File"); 
-  std::cout << "</p>" << std::endl;  
+  std::cout << snap::web::create_link(output_file_path, "Output Long File", "long-data");
+  std::cout << "</p>" << std::endl;
   
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
-  snap::web::close_html();
+  snap::web::close_html();  
   return 0;
 }

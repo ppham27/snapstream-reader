@@ -9,7 +9,6 @@
 const std::string output_path = "../tmp/";
 const int CHUNK_SIZE = 100;
 
-
 int main() {
   snap::web::print_header();
   int content_length = atoi(getenv("CONTENT_LENGTH"));
@@ -36,6 +35,6 @@ int main() {
   // too lazy to send a proper redirect request, so just insert some javascript instead    
   snap::web::redirect("../visualize.html?filename=tmp%2F" + filename + "&title=" + snap::web::encode_uri(files["graph_title"]));
   snap::web::close_html();
-
+  
   return 0;
 }
