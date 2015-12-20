@@ -1,0 +1,10 @@
+body {  
+  font-family: "Helvetica Neue", sans-serif;
+  color: #222;
+}
+
+#graph svg {
+  border: 1px solid black;
+}
+
+
