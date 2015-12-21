@@ -1,6 +1,8 @@
-var width = 790;
-var height = 480;
-var margin = {top: 10, right: 10, bottom: 20, left: 60};
+var variables = ["Contexts", "Programs", "Total Matches"];
+var movingAverageWindow = 7;
+var width = 800;
+var height = 475;
+var margin = {top: 5, right: 10, bottom: 20, left: 60};
 // graph
 var controls = d3.select("#graph")
                .append("div").attr("id", "controls")
@@ -21,9 +23,9 @@ var svg = d3.select("#graph")
 svg.append("clipPath")
 .attr("id", "clip")
 .append("rect")
-.attr("x", margin.left).attr("y", margin.top)
-.attr("width", width - margin.left - margin.right)
-.attr("height", height - margin.top - margin.bottom);
+.attr("x", margin.left).attr("y", margin.top-5)
+.attr("width", width - margin.left - margin.right + 5)
+.attr("height", height - margin.top - margin.bottom + 5);
 legend.append("h2").text("Legend");
 legend = legend.append("ul");
 
@@ -55,29 +57,31 @@ var yAxisTitle = d3.select(".y.axis")
                  .attr("y", margin.top + (height - margin.top - margin.left)/2)
                  .attr("text-anchor", "middle")
                  .attr("transform", "rotate(-90, -50," + (margin.top + (height - margin.top - margin.left)/2) + ")")
-                 .text("Contexts");
+                 .text(variables[0] + " Moving Average");
 
 // build controls
 controls = controls.append("form");
 var variableSelector = controls.append("fieldset");
 variableSelector.append("label").text("Variable:")
 .attr("for", "variable");
-["Contexts", "Programs", "Total Matches"].forEach(function(d, idx) {
+variables.forEach(function(d, idx) {
   var input = variableSelector.append("input")
               .attr("type", "radio")
               .attr("name", "variable")
               .attr("value", d)
-              .on("change", function() {
-                var variable = getVariable();
-                var isPercent = getIsPercent();
-                yAxisTitle.text(variable);
-                var valueRange = calculateValue(data, variable, isPercent);
-                drawAxes(minDate, maxDate, valueRange[0], valueRange[1], isPercent);
-                draw();
-              });
+              .on("change", update);
   if (idx === 0) input[0][0].checked = true;
   variableSelector.append("span").attr("class", "radio-label").text(d);
 });
+var isMovingAverage = controls.append("fieldset");
+isMovingAverage.append("label").text("Moving Average:")
+.attr("for", "isMovingAverage");
+isMovingAverage.append("input")
+.attr("type", "checkbox")
+.attr("id", "isMovingAverage")
+.attr("name", "isMovingAverage")
+.on("change", update)
+.node().checked = true;
 var isPercentSelector = controls.append("fieldset");
 isPercentSelector.append("label").text("Percentage:")
 .attr("for", "isPercent");
@@ -85,14 +89,7 @@ isPercentSelector.append("input")
 .attr("type", "checkbox")
 .attr("id", "isPercent")
 .attr("name", "isPercent")
-.on("change", function() {
-  var variable = getVariable();
-  var isPercent = getIsPercent();
-  yAxisTitle.text(variable);
-  var valueRange = calculateValue(data, variable, isPercent);
-  drawAxes(minDate, maxDate, valueRange[0], valueRange[1], isPercent);
-  draw();
-})
+.on("change", update)
 .node().checked = true;
 controls.append("button").attr("type", "button")
 .text("Reset Zoom")
@@ -109,10 +106,11 @@ var strokeColor = d3.scale.category10();
 var pointTip = d3.tip()
                .attr('class', 'tip')
                .direction('e')
+               .offset([0,5])
                .html(function (d) {
                  var percentFormatter = d3.format('%');
                  var html = d.Term + ', ' + d.day;
-                 ["Contexts", "Programs", "Total Matches"].forEach(function(dd) {
+                 variables.forEach(function(dd) {
                    html += '<br><strong>'+dd+':</strong> <span style="color:#e41a1c">';
                    html += d[dd] + ' (' + percentFormatter(d[dd]/dailyTotals[d.day][dd]) + ')</span>';
                  });
@@ -138,15 +136,14 @@ var dailyTotals = {};
 d3.csv("default-time-series.csv", function(err, rawData) {  
   rawData.forEach(function(d) {
     if (dailyTotals[d.Date] === undefined) {
-      dailyTotals[d.Date] = {"Programs": 0, "Contexts": 0, "Total Matches": 0};
+      dailyTotals[d.Date] = {};
+      variables.forEach(function(variable) { dailyTotals[d.Date][variable] = 0; });
     }
     d.day = d.Date;
-    d.Programs = parseInt(d.Programs);
-    d.Contexts = parseInt(d.Contexts);
-    d["Total Matches"] = parseInt(d["Total Matches"]);
-    dailyTotals[d.Date].Programs += d.Programs;
-    dailyTotals[d.Date].Contexts += d.Contexts;
-    dailyTotals[d.Date]["Total Matches"] += d["Total Matches"];
+    variables.forEach(function(variable) { 
+      d[variable] = parseInt(d[variable]); 
+      dailyTotals[d.Date][variable] += d[variable];
+    });
   });
   data = d3.nest()
          .key(function(d) { return d.Term; })  
@@ -158,8 +155,8 @@ d3.csv("default-time-series.csv", function(err, rawData) {
     d.values.sort(function(a, b) { return a.Date - b.Date; });
   });
   data.sort(function(a, b) {
-    var aSum = d3.sum(a.values.slice(-3), function(d) { return d.Contexts; });
-    var bSum = d3.sum(b.values.slice(-3), function(d) { return d.Contexts; });
+    var aSum = d3.sum(a.values.slice(-3), function(d) { return d[variables[0]]; });
+    var bSum = d3.sum(b.values.slice(-3), function(d) { return d[variables[0]]; });
     return bSum - aSum;
   });
   data = data.slice(0, 10);
@@ -179,46 +176,28 @@ d3.csv("default-time-series.csv", function(err, rawData) {
     .attr("x1", 0).attr("y1", h/2)
     .attr("x2", w).attr("y2", h/2)
     .style("stroke", strokeColor(d.key));
-    svg.append("circle")
-    .attr("cx", w/2).attr("cy", h/2).attr("r", 2.5)
-    .style("fill", strokeColor(d.key));
+    // svg.append("circle")
+    // .attr("cx", w/2).attr("cy", h/2).attr("r", 2.5)
+    // .style("fill", strokeColor(d.key));
     svg.append("text").text(d.key)
     .attr("x", w + 5).attr("y", h/2).attr("dy", "5px");
     svg.on("mouseover", function() {
       d3.selectAll("path.data")
       .filter(function(dd) {
         return dd.key === d.key;
-      }).transition().duration(100)
+      }).transition().duration(250)
       .style("stroke-width", 3);
-      d3.selectAll("circle.data")
-      .filter(function(dd) {
-        return dd.Term === d.key;
-      }).transition().duration(100)
-      .attr("r", 5);
     })
     .on("mouseout", function() {
       d3.selectAll("path.data")
       .filter(function(dd) {
         return dd.key === d.key;
-      }).transition().duration(100)
+      }).transition().duration(250)
       .style("stroke-width", 1);
-      d3.selectAll("circle.data")
-      .filter(function(dd) {
-        return dd.Term === d.key;
-      }).transition().duration(100)
-      .attr("r", 2.5);
     });
   });
-
-
   minDate = d3.min(data[0].values, function(d) { return d.Date; });
   maxDate = d3.max(data[0].values, function(d) { return d.Date; });
-  var minValue = d3.min(data.map(function(d) {
-                          return d3.min(d.values, function(dd) { return dd.Contexts; });
-                        }));
-  var maxValue = d3.min(data.map(function(d) {
-                          return d3.max(d.values, function(dd) { return dd.Contexts; });
-                        }));
   var valueRange = calculateValue(data, getVariable(), getIsPercent());
   drawAxes(minDate, maxDate, valueRange[0], valueRange[1], getIsPercent());
   var paths = svg.selectAll("path.data")
@@ -234,11 +213,18 @@ d3.csv("default-time-series.csv", function(err, rawData) {
   .enter().append("circle")
   .attr("clip-path", "url(#clip)")
   .attr("class", "data")
-  .attr("r", 2.5)
+  .attr("r", 5)
   .style("fill", function(d) { return strokeColor(d.Term); })
+  .style("fill-opacity", 0)
   .style("stroke", "none")
-  .on("mouseover", pointTip.show)
-  .on("mouseout", pointTip.hide);
+  .on("mouseover", function(d) {
+    pointTip.show(d, this);
+    d3.select(this).transition().duration(250).style("fill-opacity", 1);
+  })
+  .on("mouseout", function(d) {
+    pointTip.hide(d, this);
+    d3.select(this).transition().duration(250).style("fill-opacity", 0);
+  });
   draw();
   svg.append("g").attr("class", "brush").call(brush);
   svg.call(pointTip);
@@ -292,14 +278,13 @@ function getIsPercent() {
   return document.getElementById("isPercent").checked;
 }
 
+function getIsMovingAverage() {
+  return document.getElementById("isMovingAverage").checked;
+}
+
 function brushed() {
   if (brush.empty()) {
-    var variable = getVariable();
-    var isPercent = getIsPercent();
-    yAxisTitle.text(variable);
-    var valueRange = calculateValue(data, variable, isPercent);
-    drawAxes(minDate, maxDate, valueRange[0], valueRange[1], isPercent);
-    draw(); 
+    update();
   } else {
     var variable = getVariable();
     var isPercent = getIsPercent();
@@ -310,4 +295,13 @@ function brushed() {
     drawAxes(extent[0][0], extent[1][0], extent[0][1], extent[1][1], isPercent);
     draw();     
   }  
+}
+
+function update() {
+  var variable = getVariable();
+  var isPercent = getIsPercent();
+  yAxisTitle.text(variable);
+  var valueRange = calculateValue(data, variable, isPercent);
+  drawAxes(minDate, maxDate, valueRange[0], valueRange[1], isPercent);
+  draw();  
 }
