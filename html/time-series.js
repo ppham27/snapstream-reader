@@ -2,7 +2,7 @@ var variables = ["Contexts", "Programs", "Total Matches"];
 var movingAverageWindow = 7;
 var width = 800;
 var height = 475;
-var margin = {top: 5, right: 10, bottom: 20, left: 60};
+var margin = {top: 10, right: 10, bottom: 20, left: 60};
 var urlQuery = parseQueryString(window.location.search.slice(1));
 var fileName = urlQuery['filename'] || 'default-time-series.csv';
 var title = urlQuery['title'] || null;
@@ -178,7 +178,7 @@ d3.csv(fileName, function(err, rawData) {
     var bSum = d3.sum(b.values.slice(-3), function(d) { return d[variables[0]]; });
     return bSum - aSum;
   });
-  data = data.slice(0, 10);
+  data = data.slice(0, 9);
   strokeColor.domain(data.map(function(d) { return d.key; }));                     
   // set up legend
   legend.selectAll("li")
