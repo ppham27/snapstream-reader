@@ -45,6 +45,10 @@ rm $HOME/html/d3.tip.js
 rm $HOME/html/d3.v3.min.js
 rm $HOME/html/graph.js
 rm $HOME/html/multiple_time_varied.json
+rm $HOME/html/time-series.css
+rm $HOME/html/time-series.html
+rm $HOME/html/time-series.js
+rm $HOME/html/default-time-series.csv
 rm $HOME/html/cgi-bin/simple_search
 rm $HOME/html/cgi-bin/near_search
 rm $HOME/html/cgi-bin/multiple_search
@@ -60,6 +64,10 @@ cp d3.tip.js $HOME/html/d3.tip.js
 cp d3.v3.min.js $HOME/html/d3.v3.min.js
 cp graph.js $HOME/html/graph.js
 cp multiple_time_varied.json $HOME/html/multiple_time_varied.json
+cp time-series.css $HOME/html/time-series.css
+cp time-series.html $HOME/html/time-series.html
+cp time-series.js $HOME/html/time-series.js
+cp default-time-series.csv $HOME/html/default-time-series.csv
 cp cgi-bin/simple_search $HOME/html/cgi-bin
 cp cgi-bin/near_search $HOME/html/cgi-bin
 cp cgi-bin/multiple_search $HOME/html/cgi-bin

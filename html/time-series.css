@@ -2,3 +2,78 @@ body {
   font-family: "Helvetica Neue", sans-serif;
   color: #222;
 }
+
+#graph {
+  width: 960px;
+  height: 500px;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #222;
+  shape-rendering: crispEdges;
+}
+
+#legend ul {
+  list-style: none;  
+  padding: 0px;
+  margin: 0px;
+}
+
+#legend ul li {
+  padding: 0px;
+  margin: 0px;
+}
+
+.axis text {
+  font-size: 14px;
+  fill: #222;
+}
+
+.axis .tick line {
+  stroke: rgba(0, 0, 0, 0.1);
+}
+
+#controls form fieldset {
+  padding: 0px;
+  margin: 0px;
+  display: inline-block;  
+  border: none;
+}
+
+#controls form fieldset label {
+  font-weight: bold;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+#controls form fieldset .radio-label {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+#controls button {
+  margin-left: 10px;
+  margin-right: 5px;
+}
+
+#controls .info {
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
+}
+
+.tip {
+  line-height: 1.25;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 10px;
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+  border-radius: 10px;
+}
