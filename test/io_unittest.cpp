@@ -129,38 +129,40 @@ Hero before it became passe and awful like Facebook. Maybe we'll have something 
 }
 
 TEST(read_dictionary, Default) {
-  std::string s = R"ZZZ(Afghanistan,{afghan*},AFG
-Akrotiri and Dhekelia,{akrotiri} + {dhekelia},AKD
-Albania,{albania*},ALB
-Algeria,{algeria*},ALG
-Andorra,{andorra*},AND
-Angola,{angola*},AGO
-Anguilla,{anguilla*},AGU
-Antarctica,{antarctica},ATC
-Antigua and Barbuda,{antigua} + {barbuda},AAB
-Argentina,{argentina} + {argentine} + {argentinian},ARG
-Armenia,{armenia},ARM
-Aruba,{aruba},ARU
-Ashmore and Cartier Islands,{ashmore and cartier islands},ACI
-Australia,{australia},AUL
-Austria,{austria},AUT
-Azerbaijan,{azerbaijan},AZB
-Bahamas,{bahamas},BHM
-Bahrain,{bahrain},BHR
-Bangladesh,{bangladesh*},BAN
-Barbados,{barbados},BAR
-Bassas da India,{bassas da india},BDI
-Belarus,{belarus},BLR
-Belgium,{belgium} + {belgian} !@ {waffles},BLG
-Belize,{belize},BLZ
-Benin,{benin},BEN)ZZZ";
+  std::string s = R"ZZZ(Afghanistan,{afghan*},AFG,Country
+Akrotiri and Dhekelia,{akrotiri} + {dhekelia},AKD,Country
+Albania,{albania*},ALB,Country
+Algeria,{algeria*},ALG,Country
+Andorra,{andorra*},AND,Country
+Angola,{angola*},AGO,Country
+Anguilla,{anguilla*},AGU,Country
+Antarctica,{antarctica},ATC,Country
+Antigua and Barbuda,{antigua} + {barbuda},AAB,Country
+Argentina,{argentina} + {argentine} + {argentinian},ARG,Country
+Armenia,{armenia},ARM,Country
+Aruba,{aruba},ARU,Country
+Ashmore and Cartier Islands,{ashmore and cartier islands},ACI,Country
+Australia,{australia},AUL,Country
+Austria,{austria},AUT,Country
+Azerbaijan,{azerbaijan},AZB,Country
+Bahamas,{bahamas},BHM,Country
+Bahrain,{bahrain},BHR,Country
+Bangladesh,{bangladesh*},BAN,Country
+Barbados,{barbados},BAR,Country
+Bassas da India,{bassas da india},BDI,Country
+Belarus,{belarus},BLR,Country
+Belgium,{belgium} + {belgian} !@ {waffles},BLG,Country
+Belize,{belize},BLZ,Country
+Benin,{benin},BEN,Country)ZZZ";
   std::istringstream iss(s);
-  std::map<std::string, std::pair<std::string, std::string>> dict = snap::io::read_dictionary(iss);
+  std::map<std::string, std::tuple<std::string, std::string, std::string>> dict = snap::io::read_dictionary(iss);
   
-  ASSERT_EQ(dict["{afghan*}"].first, "AFG");
-  ASSERT_EQ(dict["{afghan*}"].second, "Afghanistan");
-  ASSERT_EQ(dict["{benin}"].first, "BEN");
-  ASSERT_EQ(dict["{benin}"].second, "Benin");
+  ASSERT_EQ("AFG", std::get<0>(dict["{afghan*}"]));
+  ASSERT_EQ("Afghanistan", std::get<1>(dict["{afghan*}"]));
+  ASSERT_EQ("Country", std::get<2>(dict["{afghan*}"]));
+  ASSERT_EQ("BEN", std::get<0>(dict["{benin}"]));
+  ASSERT_EQ("Benin", std::get<1>(dict["{benin}"]));
+  ASSERT_EQ("Country", std::get<2>(dict["{benin}"]));
 }
 
 TEST(Program, timestamps) {

@@ -1,200 +1,217 @@
-Afghanistan,{afghanistan},AFG
-Albania,{albania},ALB
-Algeria,{algeria},ALG
-Andorra,{andorra},AND
-Angola,{angola},AGO
-Antarctica,{antarctica},ATC
-Antigua and Barbuda,{antigua} + {barbuda},ATG
-Argentina,{argentina},ARG
-Armenia,{armenia},ARM
-Aruba,{aruba},ARW
-Australia,{australia},AUS
-Austria,{austria},AUT
-Azerbaijan,{azerbaijan},AZE
-Bahamas,{bahamas},BHS
-Bahrain,{bahrain},BHR
-Bangladesh,{bangladesh},BGD
-Barbados,{barbados},BRB
-Belarus,{belarus},BLR
-Belgium,{belgium},BEL
-Belize,{belize},BLZ
-Benin,{benin},BEN
-Bhutan,{bhutan},BTN
-Bolivia,{bolivia},BOL
-Bosnia and Herzegovina,{bosnia},BIH
-Botswana,{botswana},BWA
-Brazil,{brazil},BRA
-Brunei,{brunei},BRN
-Bulgaria,{bulgaria},BGR
-Burkina Faso,{burkina faso},BFA
-Burma (Myanmar),{burma} + {myanmar},MMR
-Burundi,{burundi},BDI
-Cambodia,{cambodia},KHM
-Cameroon,{cameroon},CMR
-Canada,{canada},CAN
-Cape Verde,{cape verde},CPV
-Central African Republic,{central african republic},CAF
-Chad,{chad}@({sudan*}+{libya*}+{boko haram}+{africa*}+{islam*}+{niger*}+{cameroon}),TCD
-Chile,{chile} !@ {pepper},CHL
-China,{china} !@ {fine},CHN
-Colombia,{colombia} !@ {district},COL
-Comoros,{comoros},COM
-Costa Rica,{costa rica},CRI
-Cote d'Ivoire (Ivory Coast),{cote d'ivoire} + {ivory coast},CIV
-Croatia,{croatia},HRV
-Cuba,{cuba},CUB
-Cyprus,{cyprus} !@ {hill},CYP
-Czech Republic,{czech republic},CZE
-Democratic Republic of the Congo,{democratic republic of the congo} + {dr congo} + {congo kinshasa},COD
-Denmark,{denmark},DNK
-Djibouti,{djibouti} !@ {city},DJI
-Dominican Republic,{dominican republic},DMA
-Ecuador,{ecuador},ECU
-Egypt,{egypt},EGY
-El Salvador,{el salvador},SLV
-Equatorial Guinea,{equatorial guinea} !@ ({bissau} + {papua}),GNQ
-Eritrea,{eritrea},ERI
-Estonia,{estonia},EST
-Ethiopia,{ethiopia},ETH
-Falkland Islands,{falkland islands} + {islas malvinas},FLK
-Fiji,{fiji} !@ {water},FJI
-Finland,{finland},FIN
-France,{france},FRA
-French Polynesia,{french polynesia},PYF
-Gabon,{gabon},GAB
-Gambia,{gambia},GMB
-Gaza,{gaza},GAZ
-Georgia,({georgia} @ ( {tbilisi}+{putin}+{russia}+{caucasus}) ) + {country georgia},GEO
-Germany,{germany},DEU
-Ghana,{ghana},GHA
-Greece,{greece},GRC
-Greenland,{greenland},GRL
-Grenada,{grenada} !@ {mississippi},GRD
-Guam,{guam},GUM
-Guatemala,{guatemala},GTM
-Guinea,{guinea conakry} + ({guinea} !@ ({bisseau} + {equatorial} + {pig*} + {fowl*} + {a guinea} + {french guinea} + {new guinea})),GIN
-Guinea-Bissau,{guinea-bisseau},GNB
-Guyana,{guyana},GUY
-Haiti,{haiti},HTI
-Holy See (Vatican City),{holy see} + {vatican city},VAT
-Honduras,{honduras},HND
-Hong Kong,{hong kong},HKG
-Hungary,{hungary} !@ {hungry},HUN
-Iceland,{iceland},ISL
-India,{india},IND
-Indonesia,{indonesia},IDN
-Iran,{iran},IRN
-Iraq,{iraq},IRQ
-Ireland,{ireland},IRL
-Israel,{israel},ISR
-Italy,{italy},ITA
-Jamaica,{jamaica},JAM
-Japan,{japan},JPN
-Jordan,({jordan} @1000 ( {syria} + {middle east} + {arab*}) ) + {in jordan} + {king of jordan} + {jordanian},JOR
-Kazakhstan,{kazakhstan},KAZ
-Kenya,{kenya},KEN
-Kuwait,{kuwait},KWT
-Kyrgyzstan,{kyrgyzstan},KGZ
-Laos,{laos},LAO
-Latvia,{latvia},LVA
-Lebanon,{lebanon} !@ ({tennessee} + {connecticut} + {ohio} + {new hampshire} + {pennsylvania} + {maine} + {kentucky}),LBN
-Lesotho,{lesotho},LSO
-Liberia,{liberia},LBR
-Libya,{libya},LBY
-Liechtenstein,{liechtenstein},LIE
-Lithuania,{lithuania} !@ {band},LTU
-Luxembourg,{luxembourg} !@ {city},LUX
-Macau,{macau},MCA
-Macedonia,{macedonia},MKD
-Madagascar,{madagascar} !@ ({penguins of} + {movie}),MDG
-Malawi,{malawi},MWI
-Malaysia,{malaysia} !@ {airlines},MYS
-Maldives,{maldives},MDV
-Mali,{mali} !@ ({shoes} + {nouri al}),MLI
-Malta,{malta},MLT
-Martinique,{martinique},MTQ
-Mauritania,{mauritania},MRT
-Mauritius,{mauritius},MUS
-Mexico,{mexico},MEX
-Micronesia,{micronesia},FSM
-Monaco,{monaco} !@ {fc},MCO
-Mongolia,{mongolia},MNG
-Morocco,{morocco},MAR
-Mozambique,{mozambique},MOZ
-Namibia,{namibia},NAM
-Nepal,{nepal},NPL
-Netherlands,{netherlands},NLD
-New Caledonia,{new caledonia},NCL
-New Zealand,{new zealand},NZL
-Nicaragua,{nicaragua},NIC
-Niger,{niger} !@ {state},NER
-Nigeria,{nigeria},NGA
-North Korea,{north korea} + {democratic people's republic of korea} + {dprk},PRK
-Norway,{norway},NOR
-Oman,{oman},OMN
-Pakistan,{pakistan},PAK
-Palau,{palau},PLW
-Panama,{panama} !@ {canal},PAN
-Papua New Guinea,{papua} + {papua new guinea} + {west papua},PNG
-Paraguay,{paraguay},PRY
-Peru,{peru},PER
-Philippines,{philippines},PHL
-Poland,{poland},POL
-Portugal,{portugal},PRT
-Puerto Rico,{puerto rico},PRI
-Qatar,{qatar},QAT
-Republic of the Congo,{republic of the congo} + {congo republic} + {brazzaville},COG
-Romania,{romania},ROU
-Russia,{russia},RUS
-Rwanda,{rwanda},RWA
-Saint Lucia,{saint lucia} !@ {band},LCA
-Samoa,{samoa},WSM
-San Marino,{san marino} !@ {california},SMR
-Sao Tome and Principe,{sao tome} + {principe},STP
-Saudi Arabia,{saudi arabia},SAU
-Senegal,{senegal},SEN
-Serbia,{serbia} + {montenegro},SRB
-Seychelles,{seychelles},SYC
-Sierra Leone,{sierra leone},SLE
-Singapore,{singapore},SGP
-Slovakia,{slovakia},SVK
-Slovenia,{slovenia},SVN
-Solomon Islands,{solomon islands},SLB
-Somalia,{somalia},SOM
-South Africa,{south africa},ZAF
-South Korea,{south korea} + {republic of korea} !@50 {democratic people's},KOR
-South Sudan,{south sudan},SSD
-Spain,{spain},ESP
-Sri Lanka,{sri lanka},LKA
-Sudan,{sudan} !@ {south},SDN
-Suriname,{suriname},SUR
-Swaziland,{swaziland},SWZ
-Sweden,{sweden},SWE
-Switzerland,{switzerland},CHE
-Syria,{syria},SYR
-Taiwan,{taiwan},TWN
-Tajikistan,{tajikistan},TJK
-Tanzania,{tanzania},TZA
-Thailand,{thailiand},THA
-Timor,{timor},TLS
-Togo,{togo},TGO
-Tonga,{tonga},TON
-Trinidad and Tobago,{trinidad} + {tobago},TTO
-Tunisia,{tunisia},TUN
-Turkey,{turkish} + {in turkey} + {at turkey} + {to turkey} + {into turkey} + {from turkey} + {through turkey} + ({turkey} @ ({country} + {countries} + {lira} + {soccer} + {islam} + {muslim} + {saudi} + {arab} +  {history} + {ancient} + {istanbul} + {kurd*} + {iraq} + {minister} + {asia*} + {europe*} + {africa*})),TUR
-Turkmenistan,{turkmenistan},TKM
-Uganda,{uganda},UGA
-Ukraine,{ukraine},UKR
-United Arab Emirates (UAE),{united arab emirates},ARE
-United Kingdom (UK),({united kingdom} + {scotland} + {wales} + ({england} !@ {new england})),GBR
-United States (US),{united states} + {united states of america} + {usa},USA
-Uruguay,{uruguay},URY
-Uzbekistan,{uzbekistan},UZB
-Vanuatu,{vanuatu},VUT
-Venezuela,{venezuela},VEN
-Vietnam,{vietnam},VNM
-West Bank,{west bank},WBK
-Western Sahara,{western sahara},ESH
-Yemen,{yemen},YEM
-Zambia,{zambia},ZMB
-Zimbabwe,{zimbabwe},ZWE
+Afghanistan,{afghanistan},AFG,Country
+Albania,{albania},ALB,Country
+Algeria,{algeria},ALG,Country
+Andorra,{andorra},AND,Country
+Angola,{angola},AGO,Country
+Antarctica,{antarctica},ATC,Country
+Antigua and Barbuda,{antigua} + {barbuda},ATG,Country
+Argentina,{argentina},ARG,Country
+Armenia,{armenia},ARM,Country
+Aruba,{aruba},ARW,Country
+Australia,{australia},AUS,Country
+Austria,{austria},AUT,Country
+Azerbaijan,{azerbaijan},AZE,Country
+Bahamas,{bahamas},BHS,Country
+Bahrain,{bahrain},BHR,Country
+Bangladesh,{bangladesh},BGD,Country
+Barbados,{barbados},BRB,Country
+Belarus,{belarus},BLR,Country
+Belgium,{belgium},BEL,Country
+Belize,{belize},BLZ,Country
+Benin,{benin},BEN,Country
+Bhutan,{bhutan},BTN,Country
+Bolivia,{bolivia},BOL,Country
+Bosnia and Herzegovina,{bosnia},BIH,Country
+Botswana,{botswana},BWA,Country
+Brazil,{brazil},BRA,Country
+Brunei,{brunei},BRN,Country
+Bulgaria,{bulgaria},BGR,Country
+Burkina Faso,{burkina faso},BFA,Country
+Burma (Myanmar),{burma} + {myanmar},MMR,Country
+Burundi,{burundi},BDI,Country
+Cambodia,{cambodia},KHM,Country
+Cameroon,{cameroon},CMR,Country
+Canada,{canada},CAN,Country
+Cape Verde,{cape verde},CPV,Country
+Central African Republic,{central african republic},CAF,Country
+Chad,{chad}@({sudan*}+{libya*}+{boko haram}+{africa*}+{islam*}+{niger*}+{cameroon}),TCD,Country
+Chile,{chile} !@ {pepper},CHL,Country
+China,{china} !@ {fine},CHN,Country
+Colombia,{colombia} !@ {district},COL,Country
+Comoros,{comoros},COM,Country
+Costa Rica,{costa rica},CRI,Country
+Cote d'Ivoire (Ivory Coast),{cote d'ivoire} + {ivory coast},CIV,Country
+Croatia,{croatia},HRV,Country
+Cuba,{cuba},CUB,Country
+Cyprus,{cyprus} !@ {hill},CYP,Country
+Czech Republic,{czech republic},CZE,Country
+Democratic Republic of the Congo,{democratic republic of the congo} + {dr congo} + {congo kinshasa},COD,Country
+Denmark,{denmark},DNK,Country
+Djibouti,{djibouti} !@ {city},DJI,Country
+Dominican Republic,{dominican republic},DMA,Country
+Ecuador,{ecuador},ECU,Country
+Egypt,{egypt},EGY,Country
+El Salvador,{el salvador},SLV,Country
+Equatorial Guinea,{equatorial guinea} !@ ({bissau} + {papua}),GNQ,Country
+Eritrea,{eritrea},ERI,Country
+Estonia,{estonia},EST,Country
+Ethiopia,{ethiopia},ETH,Country
+Falkland Islands,{falkland islands} + {islas malvinas},FLK,Country
+Fiji,{fiji} !@ {water},FJI,Country
+Finland,{finland},FIN,Country
+France,{france},FRA,Country
+French Polynesia,{french polynesia},PYF,Country
+Gabon,{gabon},GAB,Country
+Gambia,{gambia},GMB,Country
+Gaza,{gaza},GAZ,Country
+Georgia,({georgia} @ ( {tbilisi}+{putin}+{russia}+{caucasus}) ) + {country georgia},GEO,Country
+Germany,{germany},DEU,Country
+Ghana,{ghana},GHA,Country
+Greece,{greece},GRC,Country
+Greenland,{greenland},GRL,Country
+Grenada,{grenada} !@ {mississippi},GRD,Country
+Guam,{guam},GUM,Country
+Guatemala,{guatemala},GTM,Country
+Guinea,{guinea conakry} + ({guinea} !@ ({bisseau} + {equatorial} + {pig*} + {fowl*} + {a guinea} + {french guinea} + {new guinea})),GIN,Country
+Guinea-Bissau,{guinea-bisseau},GNB,Country
+Guyana,{guyana},GUY,Country
+Haiti,{haiti},HTI,Country
+Holy See (Vatican City),{holy see} + {vatican city},VAT,Country
+Honduras,{honduras},HND,Country
+Hong Kong,{hong kong},HKG,Country
+Hungary,{hungary} !@ {hungry},HUN,Country
+Iceland,{iceland},ISL,Country
+India,{india},IND,Country
+Indonesia,{indonesia},IDN,Country
+Iran,{iran},IRN,Country
+Iraq,{iraq},IRQ,Country
+Ireland,{ireland},IRL,Country
+Israel,{israel},ISR,Country
+Italy,{italy},ITA,Country
+Jamaica,{jamaica},JAM,Country
+Japan,{japan},JPN,Country
+Jordan,({jordan} @1000 ( {syria} + {middle east} + {arab*}) ) + {in jordan} + {king of jordan} + {jordanian},JOR,Country
+Kazakhstan,{kazakhstan},KAZ,Country
+Kenya,{kenya},KEN,Country
+Kuwait,{kuwait},KWT,Country
+Kyrgyzstan,{kyrgyzstan},KGZ,Country
+Laos,{laos},LAO,Country
+Latvia,{latvia},LVA,Country
+Lebanon,{lebanon} !@ ({tennessee} + {connecticut} + {ohio} + {new hampshire} + {pennsylvania} + {maine} + {kentucky}),LBN,Country
+Lesotho,{lesotho},LSO,Country
+Liberia,{liberia},LBR,Country
+Libya,{libya},LBY,Country
+Liechtenstein,{liechtenstein},LIE,Country
+Lithuania,{lithuania} !@ {band},LTU,Country
+Luxembourg,{luxembourg} !@ {city},LUX,Country
+Macau,{macau},MCA,Country
+Macedonia,{macedonia},MKD,Country
+Madagascar,{madagascar} !@ ({penguins of} + {movie}),MDG,Country
+Malawi,{malawi},MWI,Country
+Malaysia,{malaysia} !@ {airlines},MYS,Country
+Maldives,{maldives},MDV,Country
+Mali,{mali} !@ ({shoes} + {nouri al}),MLI,Country
+Malta,{malta},MLT,Country
+Martinique,{martinique},MTQ,Country
+Mauritania,{mauritania},MRT,Country
+Mauritius,{mauritius},MUS,Country
+Mexico,{mexico},MEX,Country
+Micronesia,{micronesia},FSM,Country
+Monaco,{monaco} !@ {fc},MCO,Country
+Mongolia,{mongolia},MNG,Country
+Morocco,{morocco},MAR,Country
+Mozambique,{mozambique},MOZ,Country
+Namibia,{namibia},NAM,Country
+Nepal,{nepal},NPL,Country
+Netherlands,{netherlands},NLD,Country
+New Caledonia,{new caledonia},NCL,Country
+New Zealand,{new zealand},NZL,Country
+Nicaragua,{nicaragua},NIC,Country
+Niger,{niger} !@ {state},NER,Country
+Nigeria,{nigeria},NGA,Country
+North Korea,{north korea} + {democratic people's republic of korea} + {dprk},PRK,Country
+Norway,{norway},NOR,Country
+Oman,{oman},OMN,Country
+Pakistan,{pakistan},PAK,Country
+Palau,{palau},PLW,Country
+Panama,{panama} !@ {canal},PAN,Country
+Papua New Guinea,{papua} + {papua new guinea} + {west papua},PNG,Country
+Paraguay,{paraguay},PRY,Country
+Peru,{peru},PER,Country
+Philippines,{philippines},PHL,Country
+Poland,{poland},POL,Country
+Portugal,{portugal},PRT,Country
+Puerto Rico,{puerto rico},PRI,Country
+Qatar,{qatar},QAT,Country
+Republic of the Congo,{republic of the congo} + {congo republic} + {brazzaville},COG,Country
+Romania,{romania},ROU,Country
+Russia,{russia},RUS,Country
+Rwanda,{rwanda},RWA,Country
+Saint Lucia,{saint lucia} !@ {band},LCA,Country
+Samoa,{samoa},WSM,Country
+San Marino,{san marino} !@ {california},SMR,Country
+Sao Tome and Principe,{sao tome} + {principe},STP,Country
+Saudi Arabia,{saudi arabia},SAU,Country
+Senegal,{senegal},SEN,Country
+Serbia,{serbia} + {montenegro},SRB,Country
+Seychelles,{seychelles},SYC,Country
+Sierra Leone,{sierra leone},SLE,Country
+Singapore,{singapore},SGP,Country
+Slovakia,{slovakia},SVK,Country
+Slovenia,{slovenia},SVN,Country
+Solomon Islands,{solomon islands},SLB,Country
+Somalia,{somalia},SOM,Country
+South Africa,{south africa},ZAF,Country
+South Korea,{south korea} + {republic of korea} !@50 {democratic people's},KOR,Country
+South Sudan,{south sudan},SSD,Country
+Spain,{spain},ESP,Country
+Sri Lanka,{sri lanka},LKA,Country
+Sudan,{sudan} !@ {south},SDN,Country
+Suriname,{suriname},SUR,Country
+Swaziland,{swaziland},SWZ,Country
+Sweden,{sweden},SWE,Country
+Switzerland,{switzerland},CHE,Country
+Syria,{syria},SYR,Country
+Taiwan,{taiwan},TWN,Country
+Tajikistan,{tajikistan},TJK,Country
+Tanzania,{tanzania},TZA,Country
+Thailand,{thailiand},THA,Country
+Timor,{timor},TLS,Country
+Togo,{togo},TGO,Country
+Tonga,{tonga},TON,Country
+Trinidad and Tobago,{trinidad} + {tobago},TTO,Country
+Tunisia,{tunisia},TUN,Country
+Turkey,{turkish} + {in turkey} + {at turkey} + {to turkey} + {into turkey} + {from turkey} + {through turkey} + ({turkey} @ ({country} + {countries} + {lira} + {soccer} + {islam} + {muslim} + {saudi} + {arab} +  {history} + {ancient} + {istanbul} + {kurd*} + {iraq} + {minister} + {asia*} + {europe*} + {africa*})),TUR,Country
+Turkmenistan,{turkmenistan},TKM,Country
+Uganda,{uganda},UGA,Country
+Ukraine,{ukraine},UKR,Country
+United Arab Emirates (UAE),{united arab emirates},ARE,Country
+United Kingdom (UK),({united kingdom} + {scotland} + {wales} + ({england} !@ {new england})),GBR,Country
+United States (US),{united states} + {united states of america} + {usa},USA,Country
+Uruguay,{uruguay},URY,Country
+Uzbekistan,{uzbekistan},UZB,Country
+Vanuatu,{vanuatu},VUT,Country
+Venezuela,{venezuela},VEN,Country
+Vietnam,{vietnam},VNM,Country
+West Bank,{west bank},WBK,Country
+Western Sahara,{western sahara},ESH,Country
+Yemen,{yemen},YEM,Country
+Zambia,{zambia},ZMB,Country
+Zimbabwe,{zimbabwe},ZWE,Country
+Jeb Bush,{jeb bush},,2016 Republican Primary
+Ben Carson,{ben carson},,2016 Republican Primary
+Chris Christie,{chris christie},,2016 Republican Primary
+Ted Cruz,{ted cruz},,2016 Republican Primary
+Carly Fiorina,{carly fiorina},,2016 Republican Primary
+Jim Gilmore,{jim gilmore},,2016 Republican Primary
+Lindsey Graham,{lindsey graham},,2016 Republican Primary
+Mike Huckabee,{mike huckabee},,2016 Republican Primary
+John Kasich,{john kasich},,2016 Republican Primary
+George Pataki,{george pataki},,2016 Republican Primary
+Rand Paul,{rand paul},,2016 Republican Primary
+Marc Rubio,{marc rubio},,2016 Republican Primary
+Rick Santorum,{rick santorum},,2016 Republican Primary
+Donald Trump,{donald trump},,2016 Republican Primary
+Hillary Clinton,{hillary clinton},,2016 Democratic Primary
+Martin O'Malley,{martin o'malley},,2016 Democratic Primary
+Bernie Sanders,{bernie sanders},,2016 Democratic Primary

@@ -133,14 +133,14 @@ namespace distance {
 
   std::string size_distance_to_csv(const std::map<std::string, double> &sizes,
                                    const std::map<std::string, std::map<std::string, double>> &distance,
-                                   const std::map<std::string, std::pair<std::string, std::string>> &dict) {
+                                   const std::map<std::string, std::tuple<std::string, std::string, std::string>> &dict) {
     std::ostringstream out;
     for (auto it = sizes.begin(); it != sizes.end(); ++it) {
       if (it != sizes.begin()) out << '\n';
       std::string symbol, name;
       if (dict.count(it -> first)) {
-        symbol = dict.at(it -> first).first;
-        name = dict.at(it -> first).second;
+        symbol = std::get<0>(dict.at(it -> first));
+        name = std::get<1>(dict.at(it -> first));
       } else {
         symbol = it -> first;
         name = it -> first;

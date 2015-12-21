@@ -67,7 +67,7 @@ namespace snap {
                                                  boost::gregorian::date to,
                                                  std::string prefix,
                                                  std::string suffix);
-    std::map<std::string, std::pair<std::string, std::string>> read_dictionary(std::istream &input);
+    std::map<std::string, std::tuple<std::string, std::string, std::string>> read_dictionary(std::istream &input);
     class CorruptFileException: public std::runtime_error {
     public:
       CorruptFileException() : std::runtime_error("File is corrupt.") {}

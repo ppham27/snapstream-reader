@@ -3,6 +3,15 @@ var movingAverageWindow = 7;
 var width = 800;
 var height = 475;
 var margin = {top: 5, right: 10, bottom: 20, left: 60};
+var urlQuery = parseQueryString(window.location.search.slice(1));
+var fileName = urlQuery['filename'] || 'default-time-series.csv';
+var title = urlQuery['title'] || null;
+if (title === null) {
+  var graphTitle = document.getElementById('graph-title');
+  graphTitle.parentNode.removeChild(graphTitle);
+} else {
+  document.getElementById('graph-title').text(title);
+}
 // graph
 var controls = d3.select("#graph")
                .append("div").attr("id", "controls")
@@ -143,7 +152,7 @@ window.addEventListener("keyup", function(e) {
 
 var data, minDate, maxDate, movingAverageMinDate;     //global data variables
 var dailyTotals = {};
-d3.csv("default-time-series.csv", function(err, rawData) {  
+d3.csv(fileName, function(err, rawData) {
   rawData.forEach(function(d) {
     if (dailyTotals[d.Date] === undefined) {
       dailyTotals[d.Date] = {};
@@ -346,4 +355,20 @@ function update() {
   var valueRange = calculateValue(data, variable, isMovingAverage, isPercent);
   drawAxes(isMovingAverage ? movingAverageMinDate : minDate, maxDate, valueRange[0], valueRange[1], isPercent);
   draw();  
+}
+
+function parseQueryString(qs) {
+  var urlQuery = {};
+  qs.split('&').forEach(function(keyValues) {
+    var kvSplit = keyValues.split('=');  
+    var key, value;
+    try {      
+      key = decodeURIComponent(kvSplit[0]);
+      value = decodeURIComponent(kvSplit[1]);
+    } catch(err) {
+      console.error(err);
+    }
+    urlQuery[key] = value;    
+  });
+  return urlQuery;
 }

@@ -13,6 +13,7 @@
 
 #include <map>
 #include <string>
+#include <tuple>
 
 namespace distance {
 
@@ -41,7 +42,7 @@ namespace distance {
                                    const std::map<std::string, std::map<std::string, double>> &distance);
   std::string size_distance_to_csv(const std::map<std::string, double> &sizes,
                                    const std::map<std::string, std::map<std::string, double>> &distance,
-                                   const std::map<std::string, std::pair<std::string, std::string>> &dict);
+                                   const std::map<std::string, std::tuple<std::string, std::string, std::string>> &dict);
 }
 
 

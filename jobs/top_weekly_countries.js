@@ -49,8 +49,8 @@ var countriesDict = {};
 countries = countries.split('\n').map(function(country) { 
               var splitLine = country.split(',');
               var searchTerm = splitLine[1];
-              if (searchTerm) countriesDict[searchTerm] = {name: splitLine[0], symbol: splitLine[2]};
-              return searchTerm;
+              if (searchTerm && splitLine[3] === "Country") countriesDict[searchTerm] = {name: splitLine[0], symbol: splitLine[2]};
+              return splitLine[3] === "Country" ? searchTerm : undefined;
             }).filter(function(country) { return !!country; });
 
 var upperBoundDate, fromDateString, toDateString;

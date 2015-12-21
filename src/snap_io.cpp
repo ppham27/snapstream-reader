@@ -53,8 +53,8 @@ namespace snap {
       return file_names;
     }
 
-    std::map<std::string, std::pair<std::string, std::string>> read_dictionary(std::istream &input) {
-      std::map<std::string, std::pair<std::string, std::string>> dict;
+    std::map<std::string, std::tuple<std::string, std::string, std::string>> read_dictionary(std::istream &input) {
+      std::map<std::string, std::tuple<std::string, std::string, std::string>> dict;
       std::string line;
       while (!input.eof()) {
         std::getline(input, line);
@@ -68,7 +68,7 @@ namespace snap {
             next_idx = line.find(',', current_idx);
           }
           split_line.push_back(line.substr(current_idx));
-          dict[split_line[1]] = std::pair<std::string, std::string>(split_line[2], split_line[0]);
+          dict[split_line[1]] = std::tuple<std::string, std::string, std::string>(split_line[2], split_line[0], split_line[3]);
         }
       }            
       return dict;
