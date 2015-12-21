@@ -108,12 +108,20 @@ var pointTip = d3.tip()
                .direction('e')
                .offset([0,5])
                .html(function (d) {
-                 var percentFormatter = d3.format('%');
+                 var floatFormatter = d3.format('.1f');
+                 var percentFormatter = d3.format('%');                 
                  var html = d.Term + ', ' + d.day;
                  variables.forEach(function(dd) {
                    html += '<br><strong>'+dd+':</strong> <span style="color:#e41a1c">';
                    html += d[dd] + ' (' + percentFormatter(d[dd]/dailyTotals[d.day][dd]) + ')</span>';
                  });
+                 if (d.Date >= movingAverageMinDate) {
+                   variables.forEach(function(dd) {
+                     var key = dd + " Moving Sum";
+                     html += '<br><strong>'+dd+' Moving Average:</strong> <span style="color:#e41a1c">';
+                     html += floatFormatter(d[key]/movingAverageWindow) + ' (' + percentFormatter(d[key]/dailyTotals[d.day][key]) + ')</span>';
+                   });
+                 }
                  return html;
                });
 
@@ -123,15 +131,17 @@ var brush = d3.svg.brush()
             .on("brushend", brushed);
 window.addEventListener("keydown", function(e) {
   if (e.keyCode === 17) {
-    var brushGroup = document.querySelector('g.brush');
-    if (brushGroup) brushGroup.parentNode.removeChild(brushGroup);
+    var brushGroups = Array.prototype.slice.call(document.querySelectorAll('g.brush'));
+    brushGroups.forEach(function(brushGroup) {
+      if (brushGroup) brushGroup.parentNode.removeChild(brushGroup);
+    });
   }
 });
 window.addEventListener("keyup", function(e) {
   if (e.keyCode === 17) svg.append("g").attr("class", "brush").call(brush);
 });
 
-var data, minDate, maxDate;     //global data variables
+var data, minDate, maxDate, movingAverageMinDate;     //global data variables
 var dailyTotals = {};
 d3.csv("default-time-series.csv", function(err, rawData) {  
   rawData.forEach(function(d) {
@@ -197,9 +207,13 @@ d3.csv("default-time-series.csv", function(err, rawData) {
     });
   });
   minDate = d3.min(data[0].values, function(d) { return d.Date; });
-  maxDate = d3.max(data[0].values, function(d) { return d.Date; });
-  var valueRange = calculateValue(data, getVariable(), getIsPercent());
-  drawAxes(minDate, maxDate, valueRange[0], valueRange[1], getIsPercent());
+  maxDate = d3.max(data[0].values, function(d) { return d.Date; });  
+  calculateMovingAverage(data, dailyTotals);
+  movingAverageMinDate = d3.min(Object.keys(dailyTotals).filter(function(dt) { return dailyTotals[dt][variables[0] + " Moving Sum"] !== undefined; }));
+  movingAverageMinDate = d3.time.format("%Y-%m-%d").parse(movingAverageMinDate);
+  var valueRange = calculateValue(data, getVariable(), getIsMovingAverage(), getIsPercent());
+  drawAxes(getIsMovingAverage() ? movingAverageMinDate : minDate, 
+           maxDate, valueRange[0], valueRange[1], getIsPercent());
   var paths = svg.selectAll("path.data")
               .data(data, function(d) { return d.key; })
               .enter().append("path")
@@ -230,17 +244,43 @@ d3.csv("default-time-series.csv", function(err, rawData) {
   svg.call(pointTip);
 });
 
+function calculateMovingAverage(data, dailyTotals) {
+  // assume data is sorted
+  data.forEach(function(d) { 
+    variables.forEach(function(variable) {
+      var cumulativeSum = [0];
+      d.values.forEach(function(dd, idx) {
+        cumulativeSum.push(cumulativeSum[idx] + dd[variable]);        
+        if (idx + 1 >= movingAverageWindow) {
+          var newKey = variable + " Moving Sum";
+          dd[newKey] = cumulativeSum[idx + 1] - cumulativeSum[idx + 1 - movingAverageWindow];
+          if (dailyTotals[dd.day][newKey] === undefined) dailyTotals[dd.day][newKey] = 0;
+          dailyTotals[dd.day][newKey] += dd[newKey];
+        }
+      });
+    });
+  });
+}
 
-function calculateValue(data, variable, isPercent) {
+function calculateValue(data, variable, isMovingAverage, isPercent) {
   var minValue = Number.MAX_VALUE;
   var maxValue = 0;
   data.forEach(function(d) {
     d.values.forEach(function(dd) {
-      var value = dd[variable];
-      if (isPercent) value /= dailyTotals[dd.day][variable];
-      if (minValue > value) minValue = value;
-      if (maxValue < value) maxValue = value;
-      dd._value = value;
+      var key = isMovingAverage ? variable + " Moving Sum" : variable;
+      var value = dd[key];
+      if (isMovingAverage && !isPercent) {
+        value /= movingAverageWindow;
+      }  else if (isPercent) {
+        value /= dailyTotals[dd.day][key];
+      }
+      if (!isNaN(value)) {
+        if (minValue > value) minValue = value;
+        if (maxValue < value) maxValue = value;
+        dd._value = value;
+      } else {
+        dd._value = -1;
+      }      
     });
   });
   return [minValue, maxValue];
@@ -288,8 +328,9 @@ function brushed() {
   } else {
     var variable = getVariable();
     var isPercent = getIsPercent();
-    yAxisTitle.text(variable);
-    var valueRange = calculateValue(data, variable, isPercent);
+    var isMovingAverage = getIsMovingAverage();
+    yAxisTitle.text(isMovingAverage ? variable + " Moving Average" : variable);
+    var valueRange = calculateValue(data, variable, isMovingAverage, isPercent);
     var extent = brush.extent();
     d3.selectAll("g.brush").call(brush.clear());
     drawAxes(extent[0][0], extent[1][0], extent[0][1], extent[1][1], isPercent);
@@ -300,8 +341,9 @@ function brushed() {
 function update() {
   var variable = getVariable();
   var isPercent = getIsPercent();
-  yAxisTitle.text(variable);
-  var valueRange = calculateValue(data, variable, isPercent);
-  drawAxes(minDate, maxDate, valueRange[0], valueRange[1], isPercent);
+  var isMovingAverage = getIsMovingAverage();
+  yAxisTitle.text(isMovingAverage ? variable + " Moving Average" : variable);
+  var valueRange = calculateValue(data, variable, isMovingAverage, isPercent);
+  drawAxes(isMovingAverage ? movingAverageMinDate : minDate, maxDate, valueRange[0], valueRange[1], isPercent);
   draw();  
 }

@@ -48,11 +48,11 @@ body {
 #controls form fieldset label {
   font-weight: bold;
   margin-left: 5px;
-  margin-right: 5px;
+  margin-right: 3px;
 }
 
 #controls form fieldset .radio-label {
-  margin-left: 5px;
+  margin-left: 3px;
   margin-right: 5px;
 }
 
@@ -61,7 +61,12 @@ body {
   margin-right: 5px;
 }
 
+#controls input[type="checkbox"] {
+  margin-right: 5px;
+}
+
 #controls .info {
+  font-size: 12px;
   margin-left: 5px;
   margin-right: 5px;
 }
