@@ -258,6 +258,11 @@ int main() {
   output_matrix_file(search_results_programs, search_strings, random_id, "programs");
   output_matrix_file(search_results_total_matches, search_strings, random_id, "total_matches"); 
   // all data in long form
+  std::map<std::string, std::tuple<std::string, std::string, std::string>> dict;
+  if (snap::io::file_exists("dictionary.csv")) {
+    std::ifstream dict_file("dictionary.csv");
+    dict = snap::io::read_dictionary(dict_file);
+  }
   std::string output_file_name = search_results.front().front() + "_all_" + random_id + ".csv";
   std::string output_file_path = output_path + output_file_name;
   std::ofstream output_file(output_file_path);
@@ -265,7 +270,8 @@ int main() {
   for (int i = 0; i < search_results.size() - 1; ++i) { // skip total line
     for (int j = 0; j < search_strings.size(); ++j) {
       output_file << '\n';
-      output_file << search_results[i].front() << ',' << search_strings[j] << ','
+      output_file << search_results[i].front() << ',' 
+                  << (dict.count(search_strings[j]) ? std::get<1>(dict[search_strings[j]]) : search_strings[j]) << ','
                   << search_results[i][j + 1] << ',' // j + 1 skips date column
                   << search_results_programs[i][j + 1] << ','
                   << search_results_total_matches[i][j + 1];
@@ -275,6 +281,10 @@ int main() {
   std::cout << "<p>";
   std::cout << snap::web::create_link(output_file_path, "Output Long File", "long-data");
   std::cout << "</p>" << std::endl;
+  std::cout << "<p>";
+  std::cout << snap::web::create_link("../time-series.html?filename=tmp%2F" + output_file_name + "&title=Snapstream%20Time%20Series",
+                                      "Visualization", "visualization");
+  std::cout << "</p>" << std::endl; 
   
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;

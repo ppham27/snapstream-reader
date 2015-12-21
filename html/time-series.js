@@ -10,7 +10,7 @@ if (title === null) {
   var graphTitle = document.getElementById('graph-title');
   graphTitle.parentNode.removeChild(graphTitle);
 } else {
-  document.getElementById('graph-title').text(title);
+  document.getElementById('graph-title').textContent = title;
 }
 // graph
 var controls = d3.select("#graph")
@@ -216,7 +216,8 @@ d3.csv(fileName, function(err, rawData) {
     });
   });
   minDate = d3.min(data[0].values, function(d) { return d.Date; });
-  maxDate = d3.max(data[0].values, function(d) { return d.Date; });  
+  maxDate = d3.max(data[0].values, function(d) { return d.Date; });
+  if (Object.keys(dailyTotals).length < 2*movingAverageWindow) movingAverageWindow = 1;
   calculateMovingAverage(data, dailyTotals);
   movingAverageMinDate = d3.min(Object.keys(dailyTotals).filter(function(dt) { return dailyTotals[dt][variables[0] + " Moving Sum"] !== undefined; }));
   movingAverageMinDate = d3.time.format("%Y-%m-%d").parse(movingAverageMinDate);
