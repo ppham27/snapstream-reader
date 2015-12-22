@@ -1,8 +1,8 @@
 var variables = ["Contexts", "Programs", "Total Matches"];
 var movingAverageWindow = 7;
 var width = 800;
-var height = 475;
-var margin = {top: 10, right: 10, bottom: 20, left: 60};
+var height = 480;
+var margin = {top: 10, right: 20, bottom: 20, left: 55};
 var urlQuery = parseQueryString(window.location.search.slice(1));
 var fileName = urlQuery['filename'] || 'default-time-series.csv';
 var title = urlQuery['title'] || null;
@@ -43,10 +43,13 @@ var x = d3.time.scale().range([margin.left, width - margin.right]);
 var y = d3.scale.linear().range([height - margin.bottom , margin.top]);
 var xAxis = d3.svg.axis()
             .scale(x).orient("bottom")
-            .innerTickSize(-height + margin.bottom + margin.top).outerTickSize(10).tickPadding(8)
+            .innerTickSize(-height + margin.bottom + margin.top)
+            .outerTickSize(8).tickPadding(8)
+            .ticks(d3.time.week, 1)
             .tickFormat(d3.time.format("%b %d"));
 var yAxis = d3.svg.axis()
-            .innerTickSize(-width + margin.left + margin.right).outerTickSize(10).tickPadding(8)
+            .innerTickSize(-width + margin.left + margin.right)
+            .outerTickSize(8).tickPadding(8)
             .scale(y).orient("left")
             .tickFormat(d3.format("%"));
 svg.append("g")
@@ -62,10 +65,10 @@ svg.append("g")
 .attr("transform", "translate(" + margin.left + "," + 0 + ")");
 var yAxisTitle = d3.select(".y.axis")
                  .append("text").attr("id", "y-axis-title")
-                 .attr("x", -50)
+                 .attr("x", -45)
                  .attr("y", margin.top + (height - margin.top - margin.left)/2)
                  .attr("text-anchor", "middle")
-                 .attr("transform", "rotate(-90, -50," + (margin.top + (height - margin.top - margin.left)/2) + ")")
+                 .attr("transform", "rotate(-90, -45," + (margin.top + (height - margin.top - margin.left)/2) + ")")
                  .text(variables[0] + " Moving Average");
 
 // build controls
@@ -298,7 +301,20 @@ function calculateValue(data, variable, isMovingAverage, isPercent) {
 
 function drawAxes(minDate, maxDate, minValue, maxValue, percent) {
   x.domain([minDate, maxDate]);
-  y.domain([minValue, maxValue]); 
+  y.domain([minValue, maxValue]);   
+  var daysRange = Math.ceil((maxDate - minDate)/24/60/60/1000);
+  var daysInterval = Math.ceil(daysRange/10);
+  if (daysInterval <= 5) {    
+    xAxis.ticks({range: timeDay}, daysInterval);
+  } else if (daysInterval <= 10) {
+    xAxis.ticks(d3.time.week, 1);
+  } else if (daysInterval <= 17) {
+    xAxis.ticks(d3.time.week, 2);
+  } else if (daysInterval <= 40) {
+    xAxis.ticks(d3.time.month, 1);
+  } else {
+    xAxis.ticks(10);
+  }
   if (percent === true) {
     yAxis.tickFormat(d3.format("%"));
   } else {
@@ -372,4 +388,20 @@ function parseQueryString(qs) {
     urlQuery[key] = value;    
   });
   return urlQuery;
+}
+
+function timeDay(start, stop, step) {
+  if (start.getMonth() !== stop.getMonth()) {
+    var current = new Date(stop.getFullYear(), stop.getMonth(), 1);
+    while (current >= start) current = d3.time.day.offset(current, -step);
+    current = d3.time.day.offset(current, step);
+    var times = [];
+    while (current <= stop) {
+      times.push(current);
+      current = d3.time.day.offset(current, step);
+    }
+    return times;
+  } else {
+    return d3.time.day(start, stop, step);
+  }
 }

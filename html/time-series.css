@@ -26,7 +26,7 @@ body {
 }
 
 .axis text {
-  font-size: 14px;
+  font-size: 13px;
   fill: #222;
 }
 
@@ -35,7 +35,7 @@ body {
 }
 
 #controls {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 #controls form fieldset {
@@ -66,7 +66,7 @@ body {
 }
 
 #controls .info {
-  font-size: 12px;
+  font-size: 11px;
   margin-left: 5px;
   margin-right: 5px;
 }
@@ -80,7 +80,7 @@ body {
 .tip {
   line-height: 1.25;
   font-weight: bold;
-  font-size: 14px;
+  font-size: 13px;
   padding: 10px;
   background: rgba(0,0,0,0.8);
   color: #fff;
@@ -88,7 +88,7 @@ body {
 }
 
 #legend text {
-  font-size: 14px;
+  font-size: 13px;
 }
 
 #y-axis-title {
