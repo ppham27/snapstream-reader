@@ -402,6 +402,6 @@ function timeDay(start, stop, step) {
     }
     return times;
   } else {
-    return d3.time.day(start, stop, step);
+    return d3.time.day.range(start, stop, step);
   }
 }
