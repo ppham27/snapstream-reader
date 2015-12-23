@@ -25,7 +25,8 @@ To compile and build, do the following
 
 ### Deploying
 
-See `jobs/get_snap_branch.sh` for a sample deployment on a Apache server.
+See `jobs/get_snap_branch.sh` for a sample deployment on a Apache server, which is run with
+`sh get_snap_branch.sh <branch name>`.
 
 On your server, you'll want a directory structure like this
 ```
@@ -42,7 +43,5 @@ Now there will be a `dictionary.csv` file in `build/cgi-bin`. Copy this to your 
 Finally, ensure that the `html-root/tmp` folder is writable and `html-root/cgi-bin` is readable. 
 You can run `chmod -R 777 html-root/tmp` to do this.
 
-
-
-
-
+### Front End
+In the `html` folder, you will find find various front ends. `index.html` allows you to perform a Simple Search, Multiple Search, and Matrix Search. `graph.html` visualizes the results of a Matrix Search, and `time-series.html` visualizes the results of a multiple search.

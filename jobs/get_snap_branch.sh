@@ -49,6 +49,7 @@ rm $HOME/html/time-series.css
 rm $HOME/html/time-series.html
 rm $HOME/html/time-series.js
 rm $HOME/html/default-time-series.csv
+rm $HOME/html/long-time-series.csv
 rm $HOME/html/cgi-bin/simple_search
 rm $HOME/html/cgi-bin/near_search
 rm $HOME/html/cgi-bin/multiple_search
@@ -68,6 +69,7 @@ cp time-series.css $HOME/html/time-series.css
 cp time-series.html $HOME/html/time-series.html
 cp time-series.js $HOME/html/time-series.js
 cp default-time-series.csv $HOME/html/default-time-series.csv
+cp long-time-series.csv $HOME/html/long-time-series.csv
 cp cgi-bin/simple_search $HOME/html/cgi-bin
 cp cgi-bin/near_search $HOME/html/cgi-bin
 cp cgi-bin/multiple_search $HOME/html/cgi-bin
