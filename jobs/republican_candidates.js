@@ -65,12 +65,14 @@ if (readFile) {
   var $ = cheerio.load(responseBody);  
   fromDate = new Date($('#from-date').text());
   toDate = new Date($('#to-date').text());
-  upperBoundDate = new Date(toDate + 24*60*60*1000);
+  upperBoundDate = new Date(toDate);
+  upperBoundDate.setDate(upperBoundDate.getDate() + 1);
   fromDateString = fromDate.toISOString().slice(0,10);
   toDateString = toDate.toISOString().slice(0,10);
   processResponse(responseBody);
 } else {
-  upperBoundDate = new Date(toDate + 24*60*60*1000);
+  upperBoundDate = new Date(toDate);
+  upperBoundDate.setDate(upperBoundDate.getDate() + 1);
   fromDateString = fromDate.toISOString().slice(0,10);
   toDateString = toDate.toISOString().slice(0,10);
   var candidatesString = candidates.join('\n');
@@ -133,18 +135,6 @@ function processResponse(body) {
                                            Matches: parseInt(splitLine[4])})
                    });
                    done(null, candidateCounts);
-                   // countryCounts.sort(function(a, b) { 
-                   //   if (b.count - a.count !== 0) {
-                   //     return b.count - a.count; 
-                   //   } else if (a.searchPattern < b.searchPattern) {
-                   //     return -1;
-                   //   } else if (a.searchPattern > b.searchPattern) {
-                   //     return 1;
-                   //   } else {
-                   //     return 0;
-                   //   }
-                   // });
-                   // done(null, countryCounts);
                  });             
                });
     },
