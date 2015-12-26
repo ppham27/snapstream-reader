@@ -85,7 +85,7 @@ if (readFile === true) {
       'Content-Type': 'application/x-www-form-urlencoded',
       'Content-Length': postData.length
     }    
-  }
+  };
   var responseBody = new String();
   var req = http.request(requestOptions, function(res) {
               res.on('data', function(chunk) {

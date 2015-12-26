@@ -85,4 +85,5 @@ rm $HOME/resources/dictionary.csv
 cp ../jobs/check_snap.py $HOME/scripts/
 cp ../jobs/top_weekly_countries.js $HOME/scripts/
 cp ../jobs/hot_list.js $HOME/scripts/
+cp ../jobs/republican_candidates.js $HOME/scripts/
 cp ../resources/dictionary.csv $HOME/resources/
