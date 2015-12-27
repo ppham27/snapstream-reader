@@ -64,6 +64,7 @@ if (readFile) {
   var responseBody = fs.readFileSync(file, 'utf8');
   var $ = cheerio.load(responseBody);  
   fromDate = new Date($('#from-date').text());
+  fromDate.setDate(fromDate.getDate() + 6);
   toDate = new Date($('#to-date').text());
   upperBoundDate = new Date(toDate);
   upperBoundDate.setDate(upperBoundDate.getDate() + 1);
@@ -73,10 +74,12 @@ if (readFile) {
 } else {
   upperBoundDate = new Date(toDate);
   upperBoundDate.setDate(upperBoundDate.getDate() + 1);
+  var shiftedFromDate = new Date(fromDate);
+  shiftedFromDate.setDate(shiftedFromDate.getDate() - 6);
   fromDateString = fromDate.toISOString().slice(0,10);
   toDateString = toDate.toISOString().slice(0,10);
   var candidatesString = candidates.join('\n');
-  var body = {"from-date": fromDateString,
+  var body = {"from-date": shiftedFromDate.toISOString().slice(0,10),
               "to-date": toDateString,
               "search-strings": candidatesString,
               "num-excerpts": 10,
