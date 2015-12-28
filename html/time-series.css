@@ -56,19 +56,22 @@ body {
   margin-right: 5px;
 }
 
-#controls button {
+#controls label.toggle {
+  margin-left: 15px;
+}
+
+#info button {
   margin-left: 10px;
-  margin-right: 5px;
+  margin-right: 10px;
+  font-size: 12px;
 }
 
 #controls input[type="checkbox"] {
   margin-right: 5px;
 }
 
-#controls .info {
+#info {
   font-size: 11px;
-  margin-left: 5px;
-  margin-right: 5px;
 }
 
 .brush .extent {

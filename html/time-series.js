@@ -1,7 +1,7 @@
-var variables = ["Contexts", "Programs", "Total Matches"];
+var variables = ["Total Matches", "Programs", "Contexts"];
 var movingAverageWindow = 7;
 var width = 800;
-var height = 480;
+var height = 460;
 var margin = {top: 10, right: 20, bottom: 20, left: 55};
 var urlQuery = parseQueryString(window.location.search.slice(1));
 var fileName = urlQuery['filename'] || 'default-time-series.csv';
@@ -16,7 +16,7 @@ if (title === null) {
 var controls = d3.select("#graph")
                .append("div").attr("id", "controls")
                .style("width", 960 + "px")
-               .style("height", (500-height) + "px");
+               .style("height", (500-height)/2 + "px");
 var legend = d3.select("#graph") 
              .append("div")
              .attr("id", "legend")
@@ -29,6 +29,15 @@ var svg = d3.select("#graph")
           .attr("width", width)
           .attr("height", height)
           .style("display", "block");
+var info = d3.select('#graph')
+           .append("div").attr("id", "info")
+           .style("width", 960 + "px")
+           .style("height", (500-height)/2 + "px");
+info.append("button").attr("type", "button")
+.text("Reset Zoom")
+.on("click", brushed);
+info.append("span")
+.html("Mouse over legend to highlight particular candidates. Hold <em>Control</em> key and mouse over graph to see data points.");
 svg.append("clipPath")
 .attr("id", "clip")
 .append("rect")
@@ -85,9 +94,13 @@ variables.forEach(function(d, idx) {
   if (idx === 0) input[0][0].checked = true;
   variableSelector.append("span").attr("class", "radio-label").text(d);
 });
+controls.append("div")
+.style("display", "inline-block")
+.style("width", "200px");
 var isMovingAverage = controls.append("fieldset");
 isMovingAverage.append("label").text("Moving Average:")
-.attr("for", "isMovingAverage");
+.attr("for", "isMovingAverage")
+.attr("class", "toggle");
 isMovingAverage.append("input")
 .attr("type", "checkbox")
 .attr("id", "isMovingAverage")
@@ -96,18 +109,14 @@ isMovingAverage.append("input")
 .node().checked = true;
 var isPercentSelector = controls.append("fieldset");
 isPercentSelector.append("label").text("Percentage:")
-.attr("for", "isPercent");
+.attr("for", "isPercent")
+.attr("class", "toggle");
 isPercentSelector.append("input")
 .attr("type", "checkbox")
 .attr("id", "isPercent")
 .attr("name", "isPercent")
 .on("change", update)
 .node().checked = true;
-controls.append("button").attr("type", "button")
-.text("Reset Zoom")
-.on("click", brushed);
-controls.append("span")
-.attr("class", "info").html("Hold the <em>Control</em> key to enable tooltips.");
 
 // set up paths
 var liner = d3.svg.line()
