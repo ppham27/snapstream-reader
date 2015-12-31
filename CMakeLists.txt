@@ -37,5 +37,6 @@ file(COPY ${CMAKE_SOURCE_DIR}/html/time-series.html DESTINATION ${CMAKE_BINARY_D
 file(COPY ${CMAKE_SOURCE_DIR}/html/time-series.js DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/html/default-time-series.csv DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/html/long-time-series.csv DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/html/current-time-series.html DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/resources/dictionary.csv DESTINATION ${CMAKE_BINARY_DIR}/cgi-bin)
 file(COPY ${CMAKE_SOURCE_DIR}/html/hot-list.html DESTINATION ${CMAKE_BINARY_DIR})

@@ -37,7 +37,7 @@ info.append("button").attr("type", "button")
 .text("Reset Zoom")
 .on("click", brushed);
 info.append("span")
-.html("Mouse over legend to highlight particular candidates. Hold <em>Control</em> key and mouse over graph to see data points.");
+.html("Mouse over legend to highlight particular candidates. Click and hold <em>Control</em> key and mouse over graph to see data points.");
 svg.append("clipPath")
 .attr("id", "clip")
 .append("rect")
@@ -64,6 +64,7 @@ var yAxis = d3.svg.axis()
 svg.append("g")
 .attr("class", "x axis")
 .attr("transform", "translate(0," + (height - margin.bottom) + ")");
+// // x axis title
 // d3.select(".x.axis")
 // .append("text").attr("id", "x-axis-title")
 // .attr("x", margin.left + (width - margin.right - margin.left)/2)
@@ -207,9 +208,6 @@ d3.csv(fileName, function(err, rawData) {
     .attr("x1", 0).attr("y1", h/2)
     .attr("x2", w).attr("y2", h/2)
     .style("stroke", strokeColor(d.key));
-    // svg.append("circle")
-    // .attr("cx", w/2).attr("cy", h/2).attr("r", 2.5)
-    // .style("fill", strokeColor(d.key));
     svg.append("text").text(d.key)
     .attr("x", w + 5).attr("y", h/2).attr("dy", "5px");
     svg.on("mouseover", function() {
