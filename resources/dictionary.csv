@@ -115,7 +115,7 @@ Malta,{malta},MLT,Country
 Martinique,{martinique},MTQ,Country
 Mauritania,{mauritania},MRT,Country
 Mauritius,{mauritius},MUS,Country
-Mexico,{mexico},MEX,Country
+Mexico,{mexico} !@10 {new mexico},MEX,Country
 Micronesia,{micronesia},FSM,Country
 Monaco,{monaco} !@ {fc},MCO,Country
 Mongolia,{mongolia},MNG,Country
