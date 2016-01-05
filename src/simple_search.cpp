@@ -66,8 +66,8 @@ int main() {
   bool random = arguments["random"] == "on";
   
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
-  if (random) {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  if (random) {   
     std::shuffle(file_list.begin(), file_list.end(), std::default_random_engine(seed));
   }
   std::vector<snap::Expression> expressions;
@@ -89,10 +89,13 @@ int main() {
   std::cout << "Excerpt Size: " << arguments["excerpt-size"] << "<br/>" << std::endl;
   std::cout << "</p>" << std::endl;  
 
-  // set up excerpt file
-  std::string output_excerpt_file_name = output_path + snap::date::date_to_string(from_date) + "_excerpts_" + random_id + ".csv";
+  // set up excerpt files
+  std::string output_excerpt_file_name = output_path + snap::date::date_to_string(from_date) + "_all_excerpts_" + random_id + ".csv";
+  std::string output_random_excerpt_file_name = output_path + snap::date::date_to_string(from_date) + "_random_excerpts_" + random_id + ".csv";
   std::ofstream output_excerpt_file(output_excerpt_file_name);
+  std::ofstream output_random_excerpt_file(output_random_excerpt_file_name);
   output_excerpt_file << "\"dt\",\"program\",\"excerpt\"" << std::endl;
+  output_random_excerpt_file << "\"dt\",\"program\",\"excerpt\"" << std::endl;
 
   // begin to iteratively process files
   std::unordered_map<int, int> left_total_match_hashes;
@@ -128,7 +131,7 @@ int main() {
       int matching_programs = 0;
       int total_matches = 0;      
       if (random) {
-        unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+        seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::shuffle(programs.begin(), programs.end(), std::default_random_engine(seed));
       }
       std::unordered_map<int, int> left_match_hashes;
@@ -164,13 +167,17 @@ int main() {
                 excerpts.emplace_back(*p, *it-excerpt_size, *it+excerpt_size);                 
                 output_excerpt_file << '"' << excerpts.back().date << "\",\""
                                     << excerpts.back().program_title << "\",\""
-                                    << boost::replace_all_copy(excerpts.back().text, "\"", "\"\"") << '"' 
+                                    << boost::replace_all_copy(excerpts.back().get_raw_text(), "\"", "\"\"") << '"' 
                                     << std::endl;
                 for (auto pattern = expressions.back().patterns.begin(); pattern != expressions.back().patterns.end(); ++pattern) {
                   excerpts.back().highlight_word(*pattern);
                 }
                 if (random && excerpts.size() <= num_excerpts) {
                   snap::web::print_excerpt(excerpts.back());
+                  output_random_excerpt_file << '"' << excerpts.back().date << "\",\""
+                                             << excerpts.back().program_title << "\",\""
+                                             << boost::replace_all_copy(excerpts.back().get_raw_text(), "\"", "\"\"") << '"' 
+                                             << std::endl;
                 }
               }
             }
@@ -207,6 +214,16 @@ int main() {
       std::copy(it -> begin(), it -> end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));
       std::cout << it -> back() << std::endl;
     }
+  } else {
+    // shuffle excerpts
+    seed = std::chrono::system_clock::now().time_since_epoch().count();
+    std::shuffle(excerpts.begin(), excerpts.end(), std::default_random_engine(seed));
+    for (int i = 0; i < num_excerpts && i < excerpts.size(); ++i) {
+      output_random_excerpt_file << '"' << excerpts[i].date << "\",\""
+                                 << excerpts[i].program_title << "\",\""
+                                 << boost::replace_all_copy(excerpts[i].get_raw_text(), "\"", "\"\"") << '"' 
+                                 << std::endl;      
+    }
   }
   std::cout << "Grand Total:";
   std::cout << '\t' << matching_contexts_sum;
@@ -228,7 +245,8 @@ int main() {
   output_excerpt_file.close();
   
   std::cout << "<a href=\"" + output_file_name + "\">Output CSV</a><br/>" << std::endl;
-  std::cout << "<a href=\"" + output_excerpt_file_name + "\">Excerpt CSV</a><br/>" << std::endl;
+  std::cout << "<a href=\"" + output_excerpt_file_name + "\">All Excerpts CSV</a><br/>" << std::endl;
+  std::cout << "<a href=\"" + output_random_excerpt_file_name + "\">Random Excerpts CSV</a><br/>" << std::endl;
   
   std::cout << "<div>";
   std::cout << "<br/>" << std::endl;
@@ -237,7 +255,7 @@ int main() {
   snap::web::print_corrupt_files(corrupt_files);
   std::cout << "</div>" << std::endl;
 
-  if (!random) snap::web::print_excerpts(excerpts, num_excerpts, true);
+  if (!random) snap::web::print_excerpts(excerpts, num_excerpts, false);
 
   double duration = (std::clock() - start_time) / (double) CLOCKS_PER_SEC;
   std::cout << "<br/><span>Time taken (seconds): " << duration << "</span><br/>" << std::endl;
