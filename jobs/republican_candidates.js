@@ -19,19 +19,19 @@ var writeFile = false;
 var file;
 switch (process.argv.length) {
   case 2:
-  // no arguments means last 3 months
+  // no arguments means since May 1, 2015 minus 6 days
   toDate = new Date();
   toDate.setDate(toDate.getDate() - 1); // server takes inclusive range
-  fromDate = new Date(toDate);
-  fromDate.setMonth(fromDate.getMonth() - 2);
+  fromDate = new Date("2015-05-01");
+  fromDate.setDate(fromDate.getDate() - 6);
   writeFile = true;
   break;
   case 3:
   // 1 arguments specifies to date
   toDate = new Date(process.argv[2]);
   toDate.setDate(toDate.getDate() - 1); // server takes inclusive range
-  fromDate = new Date(toDate);
-  fromDate.setMonth(fromDate.getMonth() - 2); 
+  fromDate = new Date("2015-05-01");
+  fromDate.setDate(fromDate.getDate() - 6);
   writeFile = true;
   break;
   case 4:
