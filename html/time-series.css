@@ -1,4 +1,4 @@
-body {  
+#graph-title {  
   font-family: "Helvetica Neue", sans-serif;
   color: #222;
 }
@@ -6,81 +6,84 @@ body {
 #graph {
   width: 960px;
   height: 500px;
+  font-family: "Helvetica Neue", sans-serif;
+  color: #222;
 }
 
-.axis path, .axis line {
+#graph .axis path, .axis line {
   fill: none;
   stroke: #222;
   shape-rendering: crispEdges;
 }
 
-#legend ul {
+#graph #legend ul {
   list-style: none;  
   padding: 0px;
   margin: 0px;
 }
 
-#legend ul li {
+#graph #legend ul li {
   padding: 0px;
   margin: 0px;
 }
 
-.axis text {
+#graph .axis text {
   font-size: 13px;
   fill: #222;
 }
 
-.axis .tick line {
+#graph .axis .tick line {
   stroke: rgba(0, 0, 0, 0.1);
 }
 
-#controls {
+#graph #controls {
   font-size: 13px;
 }
 
-#controls form fieldset {
+#graph #controls form fieldset {
   padding: 0px;
   margin: 0px;
   display: inline-block;  
   border: none;
 }
 
-#controls form fieldset label {
+#graph #controls form fieldset label {
   font-weight: bold;
   margin-left: 5px;
   margin-right: 3px;
 }
 
-#controls form fieldset .radio-label {
+#graph #controls form fieldset .radio-label {
   margin-left: 3px;
   margin-right: 5px;
 }
 
-#controls label.toggle {
+#graph #controls label.toggle {
   margin-left: 15px;
 }
 
-#info button {
+#graph #info {
+  font-size: 11px;
+}
+
+#graph #info button {
   margin-left: 10px;
   margin-right: 10px;
   font-size: 12px;
 }
 
-#controls input[type="checkbox"] {
+#graph #controls input[type="checkbox"] {
   margin-right: 5px;
 }
 
-#info {
-  font-size: 11px;
-}
 
-.brush .extent {
+#graph .brush .extent {
   stroke: #fff;
   fill-opacity: .125;
   shape-rendering: crispEdges;
 }
 
-.tip {
+#graph .tip {
   line-height: 1.25;
   font-weight: bold;
   font-size: 13px;
@@ -90,10 +93,10 @@ body {
   border-radius: 10px;
 }
 
-#legend text {
+#graph #legend text {
   font-size: 13px;
 }
 
-#y-axis-title {
+#graph #y-axis-title {
   font-weight: bold;
 }
