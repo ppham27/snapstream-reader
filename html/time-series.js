@@ -6,11 +6,13 @@ var margin = {top: 10, right: 20, bottom: 20, left: 55};
 var urlQuery = parseQueryString(window.location.search.slice(1));
 var fileName = urlQuery['filename'] || 'default-time-series.csv';
 var title = urlQuery['title'] || null;
-if (title === null) {
-  var graphTitle = document.getElementById('graph-title');
-  graphTitle.parentNode.removeChild(graphTitle);
-} else {
-  document.getElementById('graph-title').textContent = title;
+if (document.getElementById('graph-title')) {
+  if (title === null) {
+    var graphTitle = document.getElementById('graph-title');
+    graphTitle.parentNode.removeChild(graphTitle);
+  } else {
+    document.getElementById('graph-title').textContent = title;
+  }
 }
 // graph
 var controls = d3.select("#graph")
@@ -128,7 +130,7 @@ var liner = d3.svg.line()
 var strokeColor = d3.scale.category10();
 // point tip
 var pointTip = d3.tip()
-               .attr('class', 'tip')
+               .attr('class', 'graph tip')
                .direction('e')
                .offset([0,5])
                .html(function (d) {
@@ -169,7 +171,18 @@ if (!isMobile()) {
 
 var data, minDate, maxDate, movingAverageMinDate;     //global data variables
 var dailyTotals = {};
+var initialized = false;
 d3.csv(fileName, function(err, rawData) {
+  if (err) {
+    console.error(err);
+  } else {
+    initializeData(rawData);
+  }
+});
+
+
+function initializeData(rawData) {
+  initialized = true;
   rawData.forEach(function(d) {
     if (dailyTotals[d.Date] === undefined) {
       dailyTotals[d.Date] = {};
@@ -266,7 +279,8 @@ d3.csv(fileName, function(err, rawData) {
   draw();
   if (!isMobile()) svg.append("g").attr("class", "brush").call(brush);
   svg.call(pointTip);
-});
+}
+
 
 function calculateMovingAverage(data, dailyTotals) {
   // assume data is sorted

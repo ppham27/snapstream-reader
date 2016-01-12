@@ -1,4 +1,4 @@
-#graph-title {  
+.graph, #graph-title {  
   font-family: "Helvetica Neue", sans-serif;
   color: #222;
 }
@@ -83,7 +83,15 @@
   shape-rendering: crispEdges;
 }
 
-#graph .tip {
+#graph #legend text {
+  font-size: 13px;
+}
+
+#graph #y-axis-title {
+  font-weight: bold;
+}
+
+.graph.tip {
   line-height: 1.25;
   font-weight: bold;
   font-size: 13px;
@@ -91,12 +99,4 @@
   background: rgba(0,0,0,0.8);
   color: #fff;
   border-radius: 10px;
-}
-
-#graph #legend text {
-  font-size: 13px;
-}
-
-#graph #y-axis-title {
-  font-weight: bold;
 }

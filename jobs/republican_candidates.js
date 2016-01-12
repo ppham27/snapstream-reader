@@ -6,6 +6,7 @@ var querystring = require('querystring');
 var async = require('async');
 var cheerio = require('cheerio');
 var nodemailer = require('nodemailer');
+var d3 = require('d3');
 var transporter = nodemailer.createTransport();
 
 var mailFrom = 'phamp@math.upenn.edu';
@@ -199,6 +200,8 @@ function processResponse(body) {
         fs.createReadStream('../html/' + dataFilePath)
         .pipe(fs.createWriteStream('../html/tmp/' + storageFolder + '/' + upperBoundDate.toISOString().slice(0, 10) + '.csv')); // rm tmp part of file path
         query.filename = 'tmp/' + storageFolder + '/' + upperBoundDate.toISOString().slice(0, 10) + '.csv';
+        fs.writeFileSync('../html/tmp/' + storageFolder + '/current.js',
+                         'if (initialized === false) initializeData(' + JSON.stringify(d3.csv.parse(fs.readFileSync('../html/' + dataFilePath))) + ');');
       }
       htmlEmail += '<p>See the visualization <a href="' + (relativeUrl + '../time-series.html?' + querystring.stringify(query)) + '">here</a>.</p>';
       transporter.sendMail({
