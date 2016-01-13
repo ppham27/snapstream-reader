@@ -1,6 +1,7 @@
 var variables = ["Total Matches", "Programs", "Contexts"];
 var movingAverageWindow = 7;
-var width = 800;
+var width = parseInt(window.getComputedStyle(document.getElementById('graph')).width);
+var legendWidth = 160;
 var height = 460;
 var margin = {top: 10, right: 20, bottom: 20, left: 55};
 var urlQuery = parseQueryString(window.location.search.slice(1));
@@ -17,23 +18,23 @@ if (document.getElementById('graph-title')) {
 // graph
 var controls = d3.select("#graph")
                .append("div").attr("id", "controls")
-               .style("width", 960 + "px")
+               .style("width", width + "px")
                .style("height", (500-height)/2 + "px");
 var legend = d3.select("#graph") 
              .append("div")
              .attr("id", "legend")
-             .style("width", (960 - width) + "px")
+             .style("width", legendWidth + "px")
              .style("height", height + "px")
              .style("display", "block")
              .style("float", "right");
 var svg = d3.select("#graph")
           .append("svg")
-          .attr("width", width)
+          .attr("width", width - legendWidth)
           .attr("height", height)
           .style("display", "block");
 var info = d3.select('#graph')
            .append("div").attr("id", "info")
-           .style("width", 960 + "px")
+           .style("width", width + "px")
            .style("height", (500-height)/2 + "px");
 if (!isMobile()) {              //no zoom capabilities on mobile
   info.append("button").attr("type", "button")
@@ -46,22 +47,28 @@ svg.append("clipPath")
 .attr("id", "clip")
 .append("rect")
 .attr("x", margin.left).attr("y", margin.top-5)
-.attr("width", width - margin.left - margin.right + 5)
+.attr("width", width - legendWidth - margin.left - margin.right + 5)
 .attr("height", height - margin.top - margin.bottom + 5);
 legend.append("h2").text("Legend");
 legend = legend.append("ul");
 
 // set up axes
-var x = d3.time.scale().range([margin.left, width - margin.right]);
+var x = d3.time.scale().range([margin.left, width - legendWidth - margin.right]);
 var y = d3.scale.linear().range([height - margin.bottom , margin.top]);
 var xAxis = d3.svg.axis()
             .scale(x).orient("bottom")
             .innerTickSize(-height + margin.bottom + margin.top)
             .outerTickSize(8).tickPadding(8)
             .ticks(d3.time.week, 1)
-            .tickFormat(d3.time.format("%b %d"));
+            .tickFormat(function(d) {
+              if (x.ticks().length > 1 &&
+                  (x.ticks()[1] - x.ticks()[0])/1000/60/60/24 >= 28) {
+                return d3.time.format("%b '%y")(d);
+              }
+              return d3.time.format("%b %d")(d);
+            });
 var yAxis = d3.svg.axis()
-            .innerTickSize(-width + margin.left + margin.right)
+            .innerTickSize(-(width - legendWidth) + margin.left + margin.right)
             .outerTickSize(8).tickPadding(8)
             .scale(y).orient("left")
             .tickFormat(d3.format("%"));
@@ -71,7 +78,7 @@ svg.append("g")
 // // x axis title
 // d3.select(".x.axis")
 // .append("text").attr("id", "x-axis-title")
-// .attr("x", margin.left + (width - margin.right - margin.left)/2)
+// .attr("x", margin.left + (width - legendWidth - margin.right - margin.left)/2)
 // .attr("y", 45).attr("text-anchor", "middle")
 // .text("Date");
 svg.append("g")
@@ -101,7 +108,7 @@ variables.forEach(function(d, idx) {
 });
 controls.append("div")
 .style("display", "inline-block")
-.style("width", "200px");
+.style("width", (width - 590) + "px");
 var isMovingAverage = controls.append("fieldset");
 isMovingAverage.append("label").text("Moving Average:")
 .attr("for", "isMovingAverage")
@@ -219,7 +226,7 @@ function initializeData(rawData) {
     var w = 40;
     var h = 30;
     var svg = d3.select(this).append("svg")
-              .attr("width", 960-width)
+              .attr("width", legendWidth)
               .attr("height", 30);
     svg.append("line")
     .attr("x1", 0).attr("y1", h/2)
