@@ -8,6 +8,7 @@
   height: 500px;
   font-family: "Helvetica Neue", sans-serif;
   color: #222;
+  font-size: 13px;
 }
 
 #graph .axis path, .axis line {
@@ -28,16 +29,11 @@
 }
 
 #graph .axis text {
-  font-size: 13px;
   fill: #222;
 }
 
 #graph .axis .tick line {
   stroke: rgba(0, 0, 0, 0.1);
-}
-
-#graph #controls {
-  font-size: 13px;
 }
 
 #graph #controls form fieldset {
@@ -83,10 +79,6 @@
   shape-rendering: crispEdges;
 }
 
-#graph #legend text {
-  font-size: 13px;
-}
-
 #graph #y-axis-title {
   font-weight: bold;
 }
@@ -94,7 +86,7 @@
 .graph.tip {
   line-height: 1.25;
   font-weight: bold;
-  font-size: 13px;
+  font-size: 11px;
   padding: 10px;
   background: rgba(0,0,0,0.8);
   color: #fff;
