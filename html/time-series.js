@@ -1,7 +1,7 @@
 var variables = ["Total Matches", "Programs", "Contexts"];
 var movingAverageWindow = 7;
 var width = parseInt(window.getComputedStyle(document.getElementById('graph')).width);
-var shrinkWidth = width <= 720;
+var shrinkWidth = width <= 760;
 var legendWidth = shrinkWidth ? 100 : 160;
 var height = parseInt(window.getComputedStyle(document.getElementById('graph')).height);
 var controlsHeight = 20;
