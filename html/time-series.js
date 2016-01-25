@@ -112,7 +112,7 @@ variables.forEach(function(d, idx) {
 });
 controls.append("div")
 .style("display", "inline-block")
-.style("width", (width - 600) + "px");
+.style("width", (width - 620) + "px");
 var isMovingAverage = controls.append("fieldset");
 isMovingAverage.append("label").text("Moving Average:")
 .attr("for", "isMovingAverage")
