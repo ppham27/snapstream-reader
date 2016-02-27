@@ -14,6 +14,7 @@ var mailTo = process.env.NODE_ENV === 'test' ? 'phamp@math.upenn.edu' : ['phamp@
 // determine date range, from is inclusive, to is exclusive
 var toDate, fromDate;
 var readFile = false;
+var writeCurrent = false;
 var file;
 switch (process.argv.length) {
   case 2:
@@ -21,6 +22,7 @@ switch (process.argv.length) {
   toDate = new Date();
   fromDate = new Date(toDate - 24*7*60*60*1000);
   toDate = new Date(toDate - 24*1*60*60*1000); // server takes inclusive range
+  writeCurrent = true;
   break;
   case 3:
   // 1 arguments specifies to date
@@ -169,6 +171,10 @@ function processResponse(body) {
                  if (fs.existsSync('../html/tmp/daily_country') && fs.existsSync('../html/' + visualizationFilePath)) {
                    fs.createReadStream('../html/' + visualizationFilePath)
                    .pipe(fs.createWriteStream('../html/tmp/daily_country' + visualizationFilePath.substr(3))); // rm tmp part of file path
+                   if (writeCurrent === true) {
+                     fs.createReadStream('../html/' + visualizationFilePath)
+                     .pipe(fs.createWriteStream('../html/tmp/daily_country/current.json'));
+                   }
                    visualizationLink = visualizationLink.replace('filename=tmp%2F','filename=tmp%2Fdaily_country%2F');
                  }
                  htmlEmail += 'See the visualization <a href="' + (relativeUrl + visualizationLink) + '">here</a>.';
