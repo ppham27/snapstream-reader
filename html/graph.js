@@ -115,8 +115,13 @@ var node = svg.append('g').selectAll(".node.data");
 var nodeLabel = svg.append('g').selectAll(".node-label.data");
 var urlQuery = parseQueryString(window.location.search.slice(1));
 var fileName = urlQuery['filename'] || 'multiple_time_varied.json';
-var title = urlQuery['title'] || 'Graph';
-document.getElementById('graph-title').innerHTML = title;
+var title = urlQuery['title'] || undefined;
+if (title !== undefined) {
+  document.getElementById('graph-title').innerHTML = title;
+} else {
+  var graphTitleElement = document.getElementById('graph-title');
+  graphTitleElement.parentNode.removeChild(graphTitleElement);
+}
 d3.json(fileName, function(err, graph) {
   allGraphData = graph;
   setSpringConstant(allGraphData);
