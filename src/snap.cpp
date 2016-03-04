@@ -14,6 +14,25 @@
 
 namespace snap {
 
+  std::vector<std::string> filter_program_list(std::vector<std::string> &program_list) {
+    std::vector<std::string> filtered_program_list;
+    std::sort(program_list.begin(), program_list.end());
+    filtered_program_list.push_back(program_list.front());
+    for (int i = 1; i < program_list.size(); ++i) {
+      if (program_list[i].find(filtered_program_list.back()) != 0) {
+        filtered_program_list.push_back(program_list[i]);
+      }
+    }
+    return filtered_program_list;
+  }
+
+  bool is_program_selected(const std::string &program_title, const std::vector<std::string> &program_list) {
+    std::vector<std::string>::const_iterator it = std::upper_bound(program_list.begin(), program_list.end(), program_title);
+    if (it == program_list.begin()) return false;
+    it--;
+    return program_title.find(*it) == 0;
+  }
+
   std::vector<int> orv(const std::vector<int> &a, const std::vector<int> &b) {
     std::vector<int> c; 
     c.insert(c.end(), a.begin(), a.end());

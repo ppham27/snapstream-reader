@@ -16,6 +16,9 @@
 #include "Expression.h"
 
 namespace snap {
+  std::vector<std::string> filter_program_list(std::vector<std::string> &program_list);
+  bool is_program_selected(const std::string &program_title, const std::vector<std::string> &program_list);
+  
   std::map<std::string, std::vector<int>> find(const std::vector<std::string> &patterns,
                                                const std::string &s);
   std::map<std::string, std::vector<int>> find(const std::string &pattern,

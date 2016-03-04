@@ -114,6 +114,38 @@ TEST(near, Default) {
               ::testing::ElementsAre(23, 71));
 }
 
+TEST(filter_program_list, Default) {
+  std::vector<std::string> program_list{"newszz", "news", 
+      "abcde", "abc", "action news", 
+      "saturday", "friday", "monday", "zdaynotimporantstuff",
+      "zday"};
+  std::vector<std::string> expected_filtered_program_list{"abc", 
+      "action news", 
+      "friday",
+      "monday",
+      "news",
+      "saturday",
+      "zday"};
+  std::vector<std::string> filtered_program_list = snap::filter_program_list(program_list);
+  ASSERT_EQ(expected_filtered_program_list, filtered_program_list);  
+}
+
+TEST(is_program_selected, Default) {
+  std::vector<std::string> program_list{"abc", 
+      "action news", 
+      "friday",
+      "monday",
+      "news",
+      "saturday",
+      "zday"};
+  ASSERT_TRUE(snap::is_program_selected("news", program_list));
+  ASSERT_FALSE(snap::is_program_selected("mon", program_list));
+  ASSERT_TRUE(snap::is_program_selected("monday1234", program_list));
+  ASSERT_FALSE(snap::is_program_selected("aaaa", program_list));
+  ASSERT_TRUE(snap::is_program_selected("zdayzz", program_list));
+  ASSERT_TRUE(snap::is_program_selected("zdayef", program_list));
+}
+
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
