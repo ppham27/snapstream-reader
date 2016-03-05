@@ -15,7 +15,7 @@ function handleAuthResult(authResult) {
   if (authResult && !authResult.error) {
     callScriptFunction()
   } else {
-    console.err(authResult.error);
+    console.error(authResult.error);
   }
 }
 
@@ -45,7 +45,10 @@ function createProgramSelectors(programList) {
     // add selection options
     var allOption = document.createElement('option');
     allOption.innerHTML = 'All'; allOption.value = 'All';
+    var customOption = document.createElement('option');
+    customOption.innerHTML = 'Custom'; customOption.value = 'Custom';
     selector.appendChild(allOption);
+    selector.appendChild(customOption);
     Object.keys(programMap).forEach(function(key) {
       var option = document.createElement('option');
       option.value = key;
@@ -59,7 +62,11 @@ function createProgramSelectors(programList) {
     programSelector.appendChild(programTextArea);
     selector.addEventListener("change", function(e) {
       var selectedValue = this.options[this.selectedIndex].value;
-      if (selectedValue != 'All') programTextArea.textContent = programMap[selectedValue].join('\n');
+      if (selectedValue === "Custom") {
+        programTextArea.textContent = '';
+      } else if (selectedValue != 'All') {
+        programTextArea.textContent = programMap[selectedValue].join('\n');
+      }
     });
   });
 }

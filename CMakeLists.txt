@@ -27,6 +27,7 @@ add_test(CoOccurrenceMatrixTest test/bin/cooccurrencematrix_unittest)
 
 file(COPY ${CMAKE_SOURCE_DIR}/html/index.html DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/html/style.css DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ${CMAKE_SOURCE_DIR}/html/program-selector.js DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/html/visualize.html DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/html/d3.tip.js DESTINATION ${CMAKE_BINARY_DIR})
 file(COPY ${CMAKE_SOURCE_DIR}/html/d3.v3.min.js DESTINATION ${CMAKE_BINARY_DIR})

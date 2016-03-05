@@ -64,6 +64,8 @@ int main() {
   int num_excerpts = stoi(arguments["num-excerpts"]);
   int excerpt_size = stoi(arguments["excerpt-size"]);
   bool random = arguments["random"] == "on";
+  // program list
+  std::string program_selection = snap::web::decode_uri(arguments["program-selection"]);
   
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -87,6 +89,7 @@ int main() {
   std::cout << "To (inclusive): " << arguments["to-date"] << "<br/>" << std::endl;
   std::cout << "Number of Excerpts: " << arguments["num-excerpts"] << "<br/>" << std::endl;
   std::cout << "Excerpt Size: " << arguments["excerpt-size"] << "<br/>" << std::endl;
+  std::cout << "Program List Selection: " << program_selection << "<br/>" << std::endl;
   std::cout << "</p>" << std::endl;  
 
   // set up excerpt files

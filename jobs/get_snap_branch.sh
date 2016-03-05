@@ -41,6 +41,7 @@ rm $HOME/html/index.html
 rm $HOME/html/hot-list.html
 rm $HOME/html/style.css
 rm $HOME/html/visualize.html
+rm $HOME/html/program-selector.js
 rm $HOME/html/d3.tip.js
 rm $HOME/html/d3.v3.min.js
 rm $HOME/html/graph.js
@@ -62,6 +63,7 @@ cp index.html $HOME/html/index.html
 cp hot-list.html $HOME/html/hot-list.html
 cp style.css $HOME/html/style.css
 cp visualize.html $HOME/html/visualize.html
+cp program-selector.js $HOME/html/program-selector.js
 cp d3.tip.js $HOME/html/d3.tip.js
 cp d3.v3.min.js $HOME/html/d3.v3.min.js
 cp graph.js $HOME/html/graph.js
