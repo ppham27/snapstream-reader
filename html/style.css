@@ -99,3 +99,46 @@ body {
   padding-bottom: 3px;
 }
 
+.program-selector {
+  max-height: 0px;
+  overflow: hidden;
+  transition: all 1s ease;
+}
+
+.program-selector.expanded {
+  max-height: 500px;
+}
+
+.program-selector select {
+  margin-bottom: 5px;
+}
+
+.program-expander {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  transition: all 1s ease;
+  cursor: pointer;
+}
+
+
+.program-expander.expanded {
+  color: #D02027;
+}
+
+.program-expander .label {
+  text-decoration: underline;
+}
+
+.program-expander .bullet {
+  font-size: 140%;
+  display: inline-block;
+  transition: all 1s ease;
+}
+
+.program-expander.expanded .bullet {
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+}
+
+
+

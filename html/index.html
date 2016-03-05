@@ -47,6 +47,8 @@
       <span>Number of Excerpts: <input type="text" name="num-excerpts" value="100"></span><br/>
       <span>Excerpt Size: <input type="text" name="excerpt-size" value="400"></span><br/>
       <span>Random: <input type="checkbox" name="random"></span><br/>
+      <h4 class="program-expander"><span class="bullet">&#8227</span><span class="label">Program Filter</span></h4>
+      <div class="program-selector"></div>
       <input type="submit" value="Simple search">
     </form>
     
@@ -59,6 +61,8 @@
       <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/> 
       <span>Number of Excerpts: <input type="text" name="num-excerpts" value="100"></span><br/>
       <span>Excerpt Size: <input type="text" name="excerpt-size" value="400"></span><br/>
+      <h4 class="program-expander"><span class="bullet">&#8227</span><span class="label">Program Filter</span></h4>
+      <div class="program-selector"></div>
       <input type="submit" value="Multiple search">
     </form>
     <!-- <h2>Near search</h2> -->
@@ -83,7 +87,21 @@
       <span>From date, inclusive (YYYY-MM-DD): <input type="text" name="from-date" value="YYYY-MM-DD"></span><br/>
       <span>To date, inclusive (YYYY-MM-DD): <input type="text" name="to-date" value="YYYY-MM-DD"></span><br/> 
       <span>Filter top (for visualization): <input type="text" name="top-filter" value="25"></span><br/> 
+      <h4 class="program-expander"><span class="bullet">&#8227</span><span class="label">Program Filter</span></h4>
+      <div class="program-selector"></div>
       <input type="submit" value="Matrix search">
     </form>
+    <script src="program-selector.js"></script>
+    <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script>
+    <script>
+     var programExpanders = document.getElementsByClassName('program-expander');
+     programExpanders = Array.prototype.slice.call(programExpanders, 0);
+     programExpanders.forEach(function(programExpander) {
+       programExpander.addEventListener('click', function(e) {
+         this.classList.toggle('expanded');
+         this.parentNode.querySelector('.program-selector').classList.toggle('expanded');
+       });
+     });
+    </script>
   </body>
 </html>
