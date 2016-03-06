@@ -64,8 +64,23 @@ int main() {
   int num_excerpts = stoi(arguments["num-excerpts"]);
   int excerpt_size = stoi(arguments["excerpt-size"]);
   bool random = arguments["random"] == "on";
-  // program list
+  // process program list
   std::string program_selection = snap::web::decode_uri(arguments["program-selection"]);
+  arguments["program-list"] = snap::web::decode_uri(arguments["program-list"]);
+  bool all_programs = program_selection == "all";
+  std::vector<std::string> program_list;
+  boost::split(program_list, arguments["program-list"], boost::is_any_of("\n"));
+  auto program_list_iterator = program_list.begin();
+  while (program_list_iterator != program_list.end()) { // remove empty lines
+    if (program_list_iterator -> empty() || 
+        std::all_of(program_list_iterator -> begin(), program_list_iterator -> end(), ::isspace)) { // do not include
+      program_list_iterator = program_list.erase(program_list_iterator);
+    } else {
+      boost::algorithm::trim(*program_list_iterator);
+      ++program_list_iterator;
+    }    
+  }
+  program_list = snap::filter_program_list(program_list);
   
   std::vector<std::string> file_list = snap::io::generate_file_names(from_date, to_date, prefix, suffix);
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -132,7 +147,8 @@ int main() {
       }
       int matching_contexts = 0; // context is distinct hash AND distinct program
       int matching_programs = 0;
-      int total_matches = 0;      
+      int total_matches = 0;    
+      int selected_programs = 0;
       if (random) {
         seed = std::chrono::system_clock::now().time_since_epoch().count();
         std::shuffle(programs.begin(), programs.end(), std::default_random_engine(seed));
@@ -140,6 +156,10 @@ int main() {
       std::unordered_map<int, int> left_match_hashes;
       std::unordered_map<int, int> right_match_hashes;
       for (auto p = programs.begin(); p != programs.end(); ++p) {
+        std::string program_title = p -> title;
+        std::transform(program_title.begin(), program_title.end(), program_title.begin(), ::tolower);
+        if (!all_programs && !snap::is_program_selected(program_title, program_list)) continue; // if not selected, skip
+        ++selected_programs;
         std::map<std::string, std::vector<int>> raw_match_positions = snap::find(expressions.back().patterns, p -> lower_text);
         std::map<std::string, std::vector<int>> match_positions = snap::evaluate_expressions(expressions, raw_match_positions);
         hasher.load_text(p -> lower_text);
@@ -190,14 +210,14 @@ int main() {
       }
       matching_programs_sum += matching_programs;
       total_matches_sum += total_matches;
-      selected_programs_sum += programs.size();
+      selected_programs_sum += selected_programs;
       total_programs_sum += programs.size();
       search_results.push_back(std::vector<std::string>());
       search_results.back().push_back(snap::date::date_to_string(current_date));
       search_results.back().push_back(std::to_string(matching_contexts));
       search_results.back().push_back(std::to_string(matching_programs));
       search_results.back().push_back(std::to_string(total_matches));      
-      search_results.back().push_back(std::to_string(programs.size()));
+      search_results.back().push_back(std::to_string(selected_programs));
       search_results.back().push_back(std::to_string(programs.size()));
       if (!random) {
         std::copy(search_results.back().begin(), search_results.back().end() - 1, std::ostream_iterator<std::string>(std::cout, "\t"));

@@ -16,6 +16,7 @@ namespace snap {
 
   std::vector<std::string> filter_program_list(std::vector<std::string> &program_list) {
     std::vector<std::string> filtered_program_list;
+    if (program_list.size() == 0) return filtered_program_list;
     std::sort(program_list.begin(), program_list.end());
     filtered_program_list.push_back(program_list.front());
     for (int i = 1; i < program_list.size(); ++i) {
