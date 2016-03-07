@@ -14,9 +14,27 @@ function checkAuth() {
 function handleAuthResult(authResult) {
   if (authResult && !authResult.error) {
     callScriptFunction()
-  } else {
-    console.error(authResult.error);
+  } else {                      // create authorization buttons
+    var programSelectors = document.getElementsByClassName('program-selector');
+    programSelectors = Array.prototype.slice.call(programSelectors, 0);
+    programSelectors.forEach(function(programSelector) {
+      var authDiv = programSelector.appendChild(document.createElement('div'));
+      authDiv.classList.add('program-auth-div');
+      var authButton = authDiv.appendChild(document.createElement('button'));
+      authButton.textContent = 'Authorize Access to Google Sheets';
+      authButton.type = 'button';
+      authButton.addEventListener('click', handleAuthClick);
+    });    
   }
+}
+
+function handleAuthClick(event) {
+  gapi.auth.authorize({
+    client_id: CLIENT_ID,
+    scope: SCOPES,
+    immediate: false
+  }, handleAuthResult);
+  return false;
 }
 
 function callScriptFunction() {
@@ -36,10 +54,16 @@ function callScriptFunction() {
 
 
 function createProgramSelectors(programList) {
+
   var programMap = processProgramList(programList);
   var programSelectors = document.getElementsByClassName("program-selector");
   programSelectors = Array.prototype.slice.call(programSelectors, 0);
   programSelectors.forEach(function(programSelector) {
+    // clean up auth divs if any
+    var authDivs = programSelector.getElementsByClassName('program-auth-div');
+    authDivs = Array.prototype.slice.call(authDivs, 0);
+    authDivs.forEach(function(authDiv) { authDiv.parentNode.removeChild(authDiv); });
+    // create selector
     var selector = document.createElement('select');
     selector.name = 'program-selection';
     // add selection options
