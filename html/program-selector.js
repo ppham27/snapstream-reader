@@ -13,6 +13,7 @@ function checkAuth() {
 
 function handleAuthResult(authResult) {
   if (authResult && !authResult.error) {
+    createDefaultProgramSelectors();
     callScriptFunction()
   } else {                      // create authorization buttons
     var programSelectors = document.getElementsByClassName('program-selector');
@@ -25,6 +26,7 @@ function handleAuthResult(authResult) {
       authButton.type = 'button';
       authButton.addEventListener('click', handleAuthClick);
     });    
+    createDefaultProgramSelectors();
   }
 }
 
@@ -51,19 +53,10 @@ function callScriptFunction() {
   });
 }
 
-
-
-function createProgramSelectors(programList) {
-
-  var programMap = processProgramList(programList);
+function createDefaultProgramSelectors() {
   var programSelectors = document.getElementsByClassName("program-selector");
   programSelectors = Array.prototype.slice.call(programSelectors, 0);
   programSelectors.forEach(function(programSelector) {
-    // clean up auth divs if any
-    var authDivs = programSelector.getElementsByClassName('program-auth-div');
-    authDivs = Array.prototype.slice.call(authDivs, 0);
-    authDivs.forEach(function(authDiv) { authDiv.parentNode.removeChild(authDiv); });
-    // create selector
     var selector = document.createElement('select');
     selector.name = 'program-selection';
     // add selection options
@@ -73,17 +66,32 @@ function createProgramSelectors(programList) {
     customOption.innerHTML = 'Custom'; customOption.value = 'Custom';
     selector.appendChild(allOption);
     selector.appendChild(customOption);
-    Object.keys(programMap).forEach(function(key) {
-      var option = document.createElement('option');
-      option.value = key;
-      option.innerHTML = key;
-      selector.appendChild(option);
-    });        
     programSelector.appendChild(selector); programSelector.appendChild(document.createElement('br'))
     // add textarea for customization
     var programTextArea = document.createElement('textarea');
     programTextArea.name = 'program-list'; programTextArea.rows = 10; programTextArea.cols = 50;
     programSelector.appendChild(programTextArea);
+  });
+}
+
+function createProgramSelectors(programList) {
+  var programMap = processProgramList(programList);
+  var programSelectors = document.getElementsByClassName("program-selector");
+  programSelectors = Array.prototype.slice.call(programSelectors, 0);
+  programSelectors.forEach(function(programSelector) {
+    // clean up auth divs if any
+    var authDivs = programSelector.getElementsByClassName('program-auth-div');
+    authDivs = Array.prototype.slice.call(authDivs, 0);
+    authDivs.forEach(function(authDiv) { authDiv.parentNode.removeChild(authDiv); });
+    // add google sheet info to selector
+    var selector = programSelector.querySelector('select');
+    Object.keys(programMap).forEach(function(key) {
+      var option = document.createElement('option');
+      option.value = key;
+      option.innerHTML = key;
+      selector.appendChild(option);
+    }); 
+    var programTextArea = programSelector.querySelector('textarea');
     selector.addEventListener("change", function(e) {
       var selectedValue = this.options[this.selectedIndex].value;
       if (selectedValue === "Custom") {

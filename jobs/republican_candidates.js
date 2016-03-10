@@ -84,7 +84,9 @@ if (readFile) {
               "to-date": toDateString,
               "search-strings": candidatesString,
               "num-excerpts": 10,
-              "excerpt-size": 200};
+              "excerpt-size": 200,
+              "program-selection": 'All',
+              "program-list": ''};
   var postData = querystring.stringify(body);
   var requestOptions = {
     hostname: 'johnny.sas.upenn.edu',
