@@ -89,8 +89,13 @@ var nodeTip = d3.tip()
                 var formatter = d3.format("0.3f");
                 var size = d.size;
                 size = formatter(size);
-                return d.name + '<br>'
-                     + '<strong>Size:</strong> <span style="color:#e41a1c">' + size + '</span>';;
+                var tip = d.name + '<br>' + '<strong>Size:</strong> <span style="color:#e41a1c">' + size + '</span>';
+                if (d.data) {
+                  Object.keys(d.data).forEach(function(key) {
+                    tip += '<br><strong>' + key + ':</strong> <span style="color:#e41a1c">' + d.data[key] + '</span>';
+                  });
+                }
+                return tip;
               });
 var linkTip = d3.tip()
               .attr('class', 'tip')
@@ -99,9 +104,15 @@ var linkTip = d3.tip()
               })
               .html(function (d) {
                 var formatter = d3.format("0.3f");
-                return '<span style="color:#e41a1c">' + nodeAttr[d.source].name + '</span><br>'
-                     + '<span style="color:#e41a1c">' + nodeAttr[d.target].name + '</span><br>'
-                     + '<strong>Distance:</strong> <span style="color:#e41a1c">' + formatter(d.distance) + '</span>';
+                var tip = '<span style="color:#e41a1c">' + nodeAttr[d.source].name + '</span><br>'
+                        + '<span style="color:#e41a1c">' + nodeAttr[d.target].name + '</span><br>'
+                        + '<strong>Distance:</strong> <span style="color:#e41a1c">' + formatter(d.distance) + '</span>';
+                if (d.data) {
+                  Object.keys(d.data).forEach(function(key) {
+                    tip += '<br><strong>' + key + ':</strong> <span style="color:#e41a1c">' + d.data[key] + '</span>';
+                  });
+                }
+                return tip;                
               });
 
 svg.call(nodeTip);
@@ -456,7 +467,8 @@ function initializeGraph(graph, options) {
   for (var i = 0; i < graph.nodes.length - 1; ++i) {
     for (var j = i + 1; j < graph.nodes.length; ++j) {
       if (options.create || options.update) {
-        links.push({source: graph.nodes[i].symbol, target: graph.nodes[j].symbol, distance: graph.links[i][j].distance});
+        links.push({source: graph.nodes[i].symbol, target: graph.nodes[j].symbol, distance: graph.links[i][j].distance, 
+                    data: graph.links[i][j].data});
       }
       if (graph.links[i][j].distance > maxLinkDistance) maxLinkDistance = graph.links[i][j].distance;
       if (graph.links[i][j].distance < minLinkDistance) minLinkDistance = graph.links[i][j].distance;
