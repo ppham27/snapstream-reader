@@ -139,6 +139,53 @@ namespace snap {
       return json.str();
     }
 
+    std::string matrix_to_json_data(std::string matrix, const std::vector<std::vector<int>> &occurrences) {
+      // matrix comes in CSV form
+      std::vector<std::string> rows;
+      boost::split(rows, matrix, boost::is_any_of("\r\n"));
+      // remove blank rows?
+      auto it = rows.begin();
+      while (it != rows.end()) {
+        boost::algorithm::trim(*it);
+        if (*it == "") {
+          it = rows.erase(it);
+        } else {
+          ++it;        
+        }
+      }
+      int N = rows.size();      // number of countries
+      std::vector<std::vector<std::string>> rowsSplit(N);
+      // item info, for countries, tuple is symbol, name, size
+      std::ostringstream json;
+      json << "{\"nodes\":[";
+      for (int i = 0; i < N; ++i) {
+        boost::split(rowsSplit[i], rows[i], boost::is_any_of(","));
+        json << boost::format("{\"symbol\":\"%s\",\"name\":\"%s\",\"size\":%f,\"data\":{\"Occurrences\":%d}}") % rowsSplit[i][0] % rowsSplit[i][1] % rowsSplit[i][2] % occurrences[i][i];
+        if (i < N - 1) {
+          json << ',';
+        } else {
+          json << "],\"links\":[";
+        }
+      }
+      for (int i = 0; i < N; ++i) {
+        json << '[';
+        for (int j = 0; j < N; ++j) {
+          int k = 1;
+          if (i == j) k = -1;
+          json << boost::format("{\"distance\":%f,\"k\":%d,\"data\":{\"Co-occurrences\":%d}}") % rowsSplit[i][j + 3] % k % occurrences[i][j];
+          if (j < N - 1) {
+            json << ',';
+          }
+        }
+        if (i < N - 1) {
+          json << "],";
+        } else {
+          json << "]]}";
+        }
+      }      
+      return json.str();      
+    }
+
     void print_header() {
       std::cout << R"ZZZ(Content-type: text/html; charset=iso-8859-1
 

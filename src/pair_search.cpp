@@ -52,18 +52,26 @@ void output_visualization(std::map<std::string, std::map<std::string, std::tuple
   std::string csv;
   if (snap::io::file_exists("dictionary.csv")) {
     std::ifstream dict_file("dictionary.csv");
-    csv = distance::size_distance_to_csv(sizes, distances, snap::io::read_dictionary(dict_file));
+    std::map<std::string, std::tuple<std::string, std::string, std::string>> dictionary = snap::io::read_dictionary(dict_file);
+    csv = distance::size_distance_to_csv(sizes, distances, dictionary);    
   } else {
     csv = distance::size_distance_to_csv(sizes, distances);
   }
-
+  std::vector<std::vector<int>> occurences;
+  for (std::pair<std::string, double> sizeA : sizes) { // relies on the fact that csv is in same order as sizes
+    occurences.emplace_back();
+    for (std::pair<std::string, double> sizeB : sizes) {
+      occurences.back().push_back(std::get<0>(results[sizeA.first][sizeB.first]));
+    } 
+  }
+  
   std::string visualization_file_path = output_path + dt + "_visualization_" + uid + ".csv";
   std::ofstream visualization_file(visualization_file_path, std::ios::out);
   visualization_file << csv;
   visualization_file.close();
   std::cout << snap::web::create_link(visualization_file_path, "Visualization File") << "<br/>" << std::endl;
 
-  std::string json = snap::web::matrix_to_json(csv);
+  std::string json = snap::web::matrix_to_json_data(csv, occurences);
   std::string json_file_name = dt + "_visualization_" + uid + ".json";
   std::string visualization_json_path = output_path + json_file_name;
   std::ofstream visualization_json(visualization_json_path, std::ios::out);

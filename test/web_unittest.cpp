@@ -124,6 +124,13 @@ TEST(matrix_to_json, Default) {
   ASSERT_EQ(json, snap::web::matrix_to_json(matrix));    
 }
 
+TEST(matrix_to_json_data, Default) {
+  std::string matrix = "\nUSA,United States,85,-1,94,31\nGBR,Great Britain,40,94,-1,57\nRUS,Russia,70,31,57,-1\n\n\n";
+  std::vector<std::vector<int>> occurrences{{100,10,5}, {10,20,15}, {5,15, 40}};
+  std::string json = R"ZZZ({"nodes":[{"symbol":"USA","name":"United States","size":85,"data":{"Occurrences":100}},{"symbol":"GBR","name":"Great Britain","size":40,"data":{"Occurrences":20}},{"symbol":"RUS","name":"Russia","size":70,"data":{"Occurrences":40}}],"links":[[{"distance":-1,"k":-1,"data":{"Co-occurrences":100}},{"distance":94,"k":1,"data":{"Co-occurrences":10}},{"distance":31,"k":1,"data":{"Co-occurrences":5}}],[{"distance":94,"k":1,"data":{"Co-occurrences":10}},{"distance":-1,"k":-1,"data":{"Co-occurrences":20}},{"distance":57,"k":1,"data":{"Co-occurrences":15}}],[{"distance":31,"k":1,"data":{"Co-occurrences":5}},{"distance":57,"k":1,"data":{"Co-occurrences":15}},{"distance":-1,"k":-1,"data":{"Co-occurrences":40}}]]})ZZZ";
+  ASSERT_EQ(json, snap::web::matrix_to_json_data(matrix, occurrences));
+}
+
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();    
