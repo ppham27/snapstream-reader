@@ -131,8 +131,7 @@ isPercentSelector.append("input")
 .attr("type", "checkbox")
 .attr("id", "isPercent")
 .attr("name", "isPercent")
-.on("change", update)
-.node().checked = true;
+.on("change", update);
 
 // set up paths
 var liner = d3.svg.line()
