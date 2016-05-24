@@ -1,33 +1,24 @@
 <!DOCTYPE html>
+
 <html>
   <head>
-    <title>Current Snapstream Time Series</title>
     <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="http://johnny.sas.upenn.edu/~pemantle/time-series.css">
+    <style type="text/css">
+      #graph {
+        width: 740px;
+        height: 380px;
+      }
+	  body {
+		  background-color:#fff;
+	  }
+    </style>
   </head>
-  <body style="width: 960px; height: 500px;">
-    <iframe id="graph" src="time-series.html" 
-            scrolling="no" frameborder="0" 
-            marginheight="0px" marginwidth="0px"
-            style="border: none; width: 960px; height: 500px;">
-    </iframe>
-    <script>
-     var currentDate = new Date(); 
-     getLatestDate();
-     function getLatestDate() {
-       var dateString = currentDate.toJSON().slice(0, 10);    
-       var dataRequest = new XMLHttpRequest();
-       dataRequest.addEventListener("load", function(event) {
-         if (this.status === 200) {
-           document.getElementById("graph").src += '?filename=' + encodeURIComponent('tmp/daily_2016_republicans/' + dateString + '.csv');
-         } else {
-           currentDate.setDate(currentDate.getDate() - 1);
-           getLatestDate();
-         }
-       });
-       dataRequest.open("GET",
-                        "tmp/daily_2016_republicans/" + dateString + ".csv");
-       dataRequest.send();
-     }
-    </script>
+  <body>
+    <div id="graph"></div>
+    <script src="http://johnny.sas.upenn.edu/~pemantle/d3.v3.min.js" charset="utf-8"></script>
+    <script src="http://johnny.sas.upenn.edu/~pemantle/d3.tip.js" charset="utf-8"></script>
+    <script src="http://johnny.sas.upenn.edu/~pemantle/time-series.js" charset="utf-8"></script>
+    <script src="http://johnny.sas.upenn.edu/~pemantle/tmp/daily_2016_presidential/current.js" charset="utf-8"></script>
   </body>
 </html>
